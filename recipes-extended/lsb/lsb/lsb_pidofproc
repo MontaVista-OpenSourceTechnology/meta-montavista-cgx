@@ -1,0 +1,9 @@
+#!/bin/bash
+
+. /etc/init.d/functions
+# Some functions are defined in /etc/init.d/functions.lsbinitscripts 
+# but not in /etc/init.d/functions.
+. /etc/init.d/functions.lsbinitscripts
+
+pidofproc $*
+exit $?

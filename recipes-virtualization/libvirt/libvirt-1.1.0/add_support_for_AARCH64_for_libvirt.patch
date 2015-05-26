@@ -1,0 +1,22 @@
+diff -Naaur libvirt-1.1.0.orig/src/util/virarch.c libvirt-1.1.0/src/util/virarch.c
+--- libvirt-1.1.0.orig/src/util/virarch.c	2013-09-18 12:03:29.701796982 +0530
++++ libvirt-1.1.0/src/util/virarch.c	2013-09-18 12:04:19.181796812 +0530
+@@ -38,6 +38,7 @@
+     { "armv6l",       32, VIR_ARCH_LITTLE_ENDIAN },
+     { "armv7l",       32, VIR_ARCH_LITTLE_ENDIAN },
+     { "armv7b",       32, VIR_ARCH_BIG_ENDIAN },
++    { "aarch64",      64, VIR_ARCH_BIG_ENDIAN },
+     { "cris",         32, VIR_ARCH_LITTLE_ENDIAN },
+     { "i686",         32, VIR_ARCH_LITTLE_ENDIAN },
+ 
+diff -Naaur libvirt-1.1.0.orig/src/util/virarch.h libvirt-1.1.0/src/util/virarch.h
+--- libvirt-1.1.0.orig/src/util/virarch.h	2013-09-18 12:03:20.205797014 +0530
++++ libvirt-1.1.0/src/util/virarch.h	2013-09-18 12:04:03.261796866 +0530
+@@ -30,6 +30,7 @@
+     VIR_ARCH_ARMV6L,       /* ARMv6       32 LE http://en.wikipedia.org/wiki/ARM_architecture */
+     VIR_ARCH_ARMV7L,       /* ARMv7       32 LE http://en.wikipedia.org/wiki/ARM_architecture */
+     VIR_ARCH_ARMV7B,       /* ARMv7       32 BE http://en.wikipedia.org/wiki/ARM_architecture */
++    VIR_ARCH_AARCH64,      /* ARMv7       64 BE http://en.wikipedia.org/wiki/ARM_architecture */
+     VIR_ARCH_CRIS,         /* ETRAX       32 LE http://en.wikipedia.org/wiki/ETRAX_CRIS */
+     VIR_ARCH_I686,         /* x86         32 LE http://en.wikipedia.org/wiki/X86 */
+ 

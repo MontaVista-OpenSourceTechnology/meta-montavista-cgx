@@ -1,0 +1,155 @@
+Index: cpuset-1.5.5/cpuset/commands/proc.py
+===================================================================
+--- cpuset-1.5.5.orig/cpuset/commands/proc.py	2010-04-29 22:21:52.000000000 -0500
++++ cpuset-1.5.5/cpuset/commands/proc.py	2011-09-02 13:00:44.518511531 -0500
+@@ -83,6 +83,12 @@
+ there is only one process, say PID 57, in the range of 50-65,
+ then only that process will be moved.
+ 
++If the item or range in a PIDSPEC begins with "^", then this operates
++as a not and excludes those PIDs or TIDs from the set.  So, for
++instance, "1,2,600-700,^650-660" will not have PIDs 650 to 660
++in the set.  Note that if the PIDSPEC is all excludes, you must
++specify a from set in the command.
++
+ To move a PIDSPEC to a specific cpuset, you can either specify
+ the PIDSPEC with --pid and the destination cpuset with --toset,
+ or use the short hand and list the cpuset name after the PIDSPEC
+@@ -593,17 +599,25 @@
+         raise CpusetException('pidspec=%s is not a string' % pidspec)
+     groups = pidspec.split(',')
+     plist = []
++    rlist = []
+     nifs = 0
+     if fset: chktsk = fset.tasks
+     log.debug('parsing groups: %s', groups)
+     for sub in groups:
++        if sub and sub[0] == '^':
++            sub = sub[1:]
++            remove = True
++        else:
++            remove = False
+         items = sub.split('-')
+         if len(items) == 1:
+             if not len(items[0]):
+                 # two consecutive commas in pidspec, just continue processing
+                 continue
+             # one pid in this group
+-            if fset:
++            if remove:
++                rlist.append(items[0])
++            elif fset:
+                 try:
+                     chktsk.index(items[0])
+                     plist.append(items[0])
+@@ -618,7 +632,9 @@
+             # a range of pids, only include those that exist
+             rng = [str(x) for x in range(int(items[0]), int(items[1])+1) 
+                            if os.access('/proc/'+str(x), os.F_OK)]
+-            if fset:
++            if remove:
++                rlist.extend(rng)
++            elif fset:
+                 for tsk in rng:
+                     try:
+                         chktsk.index(tsk)
+@@ -632,7 +648,11 @@
+                 log.debug(' added range of pids from %s-%s: %s', items[0], items[1], rng)
+         else:
+             raise CpusetException('pidspec=%s has bad group=%s' % (pidspec, items))
+-    log.debug('raw parsed pid list of %s tasks: %s', len(plist), plist)
++    if not plist:
++        if not fset:
++            raise CpusetException('pidspec=%s was all remove and no from set was given' % (pidspec,))
++        plist = cset.unique_set(fset).tasks
++    log.debug('raw parsed pid list of %s tasks: %s remove %s', len(plist), plist, rlist)
+     if nifs > 0:
+         if nifs > 1: nmsg = "tasks"
+         else: nmsg = "task"
+@@ -644,6 +664,8 @@
+         if task in pdict:
+             dups += 1
+             continue
++        if task in rlist:
++            continue
+         pdict[task] = True
+     log.debug('found %s duplicates', dups)
+     if threads:
+Index: cpuset-1.5.5/doc/cset-proc.txt
+===================================================================
+--- cpuset-1.5.5.orig/doc/cset-proc.txt	2011-09-02 14:51:41.098510729 -0500
++++ cpuset-1.5.5/doc/cset-proc.txt	2011-09-02 14:51:45.278510729 -0500
+@@ -121,6 +121,12 @@
+ there is only one process, say PID 57, in the range of 50-65,
+ then only that process will be moved.
+ 
++If the item or range in a PIDSPEC begins with "^", then this operates
++as a not and excludes those PIDs or TIDs from the set.  So, for
++instance, "1,2,600-700,^650-660" will not have PIDs 650 to 660
++in the set.  Note that if the PIDSPEC is all excludes, you must
++specify a from set in the command.
++
+ To move a PIDSPEC to a specific cpuset, you can either specify
+ the PIDSPEC with --pid and the destination cpuset with --toset,
+ or use the short hand and list the cpuset name after the PIDSPEC
+Index: cpuset-1.5.5/cpuset/commands/shield.py
+===================================================================
+--- cpuset-1.5.5.orig/cpuset/commands/shield.py	2011-09-02 14:53:16.348510717 -0500
++++ cpuset-1.5.5/cpuset/commands/shield.py	2011-09-02 14:53:25.698510717 -0500
+@@ -123,6 +123,11 @@
+ there is only one process, say PID 57, in the range of 50-65,
+ then only that process will be moved.
+ 
++If the item or range in a PIDSPEC begins with "^", then this operates
++as a not and excludes those PIDs or TIDs from the set.  So, for
++instance, "1,2,600-700,^650-660" will not have PIDs 650 to 660
++in the set.
++
+ The --unshield (or -u) subcommand will remove the specified
+ processes or threads from the shielded cpuset and move them into
+ the unshielded (or system) cpuset.  This option is use with a
+Index: cpuset-1.5.5/doc/cset-shield.txt
+===================================================================
+--- cpuset-1.5.5.orig/doc/cset-shield.txt	2011-09-02 14:52:57.688510721 -0500
++++ cpuset-1.5.5/doc/cset-shield.txt	2011-09-02 14:53:31.858510715 -0500
+@@ -177,6 +177,11 @@
+ there is only one process, say PID 57, in the range of 50-65,
+ then only that process will be moved.
+ 
++If the item or range in a PIDSPEC begins with "^", then this operates
++as a not and excludes those PIDs or TIDs from the set.  So, for
++instance, "1,2,600-700,^650-660" will not have PIDs 650 to 660
++in the set.
++
+ The --unshield (or -u) subcommand will remove the specified
+ processes or threads from the shielded cpuset and move them into
+ the unshielded (or system) cpuset.  This command is also used in
+Index: cpuset-1.5.5/doc/tutorial.txt
+===================================================================
+--- cpuset-1.5.5.orig/doc/tutorial.txt	2011-09-02 14:53:53.518510713 -0500
++++ cpuset-1.5.5/doc/tutorial.txt	2011-09-02 14:54:51.808510707 -0500
+@@ -355,6 +355,11 @@
+ specifies to act on any tasks that have a PID or TID that is within that
+ range.
+ 
++If the item or range in a PIDSPEC begins with "^", then this operates
++as a not and excludes those PIDs or TIDs from the set.  So, for
++instance, "1,2,600-700,^650-660" will not have PIDs 650 to 660
++in the set.
++
+ Use of the appropriate PIDSPEC can thus be handy to move tasks and groups of
+ tasks into and out of the shield.  Additionally, there is one more option that
+ can help with multi-threaded processes, and that is the +\--threads+ flag.  If
+@@ -766,6 +771,12 @@
+ specifies to act on any tasks that have a PID or TID that is within that
+ range.
+ 
++If the item or range in a PIDSPEC begins with "^", then this operates
++as a not and excludes those PIDs or TIDs from the set.  So, for
++instance, "1,2,600-700,^650-660" will not have PIDs 650 to 660
++in the set.  Note that if the PIDSPEC is all excludes, you must
++specify a from set in the command.
++
+ In the following example, we move the current shell into the cpuset named
+ 'two' with a range PIDSPEC and back out to the 'root' cpuset with the bash
+ variable for the current PID.

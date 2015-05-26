@@ -1,0 +1,82 @@
+From b69d3a0b06fc6f034195b44f1c1656e1f9065dbb Mon Sep 17 00:00:00 2001
+From: Jon Medhurst <tixy@linaro.org>
+Date: Tue, 10 Jan 2012 09:54:41 +0000
+Subject: [PATCH 3341/3348] vexpress-hacks: Make default boot command boot from MMC on extended memory map
+
+Signed-off-by: Jon Medhurst <tixy@linaro.org>
+---
+ include/configs/vexpress_ca5x2.h  |    5 +++++
+ include/configs/vexpress_common.h |   16 ++++++++++++++--
+ 2 files changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/include/configs/vexpress_ca5x2.h b/include/configs/vexpress_ca5x2.h
+index 5998530..81bb6cd 100644
+--- a/include/configs/vexpress_ca5x2.h
++++ b/include/configs/vexpress_ca5x2.h
+@@ -27,8 +27,13 @@
+ #ifndef __VEXPRESS_CA5X2_h
+ #define __VEXPRESS_CA5X2_h
+ 
++// Hack in default commands to boot from mmc with device-tree...
++#define CONFIG_DEVICE_TREE_FILENAME "v2p-ca5s.dtb"
++#define CONFIG_MMCI_FMAX "2000000"
++
+ #define CONFIG_VEXPRESS_EXTENDED_MEMORY_MAP
+ #include "vexpress_common.h"
+ #define CONFIG_BOOTP_VCI_STRING     "U-boot.armv7.vexpress_ca5x2"
+ 
++
+ #endif // __VEXPRESS_CA5X2_h
+diff --git a/include/configs/vexpress_common.h b/include/configs/vexpress_common.h
+index e81a379..fbf7598 100644
+--- a/include/configs/vexpress_common.h
++++ b/include/configs/vexpress_common.h
+@@ -226,6 +226,8 @@
+ #define CONFIG_SYS_INIT_SP_ADDR		CONFIG_SYS_GBL_DATA_OFFSET
+ 
+ /* Basic environment settings */
++#ifdef CONFIG_VEXPRESS_ORIGINAL_MEMORY_MAP
++
+ #define CONFIG_BOOTCOMMAND \
+ 	"if mmc rescan ${mmcdev}; then " \
+ 		"if run loadbootscript; then " \
+@@ -234,7 +236,6 @@
+ 	"fi; " \
+ 	"run bootflash;"
+ 
+-#ifdef CONFIG_VEXPRESS_ORIGINAL_MEMORY_MAP
+ #define CONFIG_PLATFORM_ENV_SETTINGS \
+ 		"loadaddr=0x80008000\0" \
+ 		"ramdisk_addr_r=0x61000000\0" \
+@@ -243,7 +244,16 @@
+ 		"maxramdisk=0x1800000\0" \
+ 		"pxefile_addr_r=0x88000000\0" \
+ 		"kernel_addr_r=0x80008000\0"
++
+ #elif defined(CONFIG_VEXPRESS_EXTENDED_MEMORY_MAP)
++
++#define CONFIG_BOOTCOMMAND \
++	"run mmc_args; mmc rescan; " \
++	"fatload mmc 0:1 0x80000000 uImage; " \
++	"fatload mmc 0:1 0x82000000 uInitrd; " \
++	"fatload mmc 0:1 0x81f00000 "CONFIG_DEVICE_TREE_FILENAME"; " \
++	"bootm 0x80000000 0x82000000 0x81f00000;"
++
+ #define CONFIG_PLATFORM_ENV_SETTINGS \
+ 		"loadaddr=0xa0008000\0" \
+ 		"ramdisk_addr_r=0x81000000\0" \
+@@ -251,8 +261,10 @@
+ 		"ramdisk_addr=0x0c800000\0" \
+ 		"maxramdisk=0x1800000\0" \
+ 		"pxefile_addr_r=0xa8000000\0" \
+-		"kernel_addr_r=0xa0008000\0"
++		"kernel_addr_r=0xa0008000\0" \
++		"mmc_args=setenv bootargs \"console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=1024M clcd=xvga consoleblank=0 mmci.fmax="CONFIG_MMCI_FMAX"\"; "
+ #endif
++
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 		CONFIG_PLATFORM_ENV_SETTINGS \
+ 		"console=ttyAMA0,38400n8\0" \
+-- 
+1.7.0.1
+

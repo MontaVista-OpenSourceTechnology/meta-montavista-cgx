@@ -1,0 +1,12 @@
+diff -Naurp dpkg-1.17.21_org/scripts/Dpkg/Arch.pm dpkg-1.17.21/scripts/Dpkg/Arch.pm
+--- dpkg-1.17.21_org/scripts/Dpkg/Arch.pm	2015-03-17 10:24:27.089178938 -0400
++++ dpkg-1.17.21/scripts/Dpkg/Arch.pm	2015-03-17 10:24:48.265202140 -0400
+@@ -383,7 +383,7 @@ sub debarch_to_cpuattrs($)
+     if (defined($cpu)) {
+         abitable_load();
+ 
+-        return ($abibits{$abi} // $cpubits{$cpu}, $cpuendian{$cpu});
++        return ($abibits{$abi} || $cpubits{$cpu}, $cpuendian{$cpu});
+     } else {
+         return;
+     }

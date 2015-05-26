@@ -1,0 +1,370 @@
+From 9ba5872e4c931d0eb7992867d3a21d54ab1a185f Mon Sep 17 00:00:00 2001
+From: Ryan Harkin <ryan.harkin@linaro.org>
+Date: Tue, 18 Oct 2011 11:06:25 +0100
+Subject: [PATCH 3318/3348] ARM: vexpress: create A5 specific board config
+
+This patch creates a new config for the A5 dual core tile that includes the
+generic config for the Versatile Express platform.
+
+The generic config has been modified to provide support for the Extended
+Memory Map, as used on the A5 core tile.  A5 does not support the legacy
+memory map.
+
+Signed-off-by: Ryan Harkin <ryan.harkin@linaro.org>
+---
+ MAINTAINERS                             |    1 +
+ board/armltd/vexpress/vexpress_common.c |   29 +++++--
+ boards.cfg                              |    1 +
+ include/configs/vexpress_ca5x2.h        |   34 +++++++
+ include/configs/vexpress_common.h       |  147 +++++++++++++++++++++++++++----
+ 5 files changed, 187 insertions(+), 25 deletions(-)
+ create mode 100644 include/configs/vexpress_ca5x2.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ad4678c..2e092bd 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -867,6 +867,7 @@ Hugo Villeneuve <hugo.villeneuve@lyrtech.com>
+ Matt Waddel <matt.waddel@linaro.org>
+ 
+ 	vexpress_ca9x4	ARM ARMV7 (Quad Core)
++	vexpress_ca5x2	ARM ARMV7 (Dual Core)
+ 
+ Prafulla Wadaskar <prafulla@marvell.com>
+ 
+diff --git a/board/armltd/vexpress/vexpress_common.c b/board/armltd/vexpress/vexpress_common.c
+index da6f14d..df20ee9 100644
+--- a/board/armltd/vexpress/vexpress_common.c
++++ b/board/armltd/vexpress/vexpress_common.c
+@@ -43,8 +43,7 @@
+ static ulong timestamp;
+ static ulong lastdec;
+ 
+-static struct wdt *wdt_base = (struct wdt *)WDT_BASE;
+-static struct systimer *systimer_base = (struct systimer *)SYSTIMER_BASE;
++static struct systimer *systimer_base = (struct systimer *)V2M_TIMER01;
+ static struct sysctrl *sysctrl_base = (struct sysctrl *)SCTL_BASE;
+ 
+ static void flash__init(void);
+@@ -154,13 +153,31 @@ static void vexpress_timer_init(void)
+ 	reset_timer_masked();
+ }
+ 
++int v2m_cfg_write(u32 devfn, u32 data)
++{
++	/* Configuration interface broken? */
++	u32 val;
++
++	devfn |= SYS_CFG_START | SYS_CFG_WRITE;
++
++	val = readl(V2M_SYS_CFGSTAT);
++	writel(val & ~SYS_CFG_COMPLETE, V2M_SYS_CFGSTAT);
++
++	writel(data, V2M_SYS_CFGDATA);
++	writel(devfn, V2M_SYS_CFGCTRL);
++
++	do {
++		val = readl(V2M_SYS_CFGSTAT);
++	} while (val == 0);
++
++	return !!(val & SYS_CFG_ERR);
++}
++
+ /* Use the ARM Watchdog System to cause reset */
+ void reset_cpu(ulong addr)
+ {
+-	writeb(WDT_EN, &wdt_base->wdogcontrol);
+-	writel(WDT_RESET_LOAD, &wdt_base->wdogload);
+-	while (1)
+-		;
++	if (v2m_cfg_write(SYS_CFG_REBOOT | SYS_CFG_SITE_MB, 0))
++		printf("Unable to reboot\n");
+ }
+ 
+ /*
+diff --git a/boards.cfg b/boards.cfg
+index 2c093a6..04afdbf 100644
+--- a/boards.cfg
++++ b/boards.cfg
+@@ -181,6 +181,7 @@ versatilepb                  arm         arm926ejs   versatile           armltd
+ versatileqemu                arm         arm926ejs   versatile           armltd         versatile   versatile:ARCH_VERSATILE_QEMU,ARCH_VERSATILE_PB
+ integratorap_cm946es         arm         arm946es    integrator          armltd         -               integratorap:CM946ES
+ integratorcp_cm946es         arm         arm946es    integrator          armltd         -               integratorcp:CM946ES
++vexpress_ca5x2               arm         armv7       vexpress            armltd
+ vexpress_ca9x4               arm         armv7       vexpress            armltd
+ am335x_evm                   arm         armv7       am335x              ti             am33xx
+ highbank                     arm         armv7       highbank            -              highbank
+diff --git a/include/configs/vexpress_ca5x2.h b/include/configs/vexpress_ca5x2.h
+new file mode 100644
+index 0000000..5998530
+--- /dev/null
++++ b/include/configs/vexpress_ca5x2.h
+@@ -0,0 +1,34 @@
++/*
++ * (C) Copyright 2011 Linaro
++ * Ryan Harkin, <ryan.harkin@linaro.org>
++ *
++ * Configuration for Versatile Express. Parts were derived from other ARM
++ *   configurations.
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#ifndef __VEXPRESS_CA5X2_h
++#define __VEXPRESS_CA5X2_h
++
++#define CONFIG_VEXPRESS_EXTENDED_MEMORY_MAP
++#include "vexpress_common.h"
++#define CONFIG_BOOTP_VCI_STRING     "U-boot.armv7.vexpress_ca5x2"
++
++#endif // __VEXPRESS_CA5X2_h
+diff --git a/include/configs/vexpress_common.h b/include/configs/vexpress_common.h
+index b6758fc..7c1588d 100644
+--- a/include/configs/vexpress_common.h
++++ b/include/configs/vexpress_common.h
+@@ -1,4 +1,5 @@
+ /*
++ * (C) Copyright 2011 ARM Limited
+  * (C) Copyright 2010 Linaro
+  * Matt Waddel, <matt.waddel@linaro.org>
+  *
+@@ -24,15 +25,110 @@
+  * MA 02111-1307 USA
+  */
+ 
+-#ifndef __CONFIG_H
+-#define __CONFIG_H
++#ifndef __VEXPRESS_COMMON_H
++#define __VEXPRESS_COMMON_H
++
++/* Definitions copied from linux kernel: arch/arm/mach-vexpress/include/mach/motherboard.h */
++#ifdef CONFIG_VEXPRESS_ORIGINAL_MEMORY_MAP
++/* CS register bases for the original memory map. */
++#define V2M_PA_CS0		0x40000000
++#define V2M_PA_CS1		0x44000000
++#define V2M_PA_CS2		0x48000000
++#define V2M_PA_CS3		0x4c000000
++#define V2M_PA_CS7		0x10000000
++
++#define V2M_PERIPH_OFFSET(x)	(x << 12)
++#define V2M_SYSREGS		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(0))
++#define V2M_SYSCTL		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(1))
++#define V2M_SERIAL_BUS_PCI	(V2M_PA_CS7 + V2M_PERIPH_OFFSET(2))
++
++#define V2M_BASE		0x60000000
++#define CONFIG_SYS_TEXT_BASE	0x60800000
++#elif defined(CONFIG_VEXPRESS_EXTENDED_MEMORY_MAP)
++/* CS register bases for the extended memory map. */
++#define V2M_PA_CS0		0x08000000
++#define V2M_PA_CS1		0x0c000000
++#define V2M_PA_CS2		0x14000000
++#define V2M_PA_CS3		0x18000000
++#define V2M_PA_CS7		0x1c000000
++
++#define V2M_PERIPH_OFFSET(x)	(x << 16)
++#define V2M_SYSREGS		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(1))
++#define V2M_SYSCTL		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(2))
++#define V2M_SERIAL_BUS_PCI	(V2M_PA_CS7 + V2M_PERIPH_OFFSET(3))
++
++#define V2M_BASE		0x80000000
++#define CONFIG_SYS_TEXT_BASE	0x80800000
++#endif
++
++/*
++ * Physical addresses, offset from V2M_PA_CS0-3
++ */
++#define V2M_NOR0		(V2M_PA_CS0)
++#define V2M_NOR1		(V2M_PA_CS1)
++#define V2M_SRAM		(V2M_PA_CS2)
++#define V2M_VIDEO_SRAM		(V2M_PA_CS3 + 0x00000000)
++#define V2M_LAN9118		(V2M_PA_CS3 + 0x02000000)
++#define V2M_ISP1761		(V2M_PA_CS3 + 0x03000000)
++
++/* Common peripherals relative to CS7. */
++#define V2M_AACI		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(4))
++#define V2M_MMCI		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(5))
++#define V2M_KMI0		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(6))
++#define V2M_KMI1		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(7))
++
++#define V2M_UART0		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(9))
++#define V2M_UART1		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(10))
++#define V2M_UART2		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(11))
++#define V2M_UART3		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(12))
++
++#define V2M_WDT			(V2M_PA_CS7 + V2M_PERIPH_OFFSET(15))
++
++#define V2M_TIMER01		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(17))
++#define V2M_TIMER23		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(18))
++
++#define V2M_SERIAL_BUS_DVI	(V2M_PA_CS7 + V2M_PERIPH_OFFSET(22))
++#define V2M_RTC			(V2M_PA_CS7 + V2M_PERIPH_OFFSET(23))
++
++#define V2M_CF			(V2M_PA_CS7 + V2M_PERIPH_OFFSET(26))
++
++#define V2M_CLCD		(V2M_PA_CS7 + V2M_PERIPH_OFFSET(31))
++#define V2M_SIZE_CS7		V2M_PERIPH_OFFSET(32)
++
++/* System register offsets. */
++#define V2M_SYS_CFGDATA		(V2M_SYSREGS + 0x0a0)
++#define V2M_SYS_CFGCTRL		(V2M_SYSREGS + 0x0a4)
++#define V2M_SYS_CFGSTAT		(V2M_SYSREGS + 0x0a8)
++
++/*
++ * Configuration
++ */
++#define SYS_CFG_START		(1 << 31)
++#define SYS_CFG_WRITE		(1 << 30)
++#define SYS_CFG_OSC		(1 << 20)
++#define SYS_CFG_VOLT		(2 << 20)
++#define SYS_CFG_AMP		(3 << 20)
++#define SYS_CFG_TEMP		(4 << 20)
++#define SYS_CFG_RESET		(5 << 20)
++#define SYS_CFG_SCC		(6 << 20)
++#define SYS_CFG_MUXFPGA		(7 << 20)
++#define SYS_CFG_SHUTDOWN	(8 << 20)
++#define SYS_CFG_REBOOT		(9 << 20)
++#define SYS_CFG_DVIMODE		(11 << 20)
++#define SYS_CFG_POWER		(12 << 20)
++#define SYS_CFG_SITE_MB		(0 << 16)
++#define SYS_CFG_SITE_DB1	(1 << 16)
++#define SYS_CFG_SITE_DB2	(2 << 16)
++#define SYS_CFG_STACK(n)	((n) << 12)
++
++#define SYS_CFG_ERR		(1 << 1)
++#define SYS_CFG_COMPLETE	(1 << 0)
+ 
+ /* Board info register */
+-#define SYS_ID				0x10000000
++#define SYS_ID				V2M_SYSREGS
+ #define CONFIG_REVISION_TAG		1
+-#define CONFIG_SYS_TEXT_BASE		0x60800000
+ 
+-#define CONFIG_SYS_MEMTEST_START	0x60000000
++#define CONFIG_SYS_MEMTEST_START	V2M_BASE
+ #define CONFIG_SYS_MEMTEST_END		0x20000000
+ #define CONFIG_SYS_HZ			1000
+ 
+@@ -46,13 +142,13 @@
+ /* Size of malloc() pool */
+ #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + 128 * 1024)
+ 
+-#define SCTL_BASE			0x10001000
++#define SCTL_BASE			V2M_SYSCTL
+ #define VEXPRESS_FLASHPROG_FLVPPEN	(1 << 0)
+ 
+ /* SMSC9115 Ethernet from SMSC9118 family */
+ #define CONFIG_SMC911X			1
+ #define CONFIG_SMC911X_32_BIT		1
+-#define CONFIG_SMC911X_BASE		0x4E000000
++#define CONFIG_SMC911X_BASE		V2M_LAN9118
+ 
+ /* PL011 Serial Configuration */
+ #define CONFIG_PL011_SERIAL
+@@ -63,8 +159,8 @@
+ 
+ #define CONFIG_BAUDRATE			38400
+ #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
+-#define CONFIG_SYS_SERIAL0		0x10009000
+-#define CONFIG_SYS_SERIAL1		0x1000A000
++#define CONFIG_SYS_SERIAL0		V2M_UART0
++#define CONFIG_SYS_SERIAL1		V2M_UART1
+ 
+ /* Command line configuration */
+ #define CONFIG_CMD_BDI
+@@ -87,7 +183,7 @@
+ #define CONFIG_CMD_MMC
+ #define CONFIG_GENERIC_MMC
+ #define CONFIG_ARM_PL180_MMCI
+-#define CONFIG_ARM_PL180_MMCI_BASE	0x10005000
++#define CONFIG_ARM_PL180_MMCI_BASE	V2M_MMCI
+ #define CONFIG_SYS_MMC_MAX_BLK_COUNT	127
+ #define CONFIG_ARM_PL180_MMCI_CLOCK_FREQ 6250000
+ 
+@@ -101,8 +197,8 @@
+ 
+ /* Miscellaneous configurable options */
+ #undef	CONFIG_SYS_CLKS_IN_HZ
+-#define CONFIG_SYS_LOAD_ADDR		0x60008000	/* load address */
+-#define LINUX_BOOT_PARAM_ADDR		0x60000200
++#define CONFIG_SYS_LOAD_ADDR		(V2M_BASE + 0x8000)	/* load address */
++#define LINUX_BOOT_PARAM_ADDR		(V2M_BASE + 0x2000)
+ #define CONFIG_BOOTDELAY		2
+ 
+ /* Stack sizes are set up in start.S using the settings below */
+@@ -114,8 +210,8 @@
+ 
+ /* Physical Memory Map */
+ #define CONFIG_NR_DRAM_BANKS		2
+-#define PHYS_SDRAM_1			0x60000000	/* SDRAM Bank #1 */
+-#define PHYS_SDRAM_2			0x80000000	/* SDRAM Bank #1 */
++#define PHYS_SDRAM_1			(V2M_BASE)	/* SDRAM Bank #1 */
++#define PHYS_SDRAM_2			(((unsigned int)V2M_BASE) + ((unsigned int)0x20000000))	/* SDRAM Bank #2 */
+ #define PHYS_SDRAM_1_SIZE		0x20000000	/* 512 MB */
+ #define PHYS_SDRAM_2_SIZE		0x20000000	/* 512 MB */
+ 
+@@ -129,14 +225,27 @@
+ 
+ /* Basic environment settings */
+ #define CONFIG_BOOTCOMMAND		"run bootflash;"
+-#define CONFIG_EXTRA_ENV_SETTINGS \
++#ifdef CONFIG_VEXPRESS_ORIGINAL_MEMORY_MAP
++#define CONFIG_PLATFORM_ENV_SETTINGS \
+ 		"loadaddr=0x80008000\0" \
+ 		"ramdisk_addr_r=0x61000000\0" \
+ 		"kernel_addr=0x44100000\0" \
+ 		"ramdisk_addr=0x44800000\0" \
+ 		"maxramdisk=0x1800000\0" \
+ 		"pxefile_addr_r=0x88000000\0" \
+-		"kernel_addr_r=0x80008000\0" \
++		"kernel_addr_r=0x80008000\0"
++#elif defined(CONFIG_VEXPRESS_EXTENDED_MEMORY_MAP)
++#define CONFIG_PLATFORM_ENV_SETTINGS \
++		"loadaddr=0xa0008000\0" \
++		"ramdisk_addr_r=0x81000000\0" \
++		"kernel_addr=0x0c100000\0" \
++		"ramdisk_addr=0x0c800000\0" \
++		"maxramdisk=0x1800000\0" \
++		"pxefile_addr_r=0xa8000000\0" \
++		"kernel_addr_r=0xa0008000\0"
++#endif
++#define CONFIG_EXTRA_ENV_SETTINGS \
++		CONFIG_PLATFORM_ENV_SETTINGS \
+ 		"console=ttyAMA0,38400n8\0" \
+ 		"dram=1024M\0" \
+ 		"root=/dev/sda1 rw\0" \
+@@ -155,8 +264,8 @@
+ #define CONFIG_FLASH_CFI_DRIVER		1
+ #define CONFIG_SYS_FLASH_SIZE		0x04000000
+ #define CONFIG_SYS_MAX_FLASH_BANKS	2
+-#define CONFIG_SYS_FLASH_BASE0		0x40000000
+-#define CONFIG_SYS_FLASH_BASE1		0x44000000
++#define CONFIG_SYS_FLASH_BASE0		V2M_NOR0
++#define CONFIG_SYS_FLASH_BASE1		V2M_NOR1
+ #define CONFIG_SYS_MONITOR_BASE		CONFIG_SYS_FLASH_BASE0
+ 
+ /* Timeout values in ticks */
+@@ -200,4 +309,4 @@
+ #define CONFIG_CMDLINE_EDITING		1
+ #define CONFIG_SYS_MAXARGS		16	/* max command args */
+ 
+-#endif
++#endif // VEXPRESS_COMMON_H
+-- 
+1.7.0.1
+

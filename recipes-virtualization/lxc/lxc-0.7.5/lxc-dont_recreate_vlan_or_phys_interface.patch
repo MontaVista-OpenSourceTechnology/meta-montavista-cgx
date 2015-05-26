@@ -1,0 +1,45 @@
+Index: lxc-0.7.4.1/src/lxc/conf.c
+===================================================================
+--- lxc-0.7.4.1.orig/src/lxc/conf.c	2011-04-27 10:50:32.000000000 -0700
++++ lxc-0.7.4.1/src/lxc/conf.c	2011-04-27 10:52:04.000000000 -0700
+@@ -1242,7 +1242,10 @@
+ 
+ 	/* rename the interface name */
+ 	err = lxc_netdev_rename_by_name(ifname, netdev->name);
+-	if (err) {
++	if ( (netdev->type == LXC_NET_PHYS || netdev->type == LXC_NET_VLAN)
++			&& err == -EEXIST) {
++		DEBUG("using existing interface '%s'", netdev->name);
++	} else if (err) {
+ 		ERROR("failed to rename %s->%s : %s", ifname, netdev->name,
+ 		      strerror(-err));
+ 		return -1;
+@@ -1486,10 +1489,15 @@
+ 		return -1;
+ 	}
+ 
+-	snprintf(peer, sizeof(peer), "vlan%d", netdev->priv.vlan_attr.vid);
++	if (!netdev->name)
++		snprintf(peer, sizeof(peer), "vlan%d", netdev->priv.vlan_attr.vid);
++	else
++		snprintf(peer, sizeof(peer), "%s.%d", netdev->link, netdev->priv.vlan_attr.vid);
+ 
+ 	err = lxc_vlan_create(netdev->link, peer, netdev->priv.vlan_attr.vid);
+-	if (err) {
++	if (err == -EEXIST) {
++		DEBUG("using existing vlan interface '%s'", peer);
++	} else if (err) {
+ 		ERROR("failed to create vlan interface '%s' on '%s' : %s",
+ 		      peer, netdev->link, strerror(-err));
+ 		return -1;
+@@ -1502,8 +1510,8 @@
+ 		return -1;
+ 	}
+ 
+-	DEBUG("instanciated vlan '%s', ifindex is '%d'", " vlan1000",
+-	      netdev->ifindex);
++	DEBUG("instanciated vlan '%s', ifindex is '%d'",
++	      peer, netdev->ifindex);
+ 
+ 	return 0;
+ }

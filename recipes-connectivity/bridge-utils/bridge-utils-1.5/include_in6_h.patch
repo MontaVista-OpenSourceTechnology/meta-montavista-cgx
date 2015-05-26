@@ -1,0 +1,77 @@
+diff -Naurp bridge-utils-1.5_org/brctl/brctl.c bridge-utils-1.5/brctl/brctl.c
+--- bridge-utils-1.5_org/brctl/brctl.c	2013-05-23 15:46:20.828752846 +0530
++++ bridge-utils-1.5/brctl/brctl.c	2013-05-23 15:27:45.768709428 +0530
+@@ -21,6 +21,7 @@
+ #include <string.h>
+ #include <sys/errno.h>
+ #include <getopt.h>
++#include <linux/in6.h>
+ 
+ #include "libbridge.h"
+ #include "config.h"
+diff -Naurp bridge-utils-1.5_org/brctl/brctl_cmd.c bridge-utils-1.5/brctl/brctl_cmd.c
+--- bridge-utils-1.5_org/brctl/brctl_cmd.c	2013-05-23 15:46:20.828752846 +0530
++++ bridge-utils-1.5/brctl/brctl_cmd.c	2013-05-23 15:27:45.768709428 +0530
+@@ -22,6 +22,7 @@
+ #include <sys/time.h>
+ #include <errno.h>
+ #include <asm/param.h>
++#include <linux/in6.h>
+ #include "libbridge.h"
+ #include "brctl.h"
+ 
+diff -Naurp bridge-utils-1.5_org/brctl/brctl_disp.c bridge-utils-1.5/brctl/brctl_disp.c
+--- bridge-utils-1.5_org/brctl/brctl_disp.c	2013-05-23 15:46:20.828752846 +0530
++++ bridge-utils-1.5/brctl/brctl_disp.c	2013-05-23 15:27:45.768709428 +0530
+@@ -20,6 +20,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <sys/time.h>
++#include <linux/in6.h>
+ 
+ #include "libbridge.h"
+ #include "brctl.h"
+diff -Naurp bridge-utils-1.5_org/libbridge/libbridge_devif.c bridge-utils-1.5/libbridge/libbridge_devif.c
+--- bridge-utils-1.5_org/libbridge/libbridge_devif.c	2013-05-23 15:46:20.828752846 +0530
++++ bridge-utils-1.5/libbridge/libbridge_devif.c	2013-05-23 15:27:45.768709428 +0530
+@@ -24,6 +24,7 @@
+ #include <string.h>
+ #include <dirent.h>
+ #include <sys/fcntl.h>
++#include <linux/in6.h>
+ 
+ #include "libbridge.h"
+ #include "libbridge_private.h"
+diff -Naurp bridge-utils-1.5_org/libbridge/libbridge_if.c bridge-utils-1.5/libbridge/libbridge_if.c
+--- bridge-utils-1.5_org/libbridge/libbridge_if.c	2013-05-23 15:46:20.828752846 +0530
++++ bridge-utils-1.5/libbridge/libbridge_if.c	2013-05-23 15:27:45.768709428 +0530
+@@ -22,6 +22,7 @@
+ #include <string.h>
+ #include <sys/fcntl.h>
+ #include <sys/ioctl.h>
++#include <linux/in6.h>
+ 
+ #include "libbridge.h"
+ #include "libbridge_private.h"
+diff -Naurp bridge-utils-1.5_org/libbridge/libbridge_init.c bridge-utils-1.5/libbridge/libbridge_init.c
+--- bridge-utils-1.5_org/libbridge/libbridge_init.c	2013-05-23 15:46:20.828752846 +0530
++++ bridge-utils-1.5/libbridge/libbridge_init.c	2013-05-23 15:27:45.768709428 +0530
+@@ -24,6 +24,7 @@
+ #include <dirent.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
++#include <linux/in6.h>
+ 
+ #include "libbridge.h"
+ #include "libbridge_private.h"
+diff -Naurp bridge-utils-1.5_org/libbridge/libbridge_misc.c bridge-utils-1.5/libbridge/libbridge_misc.c
+--- bridge-utils-1.5_org/libbridge/libbridge_misc.c	2013-05-23 15:46:20.828752846 +0530
++++ bridge-utils-1.5/libbridge/libbridge_misc.c	2013-05-23 15:27:45.768709428 +0530
+@@ -21,6 +21,7 @@
+ #include <string.h>
+ #include <sys/time.h>
+ #include <asm/param.h>
++#include <linux/in6.h>
+ #include "libbridge.h"
+ #include "libbridge_private.h"
+ 

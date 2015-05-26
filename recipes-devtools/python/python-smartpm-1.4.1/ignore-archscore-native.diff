@@ -1,0 +1,28 @@
+diff -Naurp smart-1.4.1_org/smart/backends/rpm/base.py smart-1.4.1/smart/backends/rpm/base.py
+--- smart-1.4.1_org/smart/backends/rpm/base.py	2015-04-04 13:33:45.639546515 +0530
++++ smart-1.4.1/smart/backends/rpm/base.py	2015-04-04 13:58:16.149107687 +0530
+@@ -343,13 +343,23 @@ def getArchScore(arch, _sm=_SCOREMAP):
+         if arch not in _sm:
+             score = rpm.archscore(arch)
+             _sm[arch] = score
+-        return _sm.get(arch, 0)
++        for multi in ["lib64","lib32"]: 
++            if arch.startswith(multi):
++               return 2
++        if arch.endswith("nativesdk") and ((os.uname()[4] == "i686" and arch.startswith("x86_64")) or (os.uname()[4] == "x86_64" and arch.startswith("i686"))):
++               return 0
++
++        return 1
+     except AttributeError:
+         return 1
+ 
+ # TODO: Embed color into nameprovides and obsoletes relations.
+ _COLORMAP = {"noarch": 0, "x86_64": 2, "ppc64": 2, "s390x": 2, "sparc64": 2}
+ def getArchColor(arch, _cm=_COLORMAP):
++    for multi in ["lib64","lib32"]: 
++        if arch.startswith(multi):
++           return 1
++    return 1
+     return _cm.get(arch, 1)
+ 
+ 

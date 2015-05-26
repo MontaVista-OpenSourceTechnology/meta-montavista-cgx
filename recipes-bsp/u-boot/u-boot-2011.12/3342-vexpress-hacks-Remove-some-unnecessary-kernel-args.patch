@@ -1,0 +1,26 @@
+From 2939ca8c15df4261aa2b156361adf6a48301e9ff Mon Sep 17 00:00:00 2001
+From: Jon Medhurst <tixy@linaro.org>
+Date: Mon, 16 Jan 2012 15:56:29 +0000
+Subject: [PATCH 3342/3348] vexpress-hacks: Remove some unnecessary kernel args
+
+Signed-off-by: Jon Medhurst <tixy@linaro.org>
+---
+ include/configs/vexpress_common.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/include/configs/vexpress_common.h b/include/configs/vexpress_common.h
+index fbf7598..e6ea244 100644
+--- a/include/configs/vexpress_common.h
++++ b/include/configs/vexpress_common.h
+@@ -262,7 +262,7 @@
+ 		"maxramdisk=0x1800000\0" \
+ 		"pxefile_addr_r=0xa8000000\0" \
+ 		"kernel_addr_r=0xa0008000\0" \
+-		"mmc_args=setenv bootargs \"console=tty0 console=ttyAMA0,38400n8 rootwait ro init=/init androidboot.console=ttyAMA0 mem=1024M clcd=xvga consoleblank=0 mmci.fmax="CONFIG_MMCI_FMAX"\"; "
++		"mmc_args=setenv bootargs \"console=tty0 console=ttyAMA0,38400n8 rootwait ro mmci.fmax="CONFIG_MMCI_FMAX"\"; "
+ #endif
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-- 
+1.7.0.1
+

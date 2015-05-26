@@ -1,0 +1,3 @@
+#!/bin/sh
+
+tar -czvf support.tar.gz -C @sysconfdir@/mvl7 .

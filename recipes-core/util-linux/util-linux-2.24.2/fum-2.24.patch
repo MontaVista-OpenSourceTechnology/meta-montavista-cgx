@@ -1,0 +1,457 @@
+diff -Naurp util-linux-2.24.2_org/libmount/src/context.c util-linux-2.24.2/libmount/src/context.c
+--- util-linux-2.24.2_org/libmount/src/context.c	2015-01-22 18:29:32.944673162 +0530
++++ util-linux-2.24.2/libmount/src/context.c	2015-01-22 18:57:53.668015942 +0530
+@@ -170,6 +170,7 @@ int mnt_reset_context(struct libmnt_cont
+ 	cxt->flags |= (fl & MNT_FL_LAZY);
+ 	cxt->flags |= (fl & MNT_FL_FORK);
+ 	cxt->flags |= (fl & MNT_FL_FORCE);
++	cxt->flags |= (fl & MNT_FL_REALLY_FORCE);
+ 	cxt->flags |= (fl & MNT_FL_NOCANONICALIZE);
+ 	cxt->flags |= (fl & MNT_FL_RDONLY_UMOUNT);
+ 	cxt->flags |= (fl & MNT_FL_NOSWAPMATCH);
+@@ -564,6 +565,21 @@ int mnt_context_enable_force(struct libm
+ }
+ 
+ /**
++ * mnt_context_enable_really_force:
++ * @cxt: mount context
++ * @enable: TRUE or FALSE
++ *
++ * Enable/disable force umounting of normal filesystems (see umount(8) man
++ * page, option -F).
++ *
++ * Returns: 0 on success, negative number in case of error.
++ */
++int mnt_context_enable_really_force(struct libmnt_context *cxt, int enable)
++{
++	return set_flag(cxt, MNT_FL_REALLY_FORCE, enable);
++}
++
++/**
+  * mnt_context_is_force
+  * @cxt: mount context
+  *
+@@ -575,6 +591,17 @@ int mnt_context_is_force(struct libmnt_c
+ }
+ 
+ /**
++ * mnt_context_is_really_force
++ * @cxt: mount context
++ *
++ * Returns: 1 if really force umounting flag is enabled or 0
++ */
++int mnt_context_is_really_force(struct libmnt_context *cxt)
++{
++	return cxt && (cxt->flags & MNT_FL_REALLY_FORCE) ? 1 : 0;
++}
++
++/**
+  * mnt_context_enable_verbose:
+  * @cxt: mount context
+  * @enable: TRUE or FALSE
+diff -Naurp util-linux-2.24.2_org/libmount/src/context_umount.c util-linux-2.24.2/libmount/src/context_umount.c
+--- util-linux-2.24.2_org/libmount/src/context_umount.c	2015-01-22 18:29:32.944673162 +0530
++++ util-linux-2.24.2/libmount/src/context_umount.c	2015-01-22 19:25:52.054108288 +0530
+@@ -34,6 +34,10 @@
+ # define UMOUNT_NOFOLLOW  0x00000008	/* Don't follow symlink on umount */
+ #endif
+ 
++#ifndef MNT_FFORCE
++# define MNT_FFORCE       0x00000010   /* Do a real forced unmount */
++#endif
++
+ #ifndef UMOUNT_UNUSED
+ # define UMOUNT_UNUSED    0x80000000	/* Flag guaranteed to be unused */
+ #endif
+@@ -93,7 +97,8 @@ int mnt_context_find_umount_fs(struct li
+ 	 * it's usable only for canonicalized stuff (e.g. kernel mountinfo).
+ 	 */
+ 	if (!cxt->mtab_writable	&& *tgt == '/' &&
+-	    !mnt_context_is_force(cxt) && !mnt_context_is_lazy(cxt)) {
++	    !mnt_context_is_force(cxt) && !mnt_context_is_really_force(cxt) &&
++	    !mnt_context_is_lazy(cxt)) {
+ 
+ 		struct stat st;
+ 
+@@ -454,7 +459,7 @@ static int exec_helper(struct libmnt_con
+ 	switch (fork()) {
+ 	case 0:
+ 	{
+-		const char *args[10], *type;
++		const char *args[11], *type;
+ 		int i = 0;
+ 
+ 		if (setgid(getgid()) < 0)
+@@ -482,8 +487,10 @@ static int exec_helper(struct libmnt_con
+ 			args[i++] = "-t";			/* 8 */
+ 			args[i++] = (char *) type;	/* 9 */
+ 		}
++		if (mnt_context_is_really_force(cxt))
++			args[i++] = "-F";                       /* 10 */
+ 
+-		args[i] = NULL;					/* 10 */
++		args[i] = NULL;					/* 11 */
+ #ifdef CONFIG_LIBMOUNT_DEBUG
+ 		for (i = 0; args[i]; i++)
+ 			DBG(CXT, mnt_debug_h(cxt, "argv[%d] = \"%s\"",
+@@ -540,6 +547,9 @@ int mnt_context_umount_setopt(struct lib
+ 	case 'f':
+ 		rc = mnt_context_enable_force(cxt, TRUE);
+ 		break;
++	case 'F':
++		rc = mnt_context_enable_really_force(cxt, TRUE);
++		break;
+ 	case 'v':
+ 		rc = mnt_context_enable_verbose(cxt, TRUE);
+ 		break;
+@@ -615,6 +625,9 @@ static int do_umount(struct libmnt_conte
+ 	else if (mnt_context_is_force(cxt))
+ 		flags |= MNT_FORCE;
+ 
++	else if (mnt_context_is_really_force(cxt))
++		flags |= MNT_FFORCE;
++
+ 	DBG(CXT, mnt_debug_h(cxt, "umount(2) [target='%s', flags=0x%08x]%s",
+ 				target, flags,
+ 				mnt_context_is_fake(cxt) ? " (FAKE)" : ""));
+diff -Naurp util-linux-2.24.2_org/libmount/src/libmount.h.in util-linux-2.24.2/libmount/src/libmount.h.in
+--- util-linux-2.24.2_org/libmount/src/libmount.h.in	2015-01-22 18:29:32.944673162 +0530
++++ util-linux-2.24.2/libmount/src/libmount.h.in	2015-01-22 19:06:38.402046681 +0530
+@@ -557,6 +557,7 @@ extern int mnt_context_enable_sloppy(str
+ extern int mnt_context_enable_fake(struct libmnt_context *cxt, int enable);
+ extern int mnt_context_disable_mtab(struct libmnt_context *cxt, int disable);
+ extern int mnt_context_enable_force(struct libmnt_context *cxt, int enable);
++extern int mnt_context_enable_really_force(struct libmnt_context *cxt, int enable);
+ extern int mnt_context_enable_verbose(struct libmnt_context *cxt, int enable);
+ extern int mnt_context_enable_loopdel(struct libmnt_context *cxt, int enable);
+ extern int mnt_context_enable_fork(struct libmnt_context *cxt, int enable);
+@@ -576,6 +577,8 @@ extern int mnt_context_is_nomtab(struct
+ 			__ul_attribute__((nonnull));
+ extern int mnt_context_is_force(struct libmnt_context *cxt)
+ 			__ul_attribute__((nonnull));
++extern int mnt_context_is_really_force(struct libmnt_context *cxt)
++			__ul_attribute__((nonnull));
+ extern int mnt_context_is_verbose(struct libmnt_context *cxt)
+ 			__ul_attribute__((nonnull));
+ extern int mnt_context_is_loopdel(struct libmnt_context *cxt)
+diff -Naurp util-linux-2.24.2_org/libmount/src/libmount.sym util-linux-2.24.2/libmount/src/libmount.sym
+--- util-linux-2.24.2_org/libmount/src/libmount.sym	2015-01-22 18:29:32.944673162 +0530
++++ util-linux-2.24.2/libmount/src/libmount.sym	2015-01-22 19:07:44.918295187 +0530
+@@ -229,10 +229,12 @@ global:
+ MOUNT_2.22 {
+ global:
+ 	mnt_context_disable_swapmatch;
++	mnt_context_enable_really_force;
+ 	mnt_context_get_options;
+ 	mnt_context_is_loopdel;
+ 	mnt_context_is_nocanonicalize;
+ 	mnt_context_is_nohelpers;
++	mnt_context_is_really_force;
+ 	mnt_context_is_swapmatch;
+ 	mnt_context_tab_applied;
+ 	mnt_fs_get_priority;
+diff -Naurp util-linux-2.24.2_org/libmount/src/mountP.h util-linux-2.24.2/libmount/src/mountP.h
+--- util-linux-2.24.2_org/libmount/src/mountP.h	2015-01-22 18:29:32.944673162 +0530
++++ util-linux-2.24.2/libmount/src/mountP.h	2015-01-22 19:08:52.382545291 +0530
+@@ -395,6 +395,7 @@ struct libmnt_context
+ #define MNT_FL_HELPER		(1 << 25)	/* [u]mount.<type> */
+ #define MNT_FL_LOOPDEV_READY	(1 << 26)	/* /dev/loop<N> initialized by the library */
+ #define MNT_FL_MOUNTOPTS_FIXED  (1 << 27)
++#define MNT_FL_REALLY_FORCE	(1 << 28)	
+ 
+ /* default flags */
+ #define MNT_FL_DEFAULT		0
+diff -Naurp util-linux-2.24.2_org/mount-deprecated/umount.8 util-linux-2.24.2/mount-deprecated/umount.8
+--- util-linux-2.24.2_org/mount-deprecated/umount.8	2015-01-22 18:29:32.400673684 +0530
++++ util-linux-2.24.2/mount-deprecated/umount.8	2015-01-22 18:31:11.320580921 +0530
+@@ -112,6 +112,12 @@ to specify options for which no action s
+ .B \-f
+ Force unmount (in case of an unreachable NFS system).
+ (Requires kernel 2.1.116 or later.)
++.B \-F
++Really force unmount unmounts busy filesystems except for the root filesystem.
++Open files are closed, system calls to operate on that filesystem fail, and
++mmap holders may receive SIGSEGV.  File locks are released.
++(Requires MontaVista Linux CGE with CONFIG_FUMOUNT kernel option enabled.)
++.TP
+ .TP
+ .B \-l
+ Lazy unmount. Detach the filesystem from the filesystem hierarchy now,
+diff -Naurp util-linux-2.24.2_org/mount-deprecated/umount.c util-linux-2.24.2/mount-deprecated/umount.c
+--- util-linux-2.24.2_org/mount-deprecated/umount.c	2015-01-22 18:29:32.400673684 +0530
++++ util-linux-2.24.2/mount-deprecated/umount.c	2015-01-22 19:28:15.946581411 +0530
+@@ -23,6 +23,7 @@
+ #include "strutils.h"
+ #include "closestream.h"
+ 
++#define MNT_FFORCE (0x10)
+ #if defined(MNT_FORCE)
+ /* Interesting ... it seems libc knows about MNT_FORCE and presumably
+    about umount2 as well -- need not do anything */
+@@ -74,6 +75,11 @@ int force = 0;
+ /* Nonzero for lazy umount (-l).  There is kernel support since 2.4.11.  */
+ int lazy = 0;
+ 
++/* Nonzero for really force (-F), even with writable and open files - previous
++   kernel support was not particularly useful.
++*/
++int really_force = 0;
++
+ /* When umount fails, attempt a read-only remount (-r). */
+ int remount = 0;
+ 
+@@ -317,8 +323,16 @@ umount_one (const char *spec, const char
+ 		goto writemtab;
+ 	}
+ 
+-	if (force) {		/* only supported for NFS */
+-		res = umount2 (target, MNT_FORCE | extra_flags);
++	if (force || really_force) {            /* only supported for NFS */
++		int flags = 0;
++		if (force) {
++			flags = MNT_FORCE;
++		}
++		if (really_force) {
++			flags |= MNT_FFORCE;
++		}
++
++		res = umount2 (node, flags);
+ 		if (res == -1) {
+ 			int errsv = errno;
+ 			perror("umount2");
+@@ -495,6 +509,7 @@ static struct option longopts[] =
+ {
+   { "all", 0, 0, 'a' },
+   { "force", 0, 0, 'f' },
++  { "Force", 0, 0, 'F' },
+   { "help", 0, 0, 'h' },
+   { "no-mtab", 0, 0, 'n' },
+   { "test-opts", 1, 0, 'O' },
+@@ -513,7 +528,7 @@ usage (FILE *fp, int n)
+ {
+   fprintf (fp, _("Usage: umount -h | -V\n"
+ 	       "       umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstypes] [-O opts]\n"
+-	       "       umount [-d] [-f] [-r] [-n] [-v] special | node...\n"));
++	       "       umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"));
+   exit (n);
+ }
+ 
+@@ -779,7 +794,7 @@ main (int argc, char *argv[]) {
+ 
+ 	umask(022);
+ 
+-	while ((c = getopt_long (argc, argv, "adfhlnrit:O:vV",
++	while ((c = getopt_long (argc, argv, "adfFhlnrit:O:vV",
+ 				 longopts, NULL)) != -1)
+ 		switch (c) {
+ 		case 'a':		/* umount everything */
+@@ -792,6 +807,9 @@ main (int argc, char *argv[]) {
+ 		case 'f':		/* force umount */
+ 			++force;
+ 			break;
++		case 'F':               /* really force umount */
++			++really_force;
++			break;
+ 		case 'h':		/* help */
+ 			usage (stdout, 0);
+ 			break;
+@@ -843,7 +861,7 @@ main (int argc, char *argv[]) {
+ 	}
+ 
+ 	if (restricted &&
+-	    (all || types || nomtab || force || remount || nocanonicalize ||
++	    (all || types || nomtab || force || really_force || remount || nocanonicalize ||
+ 	     fake)) {
+ 		die (2, _("umount: only root can do that"));
+ 	}
+diff -Naurp util-linux-2.24.2_org/po/cs.po util-linux-2.24.2/po/cs.po
+--- util-linux-2.24.2_org/po/cs.po	2015-01-22 18:29:32.316673764 +0530
++++ util-linux-2.24.2/po/cs.po	2015-01-22 18:47:16.747884499 +0530
+@@ -10429,11 +10429,11 @@ msgstr "umount: seznam systémů soubor�
+ msgid ""
+ "Usage: umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstypes] [-O opts]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] special | node...\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ msgstr ""
+ "Použití: umount -h | -V\n"
+ "         umount -a [-d] [-f] [-r] [-n] [-v] [-t TYPY_VFS] [-O VOLBY]\n"
+-"         umount [-d] [-f] [-r] [-n] [-v] SPECIÁLNÍ_SOUBOR | UZEL…\n"
++"         umount [-d] [-f] [-F] [-r] [-n] [-v] SPECIÁLNÍ_SOUBOR | UZEL…\n"
+ 
+ #: mount-deprecated/umount.c:558
+ #, c-format
+diff -Naurp util-linux-2.24.2_org/po/da.po util-linux-2.24.2/po/da.po
+--- util-linux-2.24.2_org/po/da.po	2015-01-22 18:29:32.324673757 +0530
++++ util-linux-2.24.2/po/da.po	2015-01-22 18:48:18.683851628 +0530
+@@ -10349,11 +10349,11 @@ msgstr ""
+ msgid ""
+ "Usage: umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstypes] [-O opts]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] special | node...\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ msgstr ""
+ "Brug: umount -h | -V]\n"
+ "      umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstyper] [-O tilvalg]\n"
+-"      umount [-d] [-f] [-r] [-n] [-v] speciel | knude...\n"
++"      umount [-d] [-f] [-F] [-r] [-n] [-v] speciel | knude...\n"
+ 
+ #: mount-deprecated/umount.c:558
+ #, c-format
+diff -Naurp util-linux-2.24.2_org/po/de.po util-linux-2.24.2/po/de.po
+--- util-linux-2.24.2_org/po/de.po	2015-01-22 18:29:32.308673772 +0530
++++ util-linux-2.24.2/po/de.po	2015-01-22 18:48:51.459834760 +0530
+@@ -10542,12 +10542,12 @@ msgstr ""
+ msgid ""
+ "Usage: umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstypes] [-O opts]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] special | node...\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ msgstr ""
+ "Aufruf: umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t Dateisystemtypen] [-O "
+ "Optionen]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] Spezial | Knoten …\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] Spezial | Knoten …\n"
+ 
+ #: mount-deprecated/umount.c:558
+ #, c-format
+diff -Naurp util-linux-2.24.2_org/po/es.po util-linux-2.24.2/po/es.po
+--- util-linux-2.24.2_org/po/es.po	2015-01-22 18:29:32.360673722 +0530
++++ util-linux-2.24.2/po/es.po	2015-01-22 18:49:43.607808662 +0530
+@@ -10681,11 +10681,11 @@ msgstr ""
+ msgid ""
+ "Usage: umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstypes] [-O opts]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] special | node...\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ msgstr ""
+ "Uso:   umount [-hV]\n"
+ "       umount -a [-f] [-r] [-n] [-v] [-t vfstypes] [-O opciones]\n"
+-"       umount [-f] [-r] [-n] [-v] special | node...\n"
++"       umount [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ 
+ #: mount-deprecated/umount.c:558
+ #, fuzzy, c-format
+diff -Naurp util-linux-2.24.2_org/po/fr.po util-linux-2.24.2/po/fr.po
+--- util-linux-2.24.2_org/po/fr.po	2015-01-22 18:29:32.320673761 +0530
++++ util-linux-2.24.2/po/fr.po	2015-01-22 18:50:15.871792969 +0530
+@@ -10564,11 +10564,11 @@ msgstr "umount : liste des systèmes de
+ msgid ""
+ "Usage: umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstypes] [-O opts]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] special | node...\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ msgstr ""
+ "Utilisation : umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t typevfs] [-O opts]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] spécial | nœud...\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] spécial | nœud...\n"
+ 
+ #: mount-deprecated/umount.c:558
+ #, c-format
+diff -Naurp util-linux-2.24.2_org/po/it.po util-linux-2.24.2/po/it.po
+--- util-linux-2.24.2_org/po/it.po	2015-01-22 18:29:32.328673753 +0530
++++ util-linux-2.24.2/po/it.po	2015-01-22 18:50:52.403775614 +0530
+@@ -10578,11 +10578,11 @@ msgstr "umount: impossibile trovare l'el
+ msgid ""
+ "Usage: umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstypes] [-O opts]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] special | node...\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ msgstr ""
+ "Uso: umount [-hV]\n"
+ "     umount -a [-f] [-r] [-n] [-v] [-t tipofs] [-O opzioni]\n"
+-"     umount [-f] [-r] [-n] [-v] speciale | nodo...\n"
++"     umount [-f] [-F] [-r] [-n] [-v] speciale | nodo...\n"
+ 
+ #: mount-deprecated/umount.c:558
+ #, fuzzy, c-format
+diff -Naurp util-linux-2.24.2_org/po/ja.po util-linux-2.24.2/po/ja.po
+--- util-linux-2.24.2_org/po/ja.po	2015-01-22 18:29:32.324673757 +0530
++++ util-linux-2.24.2/po/ja.po	2015-01-22 18:51:18.427763516 +0530
+@@ -10556,11 +10556,11 @@ msgstr "umount: アンマウントのた
+ msgid ""
+ "Usage: umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstypes] [-O opts]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] special | node...\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ msgstr ""
+ "使い方: umount -h | -V\n"
+ "        umount -a [-d] [-f] [-r] [-n] [-v] [-t vfsタイプ] [-O オプション]\n"
+-"        umount [-d] [-f] [-r] [-n] [-v] special | node...\n"
++"        umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ 
+ #: mount-deprecated/umount.c:558
+ #, fuzzy, c-format
+diff -Naurp util-linux-2.24.2_org/po/nl.po util-linux-2.24.2/po/nl.po
+--- util-linux-2.24.2_org/po/nl.po	2015-01-22 18:29:32.332673749 +0530
++++ util-linux-2.24.2/po/nl.po	2015-01-22 18:51:59.547744849 +0530
+@@ -10454,10 +10454,10 @@ msgstr "umount: kan geen lijst vinden me
+ msgid ""
+ "Usage: umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstypes] [-O opts]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] special | node...\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ msgstr ""
+ "Gebruik:  umount [-dfnrv] map|apparaat...\n"
+-"          umount -a [-dfnrv] [-t bestandssysteemsoorten] [-O opties]\n"
++"          umount -a [-dfFnrv] [-t bestandssysteemsoorten] [-O opties]\n"
+ "          umount -h|-V\n"
+ 
+ #: mount-deprecated/umount.c:558
+diff -Naurp util-linux-2.24.2_org/po/pt_BR.po util-linux-2.24.2/po/pt_BR.po
+--- util-linux-2.24.2_org/po/pt_BR.po	2015-01-22 18:29:32.324673757 +0530
++++ util-linux-2.24.2/po/pt_BR.po	2015-01-22 18:52:21.899734929 +0530
+@@ -10453,11 +10453,11 @@ msgstr ""
+ msgid ""
+ "Usage: umount -h | -V\n"
+ "       umount -a [-d] [-f] [-r] [-n] [-v] [-t vfstypes] [-O opts]\n"
+-"       umount [-d] [-f] [-r] [-n] [-v] special | node...\n"
++"       umount [-d] [-f] [-F] [-r] [-n] [-v] special | node...\n"
+ msgstr ""
+ "Uso: umount -h | -V\n"
+ "     umount -a [-d] [-f] [-r] [-n] [-v] [-t tiposSAV] [-O opções]\n"
+-"     umount [-d] [-f] [-r] [-n] [-v] especial | nó...\n"
++"     umount [-d] [-f] [-F] [-r] [-n] [-v] especial | nó...\n"
+ 
+ #: mount-deprecated/umount.c:558
+ #, c-format
+diff -Naurp util-linux-2.24.2_org/sys-utils/umount.c util-linux-2.24.2/sys-utils/umount.c
+--- util-linux-2.24.2_org/sys-utils/umount.c	2015-01-22 18:29:32.936673169 +0530
++++ util-linux-2.24.2/sys-utils/umount.c	2015-01-22 19:13:12.103490455 +0530
+@@ -86,6 +86,7 @@ static void __attribute__((__noreturn__)
+ 	fputs(_(" -d, --detach-loop       if mounted loop device, also free this loop device\n"), out);
+ 	fputs(_("     --fake              dry run; skip the umount(2) syscall\n"), out);
+ 	fputs(_(" -f, --force             force unmount (in case of an unreachable NFS system)\n"), out);
++	fputs(_(" -F, --really-force      force unmount for any filesystem\n"), out);
+ 	fputs(_(" -i, --internal-only     don't call the umount.<type> helpers\n"), out);
+ 	fputs(_(" -n, --no-mtab           don't write to /etc/mtab\n"), out);
+ 	fputs(_(" -l, --lazy              detach the filesystem now, clean up things later\n"), out);
+@@ -506,6 +507,7 @@ int main(int argc, char **argv)
+ 		{ "detach-loop", 0, 0, 'd' },
+ 		{ "fake", 0, 0, UMOUNT_OPT_FAKE },
+ 		{ "force", 0, 0, 'f' },
++		{ "really-force", 0, 0, 'F' },
+ 		{ "help", 0, 0, 'h' },
+ 		{ "internal-only", 0, 0, 'i' },
+ 		{ "lazy", 0, 0, 'l' },
+@@ -542,7 +544,7 @@ int main(int argc, char **argv)
+ 
+ 	mnt_context_set_tables_errcb(cxt, table_parser_errcb);
+ 
+-	while ((c = getopt_long(argc, argv, "aAcdfhilnRrO:t:vV",
++	while ((c = getopt_long(argc, argv, "acdfFhilnrO:t:vV",
+ 					longopts, NULL)) != -1) {
+ 
+ 
+@@ -571,6 +573,9 @@ int main(int argc, char **argv)
+ 		case 'f':
+ 			mnt_context_enable_force(cxt, TRUE);
+ 			break;
++		case 'F':
++			mnt_context_enable_really_force(cxt, TRUE);
++			break;
+ 		case 'h':
+ 			usage(stdout);
+ 			break;

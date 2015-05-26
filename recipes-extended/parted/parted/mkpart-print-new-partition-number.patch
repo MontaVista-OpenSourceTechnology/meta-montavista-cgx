@@ -1,0 +1,12 @@
+--- parted-3.2_org/parted/parted.c	2015-01-25 22:48:23.244411940 +0530
++++ parted-3.2/parted/parted.c	2015-01-25 23:02:12.635254175 +0530
+@@ -817,6 +817,9 @@ do_mkpart (PedDevice** dev, PedDisk** di
+         if (!ped_disk_commit (disk))
+                 goto error;
+ 
++	if (opt_machine_mode)
++		printf("%d\n", part->num);
++
+         /* clean up */
+         if (range_start != NULL)
+                 ped_geometry_destroy (range_start);

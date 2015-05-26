@@ -1,0 +1,30 @@
+diff -Naurp Python-3.3.3_org/Objects/obmalloc.c Python-3.3.3/Objects/obmalloc.c
+--- Python-3.3.3_org/Objects/obmalloc.c	2015-02-03 22:39:33.010431346 +0530
++++ Python-3.3.3/Objects/obmalloc.c	2015-02-03 22:42:50.326435415 +0530
+@@ -1843,7 +1843,9 @@ _PyObject_DebugMallocStats(FILE *out)
+ 
+             if (p->ref.count == 0) {
+                 /* currently unused */
++#ifdef Py_DEBUG
+                 assert(pool_is_in_list(p, arenas[i].freepools));
++#endif
+                 continue;
+             }
+             ++numpools[sz];
+--- Python-3.3.3_org/Objects/unicodeobject.c	2015-02-04 12:57:04.444551433 +0530
++++ Python-3.3.3/Objects/unicodeobject.c	2015-02-04 13:59:04.596296317 +0530
+@@ -419,7 +419,13 @@ _PyUnicode_CheckConsistency(PyObject *op
+     }
+     return 1;
+ }
+-#endif
++#else
++int
++_PyUnicode_CheckConsistency(PyObject *op, int check_content)
++{
++    return 1;
++}
++#endif /* Py_DEBUG */
+ 
+ static PyObject*
+ unicode_result_wchar(PyObject *unicode)

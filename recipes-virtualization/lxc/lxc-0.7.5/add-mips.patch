@@ -1,0 +1,10 @@
+--- lxc-0.7.5/config/linux.m4.old	2012-08-15 13:49:05.156068704 -0500
++++ lxc-0.7.5/config/linux.m4	2012-08-15 13:49:16.336068702 -0500
+@@ -66,6 +66,7 @@
+ 	powerpc*-*) LINUX_SRCARCH=powerpc;;
+ 	s390*-*) LINUX_SRCARCH=s390;;
+ 	arm*-*) LINUX_SRCARCH=arm;;
++	mips*-*) LINUX_SRCARCH=mips;;
+ 	*) AC_MSG_ERROR([architecture ${host} not supported]);;
+ 	esac
+ 

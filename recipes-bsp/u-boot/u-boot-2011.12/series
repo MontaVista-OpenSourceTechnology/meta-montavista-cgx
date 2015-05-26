@@ -1,0 +1,14 @@
+3316-ARM-vexpress-move-files-in-preparation-for-adding-a-.patch
+3317-ARM-vexpress-create-A9-specific-board-config.patch
+3318-ARM-vexpress-create-A5-specific-board-config.patch
+3319-ARM-vexpress-Change-maintainer-for-ARM-Versatile-Exp.patch
+3320-ARM-vexpress-Extend-default-boot-sequence-to-load-sc.patch
+3340-vexpress-hacks-Force-load-address-of-kernels-to-RAM-.patch
+3341-vexpress-hacks-Make-default-boot-command-boot-from-M.patch
+3342-vexpress-hacks-Remove-some-unnecessary-kernel-args.patch
+3343-vexpress-hacks-Add-U-Boot-for-A15.patch
+3344-vexpress-hacks-Increase-MMC-clock-rate-on-A15.patch
+3345-vexpress-hacks-Update-default-bootargs-to-set-root-d.patch
+3346-vexpress-hacks-Add-correct-terminator-to-default-mmc.patch
+3347-vexpress-hacks-Remove-console-tty0-from-default-mmc_.patch
+3348-vexpress-hacks-Add-androidboot.console-ttyAMA0-to-de.patch

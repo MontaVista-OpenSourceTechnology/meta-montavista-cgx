@@ -1,0 +1,26 @@
+--- modutils.sh	2014-05-23 08:35:12.252567389 +0400
++++ modutils.sh	2014-05-23 08:52:16.579400988 +0400
+@@ -11,16 +11,18 @@
+ # Description:       Load the modules listed in /etc/modules.
+ ### END INIT INFO
+ 
+-LOAD_MODULE=modprobe
+-[ -f /proc/modules ] || exit 0
+-[ -f /etc/modules ] || [ -d /etc/modules-load.d ] || exit 0
+-[ -e /sbin/modprobe ] || LOAD_MODULE=insmod
++[ -f /proc/modules -a -d /lib/modules/`uname -r` ] || exit 0
+ 
+ if [ ! -f /lib/modules/`uname -r`/modules.dep ]; then
+ 	[ "$VERBOSE" != no ] && echo "Calculating module dependencies ..."
+-	depmod -Ae
++	depmod
+ fi
+ 
++[ -f /etc/modules ] || [ -d /etc/modules-load.d ] || exit 0
++
++LOAD_MODULE=modprobe
++[ -e /sbin/modprobe ] || LOAD_MODULE=insmod
++
+ loaded_modules=" "
+ 
+ process_file() {

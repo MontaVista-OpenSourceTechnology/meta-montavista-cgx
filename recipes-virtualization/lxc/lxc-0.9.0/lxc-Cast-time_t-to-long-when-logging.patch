@@ -1,0 +1,31 @@
+From 75bad7e5fbc5ccb4712622409268d227202e305b Mon Sep 17 00:00:00 2001
+From: Corey Minyard <cminyard@mvista.com>
+Date: Thu, 25 Jul 2013 14:32:23 -0500
+Subject: [PATCH] Cast time_t to long when logging
+
+time_t may not be long (for aarch64 it looks like it's a long long)
+so the compiler may spit out a warning.
+
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
+---
+ src/lxc/log.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/lxc/log.c b/src/lxc/log.c
+index 68a181c..8e2b320 100644
+--- a/src/lxc/log.c
++++ b/src/lxc/log.c
+@@ -73,8 +73,8 @@ static int log_append_logfile(const struct lxc_log_appender *appender,
+ 	n = snprintf(buffer, sizeof(buffer),
+ 		     "%15s %10ld.%03ld %-8s %s - ",
+ 		     log_prefix,
+-		     event->timestamp.tv_sec,
+-		     event->timestamp.tv_usec / 1000,
++		     (long) event->timestamp.tv_sec,
++		     (long) event->timestamp.tv_usec / 1000,
+ 		     lxc_log_priority_to_string(event->priority),
+ 		     event->category);
+ 
+-- 
+1.7.9.5
+

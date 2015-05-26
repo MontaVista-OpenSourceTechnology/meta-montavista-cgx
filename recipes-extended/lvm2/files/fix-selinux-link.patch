@@ -1,0 +1,27 @@
+Index: LVM2.2.02.70/tools/Makefile.in
+===================================================================
+--- LVM2.2.02.70.orig/tools/Makefile.in	2011-07-21 16:02:36.268248093 -0500
++++ LVM2.2.02.70/tools/Makefile.in	2011-07-21 16:03:31.618248086 -0500
+@@ -104,7 +104,7 @@
+ 	LVMLIBS += -ldevmapper-event
+ endif
+ 
+-LVMLIBS += -ldevmapper
++LVMLIBS += -ldevmapper $(SELINUX_LIBS)
+ 
+ EXPORTED_HEADER = $(srcdir)/lvm2cmd.h
+ EXPORTED_FN_PREFIX = lvm2
+@@ -123,11 +123,11 @@
+ 
+ dmsetup: dmsetup.o $(top_builddir)/libdm/libdevmapper.$(LIB_SUFFIX)
+ 	$(CC) $(CFLAGS) $(LDFLAGS) -L$(top_builddir)/libdm \
+-	      -o $@ dmsetup.o -ldevmapper $(LIBS)
++	      -o $@ dmsetup.o -ldevmapper $(SELINUX_LIBS) $(LIBS)
+ 
+ dmsetup.static: dmsetup.o $(interfacebuilddir)/libdevmapper.a
+ 	$(CC) $(CFLAGS) $(LDFLAGS) -static -L$(interfacebuilddir) \
+-	      -o $@ dmsetup.o -ldevmapper $(STATIC_LIBS) $(LIBS)
++	      -o $@ dmsetup.o -ldevmapper $(SELINUX_LIBS) $(STATIC_LIBS) $(LIBS)
+ 
+ all: device-mapper
+ 

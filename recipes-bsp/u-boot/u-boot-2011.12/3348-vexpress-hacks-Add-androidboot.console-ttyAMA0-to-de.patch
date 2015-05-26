@@ -1,0 +1,29 @@
+From 0392e44538abecada0dbebbac8507f5e0a5ee554 Mon Sep 17 00:00:00 2001
+From: Jon Medhurst <tixy@linaro.org>
+Date: Fri, 27 Jul 2012 13:13:31 +0100
+Subject: [PATCH 3348/3348] vexpress-hacks: Add androidboot.console=ttyAMA0 to default environment
+
+This will make the serial console on Android have job control, and makes
+ctrl-C work.
+
+Signed-off-by: Jon Medhurst <tixy@linaro.org>
+---
+ include/configs/vexpress_common.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/include/configs/vexpress_common.h b/include/configs/vexpress_common.h
+index 5d38d3b..ef2e69c 100644
+--- a/include/configs/vexpress_common.h
++++ b/include/configs/vexpress_common.h
+@@ -262,7 +262,7 @@
+ 		"maxramdisk=0x1800000\0" \
+ 		"pxefile_addr_r=0xa8000000\0" \
+ 		"kernel_addr_r=0xa0008000\0" \
+-		"mmc_args=setenv bootargs \"console=ttyAMA0,38400n8 root=/dev/mmcblk0p2 rootwait ro mmci.fmax="CONFIG_MMCI_FMAX"\"\0"
++		"mmc_args=setenv bootargs \"console=ttyAMA0,38400n8 root=/dev/mmcblk0p2 rootwait ro androidboot.console=ttyAMA0 mmci.fmax="CONFIG_MMCI_FMAX"\"\0"
+ #endif
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-- 
+1.7.0.1
+

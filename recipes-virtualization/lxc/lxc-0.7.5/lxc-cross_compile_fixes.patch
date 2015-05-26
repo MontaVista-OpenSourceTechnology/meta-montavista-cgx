@@ -1,0 +1,41 @@
+Index: lxc-0.7.5/configure.ac
+===================================================================
+--- lxc-0.7.5.orig/configure.ac
++++ lxc-0.7.5/configure.ac
+@@ -91,7 +91,7 @@ AC_CHECK_HEADERS([sys/signalfd.h])
+ 
+ AC_PROG_GCC_TRADITIONAL
+ 
+-AC_LINUX
++# AC_LINUX
+ 
+ if test "x$GCC" = "xyes"; then
+   CFLAGS="$CFLAGS -Wall"
+Index: lxc-0.7.5/src/lxc/Makefile.am
+===================================================================
+--- lxc-0.7.5.orig/src/lxc/Makefile.am
++++ lxc-0.7.5/src/lxc/Makefile.am
+@@ -55,9 +55,10 @@ AM_CFLAGS=-I$(top_srcdir)/src
+ 
+ liblxc_so_CFLAGS = -fPIC -DPIC $(AM_CFLAGS)
+ 
++liblxc_SONAME = liblxc.so.$(firstword $(subst ., ,$(VERSION)))
+ liblxc_so_LDFLAGS = \
+ 	-shared \
+-	-Wl,-soname,liblxc.so.$(firstword $(subst ., ,$(VERSION)))
++	-Wl,-soname,$(liblxc_SONAME)
+ 
+ liblxc_so_LDADD = -lutil $(CAP_LIBS)
+ 
+@@ -116,9 +117,9 @@ lxc_kill_SOURCES = lxc_kill.c
+ 
+ install-exec-local: install-soPROGRAMS
+ 	mv $(DESTDIR)$(libdir)/liblxc.so $(DESTDIR)$(libdir)/liblxc.so.$(VERSION)
+-	/sbin/ldconfig -l $(DESTDIR)$(libdir)/liblxc.so.$(VERSION)
+ 	cd $(DESTDIR)$(libdir); \
+-	ln -sf liblxc.so.$(firstword $(subst ., ,$(VERSION))) liblxc.so
++	ln -sf liblxc.so.$(VERSION) $(liblxc_SONAME); \
++	ln -sf $(liblxc_SONAME) liblxc.so
+ 
+ uninstall-local:
+ 	$(RM) $(DESTDIR)$(libdir)/liblxc.so*

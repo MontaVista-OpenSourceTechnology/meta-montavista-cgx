@@ -1,0 +1,11 @@
+d root root 0755 /var/log/libvirt	none
+d root root 0755 /var/log/libvirt/lxc	none
+d root root 0755 /var/log/libvirt/qemu	none
+d root root 0755 /var/log/libvirt/uml	none
+d root root 0755 /var/run/libvirt	none
+d root root 0755 /var/run/libvirt/lxc	none
+d root root 0755 /var/run/libvirt/qemu	none
+d root root 0755 /var/run/libvirt/uml	none
+d root root 0755 /var/run/libvirt/network	none
+d root root 0755 /var/cache/libvirt	none
+d root root 0755 /var/cache/libvirt/qemu none

@@ -1,0 +1,13 @@
+diff -Naurp glib-2.40.0_org/glib/Makefile.am glib-2.40.0/glib/Makefile.am
+--- glib-2.40.0_org/glib/Makefile.am	2015-01-22 20:24:43.862127528 +0530
++++ glib-2.40.0/glib/Makefile.am	2015-01-22 20:26:05.422389426 +0530
+@@ -432,8 +432,7 @@ install-exec-hook:
+ 	for sf in ${auto_config_binscripts} ; do \
+ 	  mv -f "$(DESTDIR)$(bindir)/$$sf" "$(DESTDIR)$(bindir)/$$sf".tmp \
+ 	  && sed < "$(DESTDIR)$(bindir)/$$sf".tmp > "$(DESTDIR)$(bindir)/$$sf" \
+-	    -e '1,24s|^ *#@PKGINSTALL_CONFIGVARS_IN24LINES@|  ${CONFIGVARS}|' \
+-	    -e '1,1s|#! /usr/bin/env python.*|#!${PYTHON}|' \
++	    -e 's|^ *#@PKGINSTALL_CONFIGVARS_IN24LINES@|  ${CONFIGVARS}|' \
+ 	  || exit $$? ; \
+ 	  chmod a+x $(DESTDIR)$(bindir)/$$sf ; \
+ 	  rm -f "$(DESTDIR)$(bindir)/$$sf".tmp ; \

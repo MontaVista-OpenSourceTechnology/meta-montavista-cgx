@@ -1,0 +1,27 @@
+From 9bca0e330a37aad71409e895dfdba098f1d0ea7a Mon Sep 17 00:00:00 2001
+From: Ryan Harkin <ryan.harkin@linaro.org>
+Date: Tue, 18 Oct 2011 15:13:39 +0100
+Subject: [PATCH 3319/3348] ARM: vexpress: Change maintainer for ARM Versatile Express platforms
+
+Signed-off-by: Ryan Harkin <ryan.harkin@linaro.org>
+---
+ MAINTAINERS |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2e092bd..8c0e039 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -864,7 +864,8 @@ Hugo Villeneuve <hugo.villeneuve@lyrtech.com>
+ 
+ 	SFFSDR		ARM926EJS
+ 
+-Matt Waddel <matt.waddel@linaro.org>
++Ryan Harkin <ryan.harkin@linaro.org>
++Jon Medhurst (Tixy) <jon.medhurst@linaro.org>
+ 
+ 	vexpress_ca9x4	ARM ARMV7 (Quad Core)
+ 	vexpress_ca5x2	ARM ARMV7 (Dual Core)
+-- 
+1.7.0.1
+

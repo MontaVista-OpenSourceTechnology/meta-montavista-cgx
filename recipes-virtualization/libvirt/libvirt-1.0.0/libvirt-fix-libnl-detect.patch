@@ -1,0 +1,96 @@
+Index: libvirt-1.0.0/configure.ac
+===================================================================
+--- libvirt-1.0.0.orig/configure.ac
++++ libvirt-1.0.0/configure.ac
+@@ -186,7 +186,8 @@ LIBS=$old_libs
+ dnl Availability of various common headers (non-fatal if missing).
+ AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/un.h \
+   sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h \
+-  sys/un.h sys/syscall.h netinet/tcp.h ifaddrs.h libtasn1.h])
++  sys/un.h sys/syscall.h netinet/tcp.h ifaddrs.h libtasn1.h \
++  netlink/netlink.h])
+ dnl Check whether endian provides handy macros.
+ AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
+ 
+@@ -2946,46 +2947,51 @@ AM_CONDITIONAL([WITH_VIRTUALPORT], [test
+ dnl netlink library
+ 
+ have_libnl=no
+-
+ if test "$with_linux" = "yes"; then
+-    # When linking with netcf, we must ensure that we pick the same version
+-    # of libnl that netcf picked.  Prefer libnl-3 unless we can prove
+-    # netcf linked against libnl-1, or unless the user set LIBNL_CFLAGS.
+-    # (Setting LIBNL_CFLAGS is already used by PKG_CHECK_MODULES to
+-    # override any probing, so if it set, you know which libnl is in use.)
+-    libnl_ldd=
+-    for dir in /usr/lib64 /usr/lib /usr/lib/*-linux-gnu*; do
+-        if test -f $dir/libnetcf.so; then
+-            libnl_ldd=`(ldd $dir/libnetcf.so) 2>&1`
+-            break
+-        fi
+-    done
+-    case $libnl_ldd:${LIBNL_CFLAGS+set} in
+-        *libnl.so.1*:) ;;
+-        *)
+-        PKG_CHECK_MODULES([LIBNL], [libnl-3.0], [
++    if test "x$ac_cv_header_netlink_netlink_h" == "no" ; then
++        AC_MSG_ERROR([libnl include file is not included])
++    fi
++
++    PKG_CHECK_MODULES([LIBNL3], [libnl-3.0], [
+             have_libnl=yes
+-            AC_DEFINE([HAVE_LIBNL3], [1], [Use libnl-3.0])
+-            AC_DEFINE([HAVE_LIBNL], [1], [whether the netlink library is available])
+-            PKG_CHECK_MODULES([LIBNL_ROUTE3], [libnl-route-3.0])
+-            LIBNL_CFLAGS="$LIBNL_CFLAGS $LIBNL_ROUTE3_CFLAGS"
+-            LIBNL_LIBS="$LIBNL_LIBS $LIBNL_ROUTE3_LIBS"
+-        ], [:]) ;;
+-    esac
+-    if test "$have_libnl" = no; then
++            AC_DEFINE_UNQUOTED([HAVE_LIBNL], [1],
++             [whether the netlink library is available])
++            AC_DEFINE_UNQUOTED([HAVE_LIBNL3], [1],
++             [whether the netlink v3 library is available])
++	    LIBNL_CFLAGS="$LIBNL3_CFLAGS"
++	    LIBNL_LIBS="$LIBNL3_LIBS"
++	    AC_SUBST([LIBNL_CFLAGS])
++	    AC_SUBST([LIBNL_LIBS])
++        ], [have_libnl=no])
++    echo "$have_libnl"
++    if test "x$have_libnl" == "xno" ; then
++        PKG_CHECK_MODULES([LIBNL2], [libnl-2.0], [
++                have_libnl=yes
++                AC_DEFINE_UNQUOTED([HAVE_LIBNL], [1],
++                 [whether the netlink library is available])
++		LIBNL_CFLAGS="$LIBNL2_CFLAGS"
++		LIBNL_LIBS="$LIBNL2_LIBS"
++	        AC_SUBST([LIBNL_CFLAGS])
++	        AC_SUBST([LIBNL_LIBS])
++            ], [have_libnl=no])
++    fi
++    if test "x$have_libnl" == "xno" ; then
+         PKG_CHECK_MODULES([LIBNL], [libnl-1 >= $LIBNL_REQUIRED], [
+             have_libnl=yes
+             AC_DEFINE_UNQUOTED([HAVE_LIBNL], [1],
+              [whether the netlink library is available])
+             AC_DEFINE_UNQUOTED([HAVE_LIBNL1], [1],
+              [whether the netlink v1 library is available])
+-        ], [
+-            if test "$with_macvtap" = "yes"; then
+-                AC_MSG_ERROR([libnl-devel >= $LIBNL_REQUIRED is required for macvtap support])
+-            fi
+-        ])
++        ], [have_libnl=no])
++    fi
++fi
++
++if test "$have_libnl" = no; then
++    if test "$with_macvtap" = "yes"; then
++        AC_MSG_ERROR([libnl-devel >= $LIBNL_REQUIRED is required for macvtap support])
+     fi
+ fi
++
+ AM_CONDITIONAL([HAVE_LIBNL], [test "$have_libnl" = "yes"])
+ 
+ AC_SUBST([LIBNL_CFLAGS])

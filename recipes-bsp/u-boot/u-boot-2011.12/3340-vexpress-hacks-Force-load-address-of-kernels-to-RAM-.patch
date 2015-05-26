@@ -1,0 +1,32 @@
+From c62e7ca33d5103adc558d4195ce551af92c16a0a Mon Sep 17 00:00:00 2001
+From: Jon Medhurst <tixy@linaro.org>
+Date: Tue, 3 Jan 2012 18:18:20 +0000
+Subject: [PATCH 3340/3348] vexpress-hacks: Force load address of kernels to RAM base+0x8000 on extended memory map
+
+Signed-off-by: Jon Medhurst <tixy@linaro.org>
+---
+ common/cmd_bootm.c |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+diff --git a/common/cmd_bootm.c b/common/cmd_bootm.c
+index d5745b1..02d1867 100644
+--- a/common/cmd_bootm.c
++++ b/common/cmd_bootm.c
+@@ -272,6 +272,14 @@ static int bootm_start(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[]
+ 		return 1;
+ 	}
+ 
++#ifdef CONFIG_VEXPRESS_EXTENDED_MEMORY_MAP
++	if (images.os.type == IH_TYPE_KERNEL) {
++		images.ep -= images.os.load;
++		images.os.load = CONFIG_SYS_SDRAM_BASE + 0x8000;
++		images.ep += images.os.load;
++	}
++#endif
++
+ 	if (images.os.type == IH_TYPE_KERNEL_NOLOAD) {
+ 		images.os.load = images.os.image_start;
+ 		images.ep += images.os.load;
+-- 
+1.7.0.1
+

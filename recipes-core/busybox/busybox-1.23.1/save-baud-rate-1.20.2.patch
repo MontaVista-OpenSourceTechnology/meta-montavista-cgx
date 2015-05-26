@@ -1,0 +1,69 @@
+--- busybox-1.20.2_org/loginutils/getty.c	2013-04-10 10:44:29.853491559 +0530
++++ busybox-1.20.2/loginutils/getty.c	2013-04-10 10:50:37.785505887 +0530
+@@ -152,12 +152,12 @@ static void parse_speeds(char *arg)
+ }
+ 
+ /* parse command-line arguments */
+-static void parse_args(char **argv)
++static void parse_args(char **argv, int argc)
+ {
+ 	char *ts;
+ 	int flags;
+ 
+-	opt_complementary = "-2:t+"; /* at least 2 args; -t N */
++	opt_complementary = "-1:t+"; /* at least 2 args; -t N */
+ 	flags = getopt32(argv, opt_string,
+ 		&G.initstring, &G.fakehost, &G.issue,
+ 		&G.login, &G.timeout
+@@ -169,20 +169,23 @@ static void parse_args(char **argv)
+ 	}
+ 	argv += optind;
+ 	debug("after getopt\n");
+-
+-	/* We loosen up a bit and accept both "baudrate tty" and "tty baudrate" */
+-	G.tty_name = argv[0];
+-	ts = argv[1];            /* baud rate(s) */
+-	if (isdigit(argv[0][0])) {
+-		/* A number first, assume it's a speed (BSD style) */
+-		G.tty_name = ts; /* tty name is in argv[1] */
+-		ts = argv[0];    /* baud rate(s) */
++       if ( argc <= 2) {
++               G.tty_name = argv[0];
++               ts = 0;
++       } else {
++	      /* We loosen up a bit and accept both "baudrate tty" and "tty baudrate" */
++	      G.tty_name = argv[0];        /* tty name */
++	      ts = argv[1];           /* baud rate(s) */
++	      if (isdigit(argv[0][0])) {
++	              /* A number first, assume it's a speed (BSD style) */
++		      G.tty_name = ts;     /* tty name is in argv[1] */
++	              ts = argv[0];   /* baud rate(s) */
++	      }
++	      if (argv[2])
++	              xsetenv("TERM", argv[2]);
+ 	}
+ 	parse_speeds(ts);
+ 
+-	if (argv[2])
+-		xsetenv("TERM", argv[2]);
+-
+ 	debug("exiting parse_args\n");
+ }
+ 
+@@ -534,7 +537,7 @@ int getty_main(int argc UNUSED_PARAM, ch
+ 	G.eol = '\r';
+ 
+ 	/* Parse command-line arguments */
+-	parse_args(argv);
++	parse_args(argv, argc);
+ 
+ 	/* Create new session and pgrp, lose controlling tty */
+ 	pid = setsid();  /* this also gives us our pid :) */
+@@ -614,6 +617,7 @@ int getty_main(int argc UNUSED_PARAM, ch
+ 	/* Make ourself a foreground process group within our session */
+ 	if (tcsetpgrp(STDIN_FILENO, pid) < 0)
+ 		bb_perror_msg_and_die("tcsetpgrp");
++	(void) ioctl(0, TIOCSCTTY, 0);
+ #endif
+ 
+ 	/*

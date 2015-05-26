@@ -1,0 +1,116 @@
+From 3be06f8183807ecb9bbf9da26efc33d78275c6ca Mon Sep 17 00:00:00 2001
+From: Corey Minyard <cminyard@mvista.com>
+Date: Fri, 28 Sep 2012 17:23:46 -0500
+Subject: [PATCH] Add ip netns get to get a processes network namespace
+
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
+---
+ ip/ipnetns.c        |   54 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ man/man8/ip-netns.8 |    5 ++++
+ 2 files changed, 59 insertions(+), 0 deletions(-)
+
+diff --git a/ip/ipnetns.c b/ip/ipnetns.c
+index e41a598..63032f0 100644
+--- a/ip/ipnetns.c
++++ b/ip/ipnetns.c
+@@ -50,6 +50,7 @@ static void usage(void)
+ 	fprintf(stderr, "       ip netns delete NAME\n");
+ 	fprintf(stderr, "       ip netns exec NAME cmd ...\n");
+ 	fprintf(stderr, "       ip netns monitor\n");
++	fprintf(stderr, "       ip netns get PID\n");
+ 	exit(-1);
+ }
+ 
+@@ -280,6 +281,56 @@ static int netns_monitor(int argc, char **argv)
+ 	return 0;
+ }
+ 
++static int netns_get(int argc, char **argv)
++{
++	struct dirent *entry;
++	DIR *dir;
++	pid_t pid;
++	char *end;
++	char ns_path[MAXPATHLEN];
++	struct stat statbuf;
++	ino_t ref_ino;
++
++	pid = strtoul(*argv, &end, 0);
++	if (!end || end == *argv || *end) {
++		fprintf(stderr, "Invalid PID: '%s'\n", *argv);
++		return -1;
++	}
++
++	snprintf(ns_path, sizeof(ns_path), "/proc/%d/ns/net", pid);
++	if (stat(ns_path, &statbuf) == -1) {
++		fprintf(stderr, "Could not stat %s: %s\n", ns_path,
++			strerror(errno));
++		return -1;
++	}
++
++	ref_ino = statbuf.st_ino;
++
++	dir = opendir(NETNS_RUN_DIR);
++	if (!dir)
++		return 0;
++
++	while ((entry = readdir(dir)) != NULL) {
++		if (strcmp(entry->d_name, ".") == 0)
++			continue;
++		if (strcmp(entry->d_name, "..") == 0)
++			continue;
++
++		snprintf(ns_path, sizeof(ns_path), "%s/%s",
++			 NETNS_RUN_DIR, entry->d_name);
++		if (stat(ns_path, &statbuf) == -1) {
++			fprintf(stderr, "Warning: could not stat %s: %s\n",
++				ns_path, strerror(errno));
++			continue;
++		}
++
++		if (statbuf.st_ino == ref_ino)
++			printf("%s\n", entry->d_name);
++	}
++	closedir(dir);
++	return 0;
++}
++
+ int do_netns(int argc, char **argv)
+ {
+ 	if (argc < 1)
+@@ -304,6 +355,9 @@ int do_netns(int argc, char **argv)
+ 	if (matches(*argv, "monitor") == 0)
+ 		return netns_monitor(argc-1, argv+1);
+ 
++	if (matches(*argv, "get") == 0)
++		return netns_get(argc-1, argv+1);
++
+ 	fprintf(stderr, "Command \"%s\" is unknown, try \"ip netns help\".\n", *argv);
+ 	exit(-1);
+ }
+diff --git a/man/man8/ip-netns.8 b/man/man8/ip-netns.8
+index 7fe9eb9..16be0c7 100644
+--- a/man/man8/ip-netns.8
++++ b/man/man8/ip-netns.8
+@@ -23,6 +23,10 @@ ip-netns \- process network namespace management
+ .BR "ip netns exec "
+ .I NETNSNAME command ...
+ 
++.ti -8
++.BR "ip netns get "
++.I PID
++
+ .SH DESCRIPTION
+ A network namespace is logically another copy of the network stack,
+ with it's own routes, firewall rules, and network devices.
+@@ -57,6 +61,7 @@ their traditional location in /etc.
+ .SS ip netns add NAME - create a new named network namespace
+ .SS ip netns delete NAME - delete the name of a network namespace
+ .SS ip netns exec NAME cmd ... - Run cmd in the named network namespace
++.SS ip netns get PID - Get the namespace(s) that match the process' namespace
+ 
+ .SH EXAMPLES
+ 
+-- 
+1.7.4.1
+

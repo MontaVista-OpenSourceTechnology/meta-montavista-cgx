@@ -1,0 +1,26 @@
+From 01ee2027958cefb7d8f2041b9ef12f14ca9530fc Mon Sep 17 00:00:00 2001
+From: Jon Medhurst <tixy@linaro.org>
+Date: Wed, 25 Jul 2012 10:31:58 +0100
+Subject: [PATCH 3346/3348] vexpress-hacks: Add correct terminator to default mmc_args string
+
+Signed-off-by: Jon Medhurst <tixy@linaro.org>
+---
+ include/configs/vexpress_common.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/include/configs/vexpress_common.h b/include/configs/vexpress_common.h
+index 0c3a07e..0e43366 100644
+--- a/include/configs/vexpress_common.h
++++ b/include/configs/vexpress_common.h
+@@ -262,7 +262,7 @@
+ 		"maxramdisk=0x1800000\0" \
+ 		"pxefile_addr_r=0xa8000000\0" \
+ 		"kernel_addr_r=0xa0008000\0" \
+-		"mmc_args=setenv bootargs \"console=tty0 console=ttyAMA0,38400n8 root=/dev/mmcblk0p2 rootwait ro mmci.fmax="CONFIG_MMCI_FMAX"\"; "
++		"mmc_args=setenv bootargs \"console=tty0 console=ttyAMA0,38400n8 root=/dev/mmcblk0p2 rootwait ro mmci.fmax="CONFIG_MMCI_FMAX"\"\0"
+ #endif
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-- 
+1.7.0.1
+

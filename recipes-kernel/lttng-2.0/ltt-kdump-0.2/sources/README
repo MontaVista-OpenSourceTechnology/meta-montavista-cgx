@@ -1,0 +1,88 @@
+This is a tool that will extract LTT dumps from a kernel coredump.  It
+uses gdb python extensions to do this.
+
+# Set up for kdump.  Replace /dev/sda with your disk, or add whatever
+# kernel setup you need.
+kexec -p --append 'root=/dev/sda console=ttyS0,115200' bzImage
+
+# Now create an lttng session in snapshot mode.  This will not generate
+# any output, just store data in a circular buffer.
+lttng create mysession --snapshot
+
+# Enable the events you want.  This command enables everything in the
+# kernel.
+lttng enable-event -k -a
+
+# Now start tracing.
+lttng start
+
+
+You should be set up now.  If your system crashes, it should boot
+into a kdump kernel.  Let's pretend that has happened and we are
+booted into the kernel.
+
+# Save the coredump memory
+kdump-tool topelf -o pcore
+
+# Now on the development host, transfer the core.  There are other
+# ways to transfer, too, you an send the pcore to standard out of
+# kdump-tool and use socat, for instance.  There is FTP.  It depends
+# on your situation.
+scp -P 5555 root@localhost:pcore pcore5
+
+# Now on the development host, convert the physical core to a virtual
+# core that gdb can use.
+kdump-tool tovelf -i pcore5 -o vcore5
+
+# Load the core into the cross gdb.  We are running this in the Linux
+# build directory,
+# tmp/work/x86_generic_64-montavista-linux/linux/3.10-r1/linux-3.10
+# from the build head.  We also store pcore and vcore there.
+x86_64-montavista-linux-gnu-gdb vmlinux vcore5
+
+# In GDB, source the ltt.py file
+source ../../../../../sysroots/x86_64-linux/usr/share/gdb/macros/ltt-kdump/ltt.py
+
+# Now dump the buffers.  I'll show the output, too.  This may take a while.
+# The first parameters is the compile directory of lttng-modules.  It is
+# required to get the .o file for lttng, which is built outside the kernel
+# but in the build directory.  The second parameters is the output directory,
+# which you can run babeltrace on.
+(gdb) dumpltt ../../../lttng-modules/2.3.4-r5/lttng-modules-2.3.4 trv5
+add symbol table from file "../../../lttng-modules/2.3.4-r5/lttng-modules-2.3.4/lttng-tracer.o" at
+	.text_addr = 0xffffffffa00ce000
+	.data_addr = 0xffffffffa00c2000
+Handling cpu 0 buffer ((struct lib_ring_buffer *) 0xffffe8ffffc01590)
+  subbuffer 1
+    subbuf size = 262144 (pad 9) 262135
+  subbuffer 2
+    subbuf size = 262144 (pad 8) 262136
+  subbuffer 3
+    subbuf size = 262144 (pad 17) 262127
+  subbuffer 4
+    subbuf size = 249856 (pad 834) 249022
+Handling cpu 1 buffer ((struct lib_ring_buffer *) 0xffffe8ffffc81590)
+  subbuffer 1
+    subbuf size = 262144 (pad 7) 262137
+  subbuffer 2
+    subbuf size = 262144 (pad 13) 262131
+  subbuffer 3
+Handling cpu 2 buffer ((struct lib_ring_buffer *) 0xffffe8ffffd01590)
+  subbuffer 1
+    subbuf size = 262144 (pad 6) 262138
+  subbuffer 2
+    subbuf size = 262144 (pad 2) 262142
+  subbuffer 3
+    subbuf size = 262144 (pad 12) 262132
+  subbuffer 4
+    subbuf size = 262144 (pad 2486) 259658
+Handling cpu 3 buffer ((struct lib_ring_buffer *) 0xffffe8ffffd81590)
+  subbuffer 1
+    subbuf size = 262144 (pad 32) 262112
+  subbuffer 2
+    subbuf size = 262144 (pad 24) 262120
+  subbuffer 3
+(gdb) 
+
+# Then you can quit out of gdb and run
+babeltrace trv5

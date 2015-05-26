@@ -1,0 +1,30 @@
+new file mode 100644
+index 0000000..a99769a
+Upstream-Status: Pending
+
+rpm2cpio fails on target with "Segmentation fault". Because macros
+"_dbpath" and "_dbi_config*" need to be defined, otherwise query these
+macros will cause segment fault.
+
+Parse config files first to fix this bug. If parse fails, give a warning.
+
+[YOCTO #3656]
+
+Signed-off-by: Kang Kai <kai.kang@windriver.com>
+
+--- rpm-5.4.9/tools/rpm2cpio.c.orig	2013-04-15 10:35:14.269398890 +0800
++++ rpm-5.4.9/tools/rpm2cpio.c	2013-04-15 10:44:12.777417885 +0800
+@@ -87,6 +87,13 @@
+ #endif
+ 	(void) rpmtsSetVSFlags(ts, vsflags);
+ 
++	/* If macros "_dbpath" and "_dbi_config*" are not defined,
++	 * sigment fault occurs */
++	rc = rpmReadConfigFiles(NULL, NULL);
++	if (rc) {
++		fprintf(stderr, _("Read RPM config files failed, that may cause sigment fault.\n"));
++	}
++
+ 	/*@-mustmod@*/      /* LCL: segfault */
+ 	rc = rpmReadPackageFile(ts, fdi, "rpm2cpio", &h);
+ 	/*@=mustmod@*/

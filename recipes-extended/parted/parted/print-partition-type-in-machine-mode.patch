@@ -1,0 +1,18 @@
+--- parted-3.2_org/parted/parted.c	2015-01-25 22:48:23.244411940 +0530
++++ parted-3.2/parted/parted.c	2015-01-25 23:07:43.670806752 +0530
+@@ -1274,9 +1277,14 @@ do_print (PedDevice** dev, PedDisk** dis
+                         putchar (':');
+ 
+                     char *flags = partition_print_flags (part);
+-                    printf ("%s;\n", flags);
++                    printf ("%s:", flags);
+                     free (flags);
+ 
++		    if (has_extended) {
++			name = ped_partition_type_get_name (part->type);
++			printf ("%s;\n", name);
++		    } else
++			fputs (";\n", stdout);
+                 } else {
+                     puts ("free;");
+                 }

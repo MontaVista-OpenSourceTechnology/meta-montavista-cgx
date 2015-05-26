@@ -1,0 +1,18 @@
+diff -Naurp nfs-utils-1.2.7_org/configure.ac nfs-utils-1.2.7/configure.ac
+--- nfs-utils-1.2.7_org/configure.ac	2015-01-27 05:36:23.698111184 -0500
++++ nfs-utils-1.2.7/configure.ac	2015-01-27 05:37:08.146133789 -0500
+@@ -422,10 +422,10 @@ if test "x$cross_compiling" = "xno"; the
+ 	CPPFLAGS_FOR_BUILD=${CPPFLAGS_FOR_BUILD-"$CPPFLAGS"}
+ 	LDFLAGS_FOR_BUILD=${LDFLAGS_FOR_BUILD-"$LDFLAGS"}
+ else
+-	CFLAGS_FOR_BUILD=${CFLAGS_FOR_BUILD-""}
+-	CXXFLAGS_FOR_BUILD=${CXXFLAGS_FOR_BUILD-""}
+-	CPPFLAGS_FOR_BUILD=${CPPFLAGS_FOR_BUILD-""}
+-	LDFLAGS_FOR_BUILD=${LDFLAGS_FOR_BUILD-""}
++	CFLAGS_FOR_BUILD=""
++	CXXFLAGS_FOR_BUILD=""
++	CPPFLAGS_FOR_BUILD=""
++	LDFLAGS_FOR_BUILD=""
+ fi
+ 
+ AC_SUBST(CFLAGS)

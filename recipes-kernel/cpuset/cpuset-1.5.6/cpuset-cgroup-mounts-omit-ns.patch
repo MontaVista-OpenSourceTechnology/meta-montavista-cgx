@@ -1,0 +1,13 @@
+Index: cpuset-1.5.5/cpuset/cset.py
+===================================================================
+--- cpuset-1.5.5.orig/cpuset/cset.py	2011-12-13 06:42:37.000000000 -0700
++++ cpuset-1.5.5/cpuset/cset.py	2011-12-13 06:44:06.000000000 -0700
+@@ -142,7 +142,7 @@
+ 
+             if not os.access(config.mountpoint, os.F_OK):
+                 os.mkdir(config.mountpoint)
+-            ret = os.system("mount -t cgroup none " + config.mountpoint)
++            ret = os.system("mount -t cgroup -o rw,relatime,freezer,devices,memory,cpu,cpuacct,cpuset cgroup " + config.mountpoint)
+             if ret:
+                raise CpusetException(
+                      'mount of cpuset filesystem failed, do you have permission?')

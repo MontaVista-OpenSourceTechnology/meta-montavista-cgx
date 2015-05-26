@@ -1,0 +1,71 @@
+diff -Naurp rpm-5.4.9_org/build/pack.c rpm-5.4.9/build/pack.c
+--- rpm-5.4.9_org/build/pack.c	2013-10-15 18:24:05.123801686 +0530
++++ rpm-5.4.9/build/pack.c	2013-10-15 18:29:32.107809402 +0530
+@@ -945,6 +945,9 @@ assert(sigh != NULL);
+ 	    V = _free(V);
+ 	    R = _free(R);
+ 	    msg = buf;
++	    if (headerIsEntry(h, RPMTAG_SOURCERPM) == 0) {
++	        ((struct rpmlead *)l)->type = 1;
++	    }
+ 	    rc = rpmpkgWrite(item, fd, l, &msg);
+ 	}
+ 
+diff -Naurp rpm-5.4.9_org/rpmdb/pkgio.c rpm-5.4.9/rpmdb/pkgio.c
+--- rpm-5.4.9_org/rpmdb/pkgio.c	2013-10-15 18:24:05.147801686 +0530
++++ rpm-5.4.9/rpmdb/pkgio.c	2013-10-15 18:30:08.247810252 +0530
+@@ -471,25 +471,6 @@ void rpmtsCleanDig(rpmts ts)
+ 
+ /*===============================================*/
+ 
+-/**
+- * The lead data structure.
+- * The lead needs to be 8 byte aligned.
+- * @deprecated The lead (except for signature_type) is legacy.
+- * @todo Don't use any information from lead.
+- */
+-struct rpmlead {
+-    unsigned char magic[4];
+-    unsigned char major;
+-    unsigned char minor;
+-    unsigned short type;
+-    unsigned short archnum;
+-    char name[66];
+-    unsigned short osnum;
+-    unsigned short signature_type; /*!< Signature type (RPMSIG_HEADERSIG) */
+-/*@unused@*/
+-    char reserved[16];		/*!< Pad to 96 bytes -- 8 byte aligned! */
+-} ;
+-
+ /*@-type@*/
+ /*@unchecked@*/ /*@observer@*/
+ static unsigned char lead_magic[] = {
+diff -Naurp rpm-5.4.9_org/rpmdb/pkgio.h rpm-5.4.9/rpmdb/pkgio.h
+--- rpm-5.4.9_org/rpmdb/pkgio.h	2013-10-15 18:24:05.167801687 +0530
++++ rpm-5.4.9/rpmdb/pkgio.h	2013-10-15 18:26:27.095805035 +0530
+@@ -92,6 +92,25 @@ rpmRC rpmpkgCheck(const char * fn, FD_t
+ 	/*@globals fileSystem, internalState @*/
+ 	/*@modifies ptr, *msg, fileSystem, internalState @*/;
+ 
++/**
++ * The lead data structure.
++ * The lead needs to be 8 byte aligned.
++ * @deprecated The lead (except for signature_type) is legacy.
++ * @todo Don't use any information from lead.
++ */
++struct rpmlead {
++    unsigned char magic[4];
++    unsigned char major;
++    unsigned char minor;
++    unsigned short type;
++    unsigned short archnum;
++    char name[66];
++    unsigned short osnum;
++    unsigned short signature_type; /*!< Signature type (RPMSIG_HEADERSIG) */
++/*@unused@*/
++    char reserved[16];		/*!< Pad to 96 bytes -- 8 byte aligned! */
++} ;
++
+ #ifdef __cplusplus
+ }
+ #endif

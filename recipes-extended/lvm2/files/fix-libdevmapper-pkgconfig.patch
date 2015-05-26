@@ -1,0 +1,11 @@
+Index: LVM2.2.02.70/libdm/libdevmapper.pc.in
+===================================================================
+--- LVM2.2.02.70.orig/libdm/libdevmapper.pc.in	2011-07-20 11:11:28.391183558 -0500
++++ LVM2.2.02.70/libdm/libdevmapper.pc.in	2011-07-20 11:12:32.121183550 -0500
+@@ -7,5 +7,5 @@
+ Description: device-mapper library
+ Version: @DM_LIB_PATCHLEVEL@
+ Cflags: -I${includedir} 
+-Libs: -L${libdir} -ldevmapper
++Libs: -L${libdir} -ldevmapper @SELINUX_LIBS@ @UDEV_LIBS@
+ Requires.private: @SELINUX_PC@ @UDEV_PC@

@@ -40,8 +40,8 @@ PREFERRED_PROVIDER_libc-mtrace = "external-mvl-toolchain"
 PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}libc-initial= 'external-mvl-toolchain'
 PREFERRED_PROVIDER_virtual/libiconv-nativesdk = 'external-mvl-toolchain'
 
-PREFERRED_PROVIDER_virtual/libiconv_gen7 = "${MV_GLIBC}"
-PREFERRED_PROVIDER_virtual/libintl_gen7 = "gettext"
+PREFERRED_PROVIDER_virtual/libiconv_mvista-cgx = "${MV_GLIBC}"
+PREFERRED_PROVIDER_virtual/libintl_mvista-cgx = "gettext"
 PREFERRED_PROVIDER_linux-libc-headers = "${MV_KERNEL_HEADER}"
 PREFERRED_PROVIDER_linux-libc-headers-dev = "${MV_KERNEL_HEADER}"
 PREFERRED_PROVIDER_virtual/libc = "${MV_GLIBC}"

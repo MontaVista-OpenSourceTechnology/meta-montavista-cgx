@@ -16,7 +16,7 @@ python () {
     d.setVarFlag('TOOLCHAIN_OPTIONS', 'vardeps' , toolchainflags.replace('CSL_VER_MAIN',''))
 }
 
-python multilib_virtclass_handler_global_gen7 () {
+python multilib_virtclass_handler_global_mvista-cgx () {
     if not e.data:
         return
 
@@ -59,7 +59,7 @@ python multilib_virtclass_handler_global_gen7 () {
                 e.data.setVar("RPROVIDES_%s" % pkg, rprovs)
 }
 
-python multilib_virtclass_handler_gen7 () {
+python multilib_virtclass_handler_mvista-cgx () {
     if not isinstance(e, bb.event.RecipePreFinalise):
         return
 
@@ -154,7 +154,7 @@ create_shar_append () {
 	fi
 }
 	
-fakeroot create_shar_gen7() {
+fakeroot create_shar_mvista-cgx() {
 	cat << "EOF" > ${SDK_DEPLOY}/${TOOLCHAIN_OUTPUTNAME}.sh
 #!/bin/bash
 
@@ -355,7 +355,7 @@ EOF
 OE_TERMINAL_EXPORTS += "MVL_SDK_PREFIX PATH"
 
 
-CORE_IMAGE_BASE_INSTALL_gen7 = '\
+CORE_IMAGE_BASE_INSTALL_mvista-cgx = '\
     ${@base_contains("IMAGE_FEATURES", "busyboxless", "packagegroup-core-boot-busyboxless", "packagegroup-core-boot", d)} \
     packagegroup-base-extended \
     ${CORE_IMAGE_EXTRA_INSTALL} \

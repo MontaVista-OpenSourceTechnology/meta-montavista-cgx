@@ -18,10 +18,12 @@ export OBJDUMP_class-target ="${TOOLCHAIN_PATH}/${HOST_PREFIX}objdump"
 export STRIP_class-target ="${TOOLCHAIN_PATH}/${HOST_PREFIX}strip"
 
 EXTERNAL_GLIBC ?= "1"
+
+COMPATIBLE_HOST_pn-glibc = "${@base_conditional('EXTERNAL_GLIBC', '1', '${SDK_SYS}' , '(.*)', d)}"
 MV_GLIBC="${@base_conditional('EXTERNAL_GLIBC', '1', 'external-mvl-toolchain' , 'glibc', d)}"
 #MV_KERNEL_HEADER="${@base_conditional('EXTERNAL_GLIBC', '1', 'external-mvl-toolchain', 'linux-libc-headers' , d)}"
 MV_KERNEL_HEADER="external-mvl-toolchain"
-PREFERRED_VERSION_glibc ?= "${@base_conditional('EXTERNAL_GLIBC', '1', '', '2.20' , d)}"
+PREFERRED_VERSION_glibc ?= "${@base_conditional('EXTERNAL_GLIBC', '1', '', '2.21' , d)}"
 
 PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}gcc = "external-mvl-toolchain"
 PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}gcc-initial = "external-mvl-toolchain"

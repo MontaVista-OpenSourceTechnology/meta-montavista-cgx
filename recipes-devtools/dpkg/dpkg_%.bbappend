@@ -3,11 +3,10 @@
 # Released under the MIT license (see LICENSE.MIT for the terms)
 #
 
-PR .= ".5"
+PR .= ".6"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-SRC_URI += "file://define_armeb_arch.patch \
-            file://fix_error_with_older_perl.patch"
+SRC_URI += "file://fix_error_with_older_perl.patch"
 
 PACKAGES =+ "start-stop-daemon"
 FILES_start-stop-daemon = "${base_sbindir}/start-stop-daemon.${PN}"

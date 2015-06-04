@@ -3,7 +3,7 @@
 # Released under the MIT license (see LICENSE.MIT for the terms)
 #
 
-PR .= ".2"
+PR .= ".3"
 
 DEPENDS += "perl-native"
 
@@ -13,5 +13,3 @@ export PERL="${STAGING_BINDIR_NATIVE}/perl-native/perl"
 EXTRA_OECONF += 'enable-md2'
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 
-SRC_URI += "file://crypto-use-bigint-in-x86-64-perl.patch \
-           "

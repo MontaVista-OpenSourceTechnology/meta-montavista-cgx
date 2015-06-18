@@ -6,7 +6,7 @@
 #
 
 #Disable task for a until its cleaned up.
-TOOLCHAIN_HOST_TASK="nativesdk-packagegroup-sdk-host"
+TOOLCHAIN_HOST_TASK="nativesdk-packagegroup-sdk-host meta-environment-${MACHINE}"
 MVL_TOOLS_TOPLEVEL_PREFIX ?='${@os.path.dirname(mvl_whereami(d))}/../tools'
 include conf/toolchain/base/${MVL_ARCH_TOOLCHAIN}.conf
 EXTERNAL_TOOLCHAIN ?= "${MVL_SDK_PREFIX}"

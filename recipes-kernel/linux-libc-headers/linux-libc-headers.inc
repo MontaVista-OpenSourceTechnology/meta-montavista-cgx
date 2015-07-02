@@ -41,10 +41,9 @@ python __anonymous () {
 
 inherit kernel-arch
 
+SRCREV="${MV_KERNEL_TREE_BRANCH}"
 KORG_ARCHIVE_COMPRESSION ?= "bz2"
-
-SRC_URI = "${KERNELORG_MIRROR}/linux/kernel/v${HEADER_FETCH_VER}/linux-${PV}.tar.${KORG_ARCHIVE_COMPRESSION}"
-SRC_URI = "${MV_KERNEL_TREE};tag=v3.18"
+SRC_URI = "${MV_KERNEL_TREE};branch=${MV_KERNEL_TREE_BRANCH}"
 S = "${WORKDIR}/git"
 
 do_configure() {

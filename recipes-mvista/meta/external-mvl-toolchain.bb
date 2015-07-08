@@ -230,9 +230,10 @@ LIBC_PACKAGES_LIST += "${PN}-dbg catchsegv sln nscd ${PN}-utils"
 LIBC_PACKAGES_LIST += "${PN}-pic libcidn libmemusage libsegfault libsotruss ${PN} glibc-extra-nss glibc-thread-db" 
 
 LIBC_PACKAGES="${@base_conditional('EXTERNAL_GLIBC', '1', bb.data.expand('${LIBC_PACKAGES_LIST}',d), 'external-mvl-toolchain' , d)}"
-PACKAGES = "libgcc libgcc-dev libssp libssp-dev libssp-staticdev libgomp libgomp-dev libgomp-staticdev libmudflap libmudflap-dev  \
+PACKAGES = "libgcc libgcc-dev libssp libssp-dev libssp-staticdev libgomp libgomp-dev libgomp-staticdev libmudflap libmudflap-dev libmudflap-staticdev  \
           libstdc++ libstdc++-dev libstdc++-staticdev libatomic libatomic-dev libatomic-staticdev libgcov-dev \
-          libgfortran libstdc++-precompile-dev libg2c libg2c-dev libgfortran-dev  libasan libasan-dev libasan-staticdev ${LIBC_PACKAGES}" 
+          libgfortran libstdc++-precompile-dev libg2c libg2c-dev libgfortran-dev  libasan libasan-dev libasan-staticdev ${LIBC_PACKAGES} \
+	  libquadmath libquadmath-dev libquadmath-staticdev libubsan libubsan-dev" 
 
 do_install_locale_append () {
      if [ "x${ALTBINDIR_SUFFIX}" != "x" ] ; then

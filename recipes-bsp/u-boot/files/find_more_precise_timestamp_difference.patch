@@ -1,0 +1,14 @@
+--- a/Makefile	2015-03-24 03:01:16.240471713 -0400
++++ b/Makefile	2015-03-24 03:01:51.056451288 -0400
+@@ -499,8 +499,9 @@ include/config/%.conf: $(KCONFIG_CONFIG)
+ # is up-to-date. When we switch to a different board configuration, old CONFIG
+ # macros are still remaining in include/config/auto.conf. Without the following
+ # gimmick, wrong config.mk would be included leading nasty warnings/errors.
+-autoconf_is_current := $(if $(wildcard $(KCONFIG_CONFIG)),$(shell find . \
+-		-path ./include/config/auto.conf -newer $(KCONFIG_CONFIG)))
++autoconf_is_current := $(shell \
++              if [ "./include/config/auto.conf" -nt "$(KCONFIG_CONFIG)" ] ; then \
++              echo "./include/config/auto.conf"; fi)
+ ifneq ($(autoconf_is_current),)
+ include $(srctree)/config.mk
+ include $(srctree)/arch/$(ARCH)/Makefile

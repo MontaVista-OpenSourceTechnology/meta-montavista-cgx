@@ -11,4 +11,7 @@ SRC_URI[sha256sum] = "42f9e5fb8f6c52e63a98a43b81bd281c227c529f194913e1c51ec48a39
 
 SRC_URI += "file://sysfs_fixes.patch;apply=yes"
 
-PR = "${INC_PR}.2"
+PR = "${INC_PR}.3"
+
+# set build directory same as source directory.
+B = "${S}"

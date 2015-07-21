@@ -156,8 +156,6 @@ do_install() {
 
      rm -f ${D}${sysconfdir}/rpc
      rm -fr ${D}${datadir}/zoneinfo
-     ln -sf libssp.so.0 ${D}${base_libdir}/libssp.so
-     ln -sf ../../${base_libdir}/libssp.so.0 ${D}${libdir}/libssp.so
      if [ -e ${D}${includedir}/mtd/ubi-user.h ] ; then
         sed -i -e 's/__packed/__attribute__ ((packed))/' ${D}${includedir}/mtd/ubi-user.h
      fi

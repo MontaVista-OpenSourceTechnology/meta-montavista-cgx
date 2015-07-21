@@ -14,8 +14,12 @@ python () {
 #   Remove CSL_VER_MAIN     
     toolchainflags = d.getVarFlag('TOOLCHAIN_OPTIONS', 'vardeps') or ""
     d.setVarFlag('TOOLCHAIN_OPTIONS', 'vardeps' , toolchainflags.replace('CSL_VER_MAIN',''))
+    if bb.data.inherits_class("kernel",d):
+       configs=get_kernel_config_env(d)
+       if configs:
+          d.setVar('KERNEL_CONF_LIST',get_kernel_config_env(d)) 
+          bb.build.addtask('do_kernel_postconfigure', 'do_compile', 'do_configure', d)
 }
-
 python multilib_virtclass_handler_global_mvista-cgx () {
     if not e.data:
         return
@@ -163,3 +167,96 @@ CORE_IMAGE_BASE_INSTALL_mvista-cgx = '\
     packagegroup-base-extended \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 '
+
+
+PRECONFIGURE_PREFIX ?= "KERNEL_"
+do_kernel_postconfigure[vardeps] += "KERNEL_CONF_LIST"
+do_kernel_postconfigure[doc] = "Adds kernel config values from the environment"
+def get_kernel_config_env(d):
+    preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX')
+    prefix_len = len(preconfigure_prefix)
+    startswith_var = preconfigure_prefix + 'CONFIG_'
+    new_var = []
+    for var in d.keys():
+        if var.startswith(startswith_var) and var != "KERNEL_CONFIG_COMMAND":
+            val = d.getVar(var)
+            new_var += [var + "=" + val]
+    new_var.sort()
+    return " ".join(new_var)
+
+python do_kernel_postconfigure() {
+    import os
+    import re
+    import tempfile
+    if not bb.data.inherits_class("kernel",d):
+       return
+
+    def get_kernel_config_vars():
+        preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX')
+        prefix_len = len(preconfigure_prefix)
+        startswith_var = preconfigure_prefix + 'CONFIG_'
+        new_vars = {}
+        for var in d.keys():
+            if var.startswith(startswith_var) and var != 'KERNEL_CONFIG_BUILD':
+                val = d.getVar(var)
+                bb.debug(2, 'config: %s=%s' % (var, val))
+                var = var[prefix_len:]
+                new_vars[var] = val
+        return new_vars
+
+    def copy_config(config, new_config, new_vars={}):
+        def write_config_line(f, var, val):
+            if val == 'n':
+                line = '# %s is not set' % var
+            else:
+                if not re.match(r'y$|m$|["0-9]', val):
+                    val = '"%s"' % val
+                line = '%s=%s' % (var, val)
+            bb.debug(1, 'updating kernel config: %s' % line)
+            f.write('%s\n' % line)
+
+        bb.debug(1, 'Copying config from %s to %s' % (config, new_config))
+        fd, tmp_config = tempfile.mkstemp('w', dir=os.path.dirname(new_config))
+        nf = os.fdopen(fd, 'w')
+        f = open(config)
+        new_vars = new_vars.copy()
+
+        config_var_pat = r'CONFIG_[A-Z0-9_]+'
+        re_commented_var = re.compile(r'# (%s) is not set$' % config_var_pat)
+        re_var_value = re.compile(r'(%s)=' % config_var_pat)
+
+        for line in f:
+            line = line.rstrip('\n')
+            bb.debug(2, 'existing kernel config: %s' % line)
+            match = re_var_value.match(line) or re_commented_var.match(line)
+            if match:
+                var = match.group(1)
+            else:
+                var = None
+
+            if var != None and var in new_vars:
+                write_config_line(nf, var, new_vars[var])
+                del new_vars[var]
+            else:
+                nf.write('%s\n' % line)
+
+        for var in new_vars:
+            write_config_line(nf, var, new_vars[var])
+
+        f.close()
+        nf.close()
+        os.rename(tmp_config, new_config)
+    new_vars = get_kernel_config_vars()
+    if new_vars:
+        builddir = d.expand(d.getVar('B'))
+        config = os.path.join(builddir,".config")
+        if os.path.exists(config):
+           save = config + ".mvsave"
+           open(save, "w").write(open(config).read())
+           copy_config(save, config, new_vars)
+           bb.build.exec_func("kernel_reconfigure", d)
+}
+
+kernel_reconfigure () {
+   eval ${KERNEL_CONFIG_COMMAND}
+}

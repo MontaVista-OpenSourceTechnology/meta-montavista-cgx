@@ -13,3 +13,5 @@ export PERL="${STAGING_BINDIR_NATIVE}/perl-native/perl"
 EXTRA_OECONF += 'enable-md2'
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 
+#Adding big int causes build failures on older assemblers.
+SRC_URI_remove_class-native = "file://crypto_use_bigint_in_x86-64_perl.patch"

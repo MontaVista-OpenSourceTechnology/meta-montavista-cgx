@@ -44,7 +44,6 @@ PROVIDES += "\
      gdb-cross \
      linux-libc-headers \
      virtual/linux-libc-headers \
-     virtual/nativesdk-libc \
      ${LIBC_PROVIDES} \
 "
 

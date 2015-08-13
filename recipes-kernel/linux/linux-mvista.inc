@@ -1,7 +1,7 @@
 require recipes-kernel/linux/linux-yocto.inc
 
 BRANCH ?= "mvl-3.18/cgx"
-SRC_URI = "${MV_KERNEL_TREE};bareclone=1;branch=${BRANCH},${KMETA};name=machine,meta"
+SRC_URI = "${MV_KERNEL_TREE};branch=${BRANCH},${KMETA};name=machine,meta"
 
 PV = "${LINUX_VERSION}+git${SRCPV}"
 

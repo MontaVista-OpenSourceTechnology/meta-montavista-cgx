@@ -1,0 +1,14 @@
+diff -ru util-linux-2.26.2/lib/sysfs.c util-linux-2.26.2-new/lib/sysfs.c
+--- util-linux-2.26.2/lib/sysfs.c	2015-04-29 06:36:45.149170000 -0400
++++ util-linux-2.26.2-new/lib/sysfs.c	2015-08-06 18:21:10.060202000 -0400
+@@ -12,7 +12,9 @@
+ #include "sysfs.h"
+ #include "fileutils.h"
+ #include "all-io.h"
+-
++#ifndef F_DUPFD_CLOEXEC
++#define F_DUPFD_CLOEXEC 37
++#endif 
+ char *sysfs_devno_attribute_path(dev_t devno, char *buf,
+ 				 size_t bufsiz, const char *attr)
+ {

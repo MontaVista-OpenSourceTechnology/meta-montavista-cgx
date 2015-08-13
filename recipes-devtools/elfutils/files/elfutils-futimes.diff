@@ -1,0 +1,60 @@
+diff -ru elfutils-0.163/src/ar.c elfutils-0.163-new/src/ar.c
+--- elfutils-0.163/src/ar.c	2015-06-11 07:38:55.000000000 -0400
++++ elfutils-0.163-new/src/ar.c	2015-08-06 16:27:16.282502000 -0400
+@@ -676,7 +676,7 @@
+ 			 arhdr->ar_name);
+ 		  status = 0;
+ 		}
+-
++#ifdef futimens
+ 	      if (preserve_dates)
+ 		{
+ 		  struct timespec tv[2];
+@@ -693,7 +693,7 @@
+ 		      status = 1;
+ 		    }
+ 		}
+-
++#endif
+ 	      /* If we used a temporary file, move it do the right
+ 		 name now.  */
+ 	      if (use_mkstemp)
+diff -ru elfutils-0.163/src/strip.c elfutils-0.163-new/src/strip.c
+--- elfutils-0.163/src/strip.c	2015-08-06 16:29:38.446143294 -0400
++++ elfutils-0.163-new/src/strip.c	2015-08-06 16:28:26.726138000 -0400
+@@ -2193,7 +2193,7 @@
+     ebl_closebackend (ebl);
+ 
+   cleanup_debug ();
+-
++#ifdef futimens
+   /* If requested, preserve the timestamp.  */
+   if (tvp != NULL)
+     {
+@@ -2205,7 +2205,7 @@
+ 	  result = 1;
+ 	}
+     }
+-
++#endif
+   /* Close the file descriptor if we created a new file.  */
+   if (output_fname != NULL)
+     close (fd);
+@@ -2266,7 +2266,7 @@
+       if (unlikely (elf_end (subelf) != 0))
+ 	INTERNAL_ERROR (fname);
+     }
+-
++#ifdef futimens
+   if (tvp != NULL)
+     {
+       if (unlikely (futimens (fd, tvp) != 0))
+@@ -2276,7 +2276,7 @@
+ 	  result = 1;
+ 	}
+     }
+-
++#endif
+   if (unlikely (close (fd) != 0))
+     error (EXIT_FAILURE, errno, gettext ("while closing '%s'"), fname);
+ 

@@ -37,6 +37,7 @@ do_install_append () {
      mkdir -p ${D}/usr/src/
      cp ${B}/.config ${STAGING_KERNEL_DIR}/
      tar -C ${STAGING_KERNEL_DIR}  --exclude='.git' -czvf ${D}/usr/src/linux.tar.gz .
+     rm ${STAGING_KERNEL_DIR}/.config
 }
 
 do_install_prepend () {

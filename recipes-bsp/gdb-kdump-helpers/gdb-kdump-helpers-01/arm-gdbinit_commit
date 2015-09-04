@@ -1,0 +1,64 @@
+#
+# This file contains a few gdb macros (user defined commands) to extract
+# useful information from kernel crashdump (kdump) like stack traces of
+# all the processes or a particular process and trapinfo.
+#
+# Code based on kernel: Documentation/kdump/gdbmacros.txt
+
+
+define dmesg
+	set $idx = log_first_idx
+	while $idx != log_next_idx
+		set $entry = (struct log *)(log_buf + $idx)
+		if $entry->len == 0
+			set $idx = 0
+			loop_continue
+		end
+		set $usecs = $entry->ts_nsec / 1000
+		printf "[%05lu.%06lu] ", $usecs / 1000000, $usecs % 1000000
+		set $msg = (char *)($entry + 1)
+		set $i = 0
+		while $i < $entry->text_len
+			printf "%c", *($msg + $i)
+			set $i = $i + 1
+		end
+		printf "\n"
+		set $idx += $entry->len
+	end
+end
+
+document dmesg
+	print the kernel log buffer
+end
+
+define ps
+	set $tasks_off=((size_t)&((struct task_struct *)0)->tasks)
+	set $pid_off=((size_t)&((struct task_struct *)0)->pids[1].node.next)
+	set $init_t=  (struct task_struct *)&init_task
+	set $next_t=  (struct task_struct *)(((char *)($init_t->tasks).next) - $tasks_off)
+	printf  "PID\t tty\t CMD\n"
+	while ($next_t != $init_t)
+		set $signal = (struct signal_struct *)($next_t->signal)
+		set $tty = (struct tty_struct *)($signal->tty)
+		if ($tty)
+			set $tty_name = ($tty.name)
+			printf "%d\t %s\t %s\n", $next_t.pid, $tty_name, $next_t.comm
+		else
+			printf "%d\t ?\t  %s\n", $next_t.pid, $next_t.comm
+		end
+		set $next_t=  (struct task_struct *)((char *)($next_t->tasks.next) - $tasks_off)
+	end
+end
+document ps
+	print processes
+end
+
+define btpid
+	# TODO btpid isn't implemented for arm.
+	set $ret = (ulong)$arg0
+end
+
+define kvtop
+	# TODO kvtop isn't implemented for arm.
+	set $ret = (ulong)$arg0
+end

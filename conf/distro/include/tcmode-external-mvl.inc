@@ -50,7 +50,6 @@ PREFERRED_PROVIDER_glibc-thread-db = "${MV_GLIBC}"
 PREFERRED_PROVIDER_linux-libc-headers = "${MV_KERNEL_HEADER}"
 PREFERRED_PROVIDER_virtual/libc-nativesdk = "${MV_GLIBC}"
 PREFERRED_PROVIDER_virtual/${TARGET_PREFIX}libc-for-gcc = "${MV_GLIBC}"
-TARGET_CPPFLAGS_prepend = " -isystem${STAGING_DIR_TARGET}${includedir} -isystem${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}/include "
 #FIX ME: this needs to be cleaned up. It should be mostly uneeded if --sysroot works correctly
 
 TOOLCHAIN_OPTIONS=" --sysroot=${STAGING_DIR_TARGET} "

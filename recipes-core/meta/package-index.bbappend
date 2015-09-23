@@ -24,8 +24,8 @@ python () {
     d.setVar('MULTILIB_PREFIX_LIST', ml_prefix_list)
     d.setVar('MULTILIB_OS_LIST', ml_os_list)
 }
-
-package_update_index_rpm_append () {
+addtask package_update_index_rpm before do_build after do_package_index
+do_package_update_index_rpm () {
 
 createrepo -q ${DEPLOY_DIR_RPM}
 }

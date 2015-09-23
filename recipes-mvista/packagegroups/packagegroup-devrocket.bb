@@ -24,7 +24,7 @@ RDEPENDS_${PN} = " \
            openssh-sftp-server \
            coreutils \
            file \
-           eglibc-utils \
+           glibc-utils \
            ${@base_conditional("LTTNG_VERSION", None, "", "lttng-control lttng-viewer", d)} \
 "
 #           libmtraq \

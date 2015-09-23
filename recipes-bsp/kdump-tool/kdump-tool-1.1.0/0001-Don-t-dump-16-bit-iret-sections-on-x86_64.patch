@@ -1,0 +1,58 @@
+From 0bf35fc12ae67892e7f9f7cbd8e2f8f75ea61b7d Mon Sep 17 00:00:00 2001
+From: Corey Minyard <cminyard@mvista.com>
+Date: Tue, 4 Nov 2014 15:04:00 -0600
+Subject: [PATCH 1/2] Don't dump 16-bit iret sections on x86_64
+
+A kernel commit named:
+  x86-64, espfix: Don't leak bits 31:16 of %esp returning to 16-bit stack
+
+added a boatload of little sections that have no value for a coredump.
+
+So ignore that section of memory.
+---
+ kdump-x86_64.c |   15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/kdump-x86_64.c b/kdump-x86_64.c
+index c52742c..b73652d 100644
+--- a/kdump-x86_64.c
++++ b/kdump-x86_64.c
+@@ -63,6 +63,15 @@
+ 
+ #define KERNBASE		0xffff000000000000
+ 
++/*
++ * This section of memory is used for mapping a bunch of virtual
++ * pages to the same physical page for use by the 16-bit iret
++ * from the kernel.  It adds a boatload of sections and virtual
++ * memory with no value for a coredump.  Nuke these.
++ */
++#define ESP_STACK_FIXUPS_START  0xffffff0000000000
++#define ESP_STACK_FIXUPS_END    0xffffff7fffffffff
++
+ static int
+ handle_pte(struct elfc *pelf, GElf_Addr vaddr, GElf_Addr pteaddr,
+ 	   GElf_Addr begin_addr, GElf_Addr end_addr,
+@@ -74,6 +83,10 @@ handle_pte(struct elfc *pelf, GElf_Addr vaddr, GElf_Addr pteaddr,
+ 	uint64_t start = begin_addr >> PAGESHIFT_4K;
+ 	uint64_t end = end_addr >> PAGESHIFT_4K;
+ 
++        vaddr |= KERNBASE;
++        if (vaddr >= ESP_STACK_FIXUPS_START && vaddr <= ESP_STACK_FIXUPS_END)
++                return 0;
++
+ 	begin_addr &= PAGEMASK_4K;
+ 	end_addr &= PAGEMASK_4K;
+ 	rv = elfc_read_pmem(pelf, pteaddr, pte, sizeof(pte));
+@@ -96,7 +109,7 @@ handle_pte(struct elfc *pelf, GElf_Addr vaddr, GElf_Addr pteaddr,
+ 		/* 4K page */
+ 		rv = handle_page(pelf, 
+ 				 lpte & PHYSADDRMASK_4K,
+-				 newvaddr | KERNBASE,
++				 newvaddr,
+ 				 PAGESIZE_4K, userdata);
+ 		if (rv == -1)
+ 			return -1;
+-- 
+1.7.9.5
+

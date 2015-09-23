@@ -1,0 +1,26 @@
+From 0f87c5b458d541b79a18df247309cf9498192deb Mon Sep 17 00:00:00 2001
+From: Corey Minyard <cminyard@mvista.com>
+Date: Wed, 12 Nov 2014 21:27:55 -0600
+Subject: [PATCH] ARM: Use the right mask for PTEs.
+
+It's 0x3ff, not 0xff3.
+---
+ kdump-arm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kdump-arm.c b/kdump-arm.c
+index 04b6dd7..fef7190 100644
+--- a/kdump-arm.c
++++ b/kdump-arm.c
+@@ -158,7 +158,7 @@ arm_walk(struct elfc *pelf, GElf_Addr pgdaddr,
+ 			continue;
+ 		case 1:
+ 			rv = handle_pte(awd, ((GElf_Addr) i) << 20,
+-					lpgd & ~0xff3,
++					lpgd & ~0x3ff,
+ 					begin_addr, end_addr,
+ 					handle_page, userdata);
+ 			if (rv == -1)
+-- 
+1.7.9.5
+

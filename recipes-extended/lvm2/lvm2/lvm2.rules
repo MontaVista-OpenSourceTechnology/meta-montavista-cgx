@@ -1,6 +1,0 @@
-#
-# Automatically assemble LVM VGs and LVs
-#
-
-SUBSYSTEM=="block", ACTION=="add|change", ENV{ID_FS_TYPE}=="lvm*|LVM*", \
-	RUN+="vgscan", RUN+="vgchange -a y"

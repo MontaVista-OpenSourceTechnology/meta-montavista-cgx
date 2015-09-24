@@ -30,6 +30,13 @@ RDEPENDS_kernel-image += "kernel-map"
 RDEPENDS_kernel += "kernel-image"
 FILES_kernel-image += "/boot/vmlinuz-*"
 
+python __anonymous() {
+    devicetree = d.getVar("KERNEL_DEVICETREE", True) or ''
+    if devicetree:
+        depends = d.getVar("RDEPENDS_kernel-image", True)
+        d.setVar("RDEPENDS_kernel-image", "%s kernel-devicetree" % depends)
+}
+
 do_install_append () {
      if [ "${KERNEL_IMAGETYPE}" = "bzImage" ] ; then
        ln -s -f bzImage-${KERNEL_VERSION} ${D}/boot/vmlinuz-${KERNEL_VERSION}

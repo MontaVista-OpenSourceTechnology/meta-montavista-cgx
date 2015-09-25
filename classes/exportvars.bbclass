@@ -7,7 +7,6 @@ EXPORTCOLLECTIONVARS ?= "PN PE PV PR FILE LICENSE SUMMARY DESCRIPTION PACKAGES"
 EXPORTVARSDIR ?= "${TMPDIR}/export/"
 EXPORTVARSFILE ?= "${EXPORTVARSDIR}/${PN}-${PV}"
 EXPORTCOLLSFILE ?= "${EXPORTVARSDIR}/collections-mapping"
-CFGSIGBLACKLIST += "EXPORTVARS EXPORTVARSDIR EXPORTVARSFILE EXPORTCOLLSFILE EXPORTVARSRUN EXPORTCOLLECTIONVARS"
 EXPORTVARSRUN ?= "0"
 
 python () {
@@ -39,3 +38,41 @@ def exportvarsrun (d):
         evfile.write('%s="%s"\n' % (expvar, bb.data.getVar(expvar,d,1)))
     evfile.close()
 
+def prune_exportvars(d):
+    import os
+    import oe
+
+    map = d.getVar("EXPORTCOLLSFILE", True)
+    exportdir = d.getVar("EXPORTVARSDIR", True)
+    if os.path.isfile(map):
+       packages=open(map).readlines()
+    else:
+       bb.warn("Could not find collections-mapping")
+       return
+    pkgsout={}
+    for package in packages:
+        pack = package.split(",")
+        pn = pack[0].split('"')[1]
+        pv = pack[2].split('"')[1]
+        if os.path.isfile(pack[4].split('"')[1]):
+           pkgsout["%s-%s" % (pn,pv)] = package
+        else:
+           varfile = exportdir + "/" + pn + "-" + pv
+           if os.path.isfile(varfile):
+              os.remove(varfile)
+    output =""
+    for pkg in pkgsout.keys():
+        output += pkgsout[pkg]
+    mapf = open(map, "w")
+    mapf.write(output)
+    mapf.close()
+ 
+python prune_exportvars_eh () {
+    from bb.event import ConfigParsed, RecipeParsed, ParseCompleted
+
+    if e.data.getVar("EXPORTVARSRUN",1) == "1" and isinstance(e, ParseCompleted):
+       prune_exportvars(e.data) 
+
+}
+prune_exportvars_eh[eventmask] = "bb.event.ParseCompleted"
+addhandler prune_exportvars_eh

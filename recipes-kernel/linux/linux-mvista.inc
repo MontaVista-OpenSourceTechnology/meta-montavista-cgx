@@ -1,15 +1,16 @@
 require recipes-kernel/linux/linux-yocto.inc
 
-MV_KERNEL_TREE_BRANCH ?= "mvl-3.18/cgx"
-MV_KERNEL_TREE_SRCREV ?= "AUTOINC"
-MV_KERNEL_TREE ?= "git://${TOPDIR}/sources/linux-mvista-3.18"
+MV_KERNEL_TREE_BRANCH ?= "mvl-4.1/cgx"
+MV_KERNEL_TREE_SRCREV ?= "${AUTOREV}"
+MV_KERNEL_TREE ?= "git://${TOPDIR}/sources/linux-mvista-4.1"
 
 SRCREV_machine ?= "${MV_KERNEL_TREE_SRCREV}"
 SRCREV ?= "${MV_KERNEL_TREE_SRCREV}"
 SRCPV ?= "${MV_KERNEL_TREE_SRCREV}"
 BRANCH ?= "${MV_KERNEL_TREE_BRANCH}"
 
-SRC_URI = "${MV_KERNEL_TREE};bareclone=1;branch=${BRANCH},${KMETA};name=machine,meta"
+do_kernel_configme[noexec] = "1"
+SRC_URI = "${MV_KERNEL_TREE};bareclone=1;branch=${BRANCH},${KMETA};name=machine"
 
 PV = "${LINUX_VERSION}+git${SRCPV}"
 

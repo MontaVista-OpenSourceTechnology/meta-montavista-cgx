@@ -64,7 +64,9 @@ ALL_QA="ldflags useless-rpaths rpaths staticdev xorg-driver-abi textrel dev-so d
 TOOLCHAIN_APPSA="*-strip,strip,gcov,gcov-dump,ld,*-ld,*-gdb,addr2line,gcc,*-gcc,nm,*-nm,ranlib,*-ranlib,merge-gcda"
 TOOLCHAIN_APPSB="*-as,as,*-gcc-ranlib,ld.bfd,*-g++,g++,cc,gcc-ar,gcc-ranlib,cpp,run,c++filt,gdb,*-gdb,*-ar,ar"
 TOOLCHAIN_APPSC="objdump,*-objdump,size,strings,gprof,*-gcc-*,elfedit,gcc-nm,objcopy,*-objcopy,c++,*-c++,readelf,*-readelf"
-SRC_URI = "file://SUPPORTED"
+SRC_URI = "file://SUPPORTED \
+file://nscd/ \
+"
 GLIBC_UTILS_DIRS="usr/sbin usr/bin usr/libexec"
 
 GCCHEADERS="float.h,iso646.h,stdalign.h,stdarg.h,stdbool.h,stddef.h,stdfix.h,stdint-gcc.h,stdint.h,stdnoreturn.h,varargs.h"
@@ -81,6 +83,7 @@ BINUTILSHEADERS="ansidecl.h,bfd.h,bfdlink.h,dis-asm.h,plugin-api.h,symcat.h"
 do_install[vardeps] += "EXTERNAL_GLIBC"
 
 do_install() {
+    cp -a ${WORKDIR}/nscd ${S}/
     set -x
     install -d ${D}${sysconfdir} ${D}${bindir} ${D}${sbindir} ${D}${base_bindir} ${D}${libdir}
     install -d ${D}${base_libdir} ${D}${base_sbindir} ${D}${datadir} ${D}/usr ${D}/lib ${D}/usr/lib

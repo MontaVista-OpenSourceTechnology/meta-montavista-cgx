@@ -10,7 +10,7 @@ SRCPV ?= "${MV_KERNEL_TREE_SRCREV}"
 BRANCH ?= "${MV_KERNEL_TREE_BRANCH}"
 
 do_kernel_configme[noexec] = "1"
-SRC_URI = "${MV_KERNEL_TREE};bareclone=1;branch=${BRANCH};name=machine"
+SRC_URI = "${MV_KERNEL_TREE};branch=${BRANCH};name=machine"
 
 PV = "${LINUX_VERSION}+git${SRCPV}"
 

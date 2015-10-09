@@ -1,0 +1,1 @@
+DEPENDS += "xkeybord-config"

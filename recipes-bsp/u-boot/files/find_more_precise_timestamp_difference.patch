@@ -1,14 +1,14 @@
---- a/Makefile	2015-03-24 03:01:16.240471713 -0400
-+++ b/Makefile	2015-03-24 03:01:51.056451288 -0400
-@@ -499,8 +499,9 @@ include/config/%.conf: $(KCONFIG_CONFIG)
- # is up-to-date. When we switch to a different board configuration, old CONFIG
- # macros are still remaining in include/config/auto.conf. Without the following
+--- git_org/Makefile	2015-10-09 14:30:40.667989926 +0530
++++ git/Makefile	2015-10-09 15:02:36.164100653 +0530
+@@ -515,8 +515,9 @@ include/config/%.conf: $(KCONFIG_CONFIG)
  # gimmick, wrong config.mk would be included leading nasty warnings/errors.
--autoconf_is_current := $(if $(wildcard $(KCONFIG_CONFIG)),$(shell find . \
--		-path ./include/config/auto.conf -newer $(KCONFIG_CONFIG)))
-+autoconf_is_current := $(shell \
-+              if [ "./include/config/auto.conf" -nt "$(KCONFIG_CONFIG)" ] ; then \
-+              echo "./include/config/auto.conf"; fi)
- ifneq ($(autoconf_is_current),)
+ ifneq ($(wildcard $(KCONFIG_CONFIG)),)
+ ifneq ($(wildcard include/config/auto.conf),)
+-autoconf_is_old := $(shell find . -path ./$(KCONFIG_CONFIG) -newer \
+-						include/config/auto.conf)
++autoconf_is_old := $(shell \
++		if [ "$(KCONFIG_CONFIG)" -nt "include/config/auto.conf" ] ; then \
++		echo "$(KCONFIG_CONFIG)"; fi)
+ ifeq ($(autoconf_is_old),)
  include $(srctree)/config.mk
  include $(srctree)/arch/$(ARCH)/Makefile

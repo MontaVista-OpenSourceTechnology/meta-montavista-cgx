@@ -3,10 +3,13 @@
 # Released under the MIT license (see LICENSE.MIT for the terms)
 #
 
-PR .= ".6"
+PR .= ".7"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-SRC_URI += "file://fix_error_with_older_perl.patch"
+# If host machine contains older perl (older than v5.10.0), then
+# dpkg build fails during configure. So add below lines
+# to use perl given by perl-native (this perl is latest newer than v5.10.0).
+DEPENDS += " perl-native "
+export PERL="${STAGING_BINDIR_NATIVE}/perl-native/perl"
 
 PACKAGES =+ "start-stop-daemon"
 FILES_start-stop-daemon = "${base_sbindir}/start-stop-daemon.${PN}"

@@ -10,29 +10,30 @@ DEPENDS += "pkgconfig pkgconfig-native"
 FILESEXTRAPATHS_append := ":${THISDIR}/qt-${PV}"
 
 SRC_URI += "file://qt-cross-prefix-fix.patch \
-            file://define_aarch64_arch.patch;apply=no \
-            file://define_mips64_arch.patch;apply=no \
-            file://check_for_aarch64_32_bit_variant.patch;apply=no"
+            file://define_aarch64_arch.patch;apply=yes \
+            file://define_mips64_arch.patch;apply=yes \
+            file://check_for_aarch64_32_bit_variant.patch;apply=yes"
 
-# meta-aarch64 layer provides aarch64.patch, so no need to apply define_aarch64_arch.patch 
-# for aarch64* architecture.
-do_patch_extra() {
-	pushd $PWD
-	cd ${S}
-	case "${TARGET_ARCH}" in
-	aarch64*)
-		patch -p1 < ../define_mips64_arch.patch
-		patch -p1 < ../check_for_aarch64_32_bit_variant.patch
-		;;
-	mips*|x86_64|i?86|arm*)
-		patch -p1 < ../define_aarch64_arch.patch
-		patch -p1 < ../define_mips64_arch.patch
-		patch -p1 < ../check_for_aarch64_32_bit_variant.patch
-		;;
-	esac
-	popd
-}
-addtask patch_extra after do_patch before do_configure
+# FIXME: needs to be reworked, if meta-aarch64 is pulled in.
+# meta-aarch64 layer provides aarch64.patch, so no need to 
+# apply define_aarch64_arch.patch for aarch64* architecture.
+#do_patch_extra() {
+#	pushd $PWD
+#	cd ${S}
+#	case "${TARGET_ARCH}" in
+#	aarch64*)
+#		patch -p1 < ../define_mips64_arch.patch
+#		patch -p1 < ../check_for_aarch64_32_bit_variant.patch
+#		;;
+#	mips*|x86_64|i?86|arm*)
+#		patch -p1 < ../define_aarch64_arch.patch
+#		patch -p1 < ../define_mips64_arch.patch
+#		patch -p1 < ../check_for_aarch64_32_bit_variant.patch
+#		;;
+#	esac
+#	popd
+#}
+#addtask patch_extra after do_patch before do_configure
 
 EXTRA_ENV = 'QMAKE="${STAGING_BINDIR_NATIVE}/qmake2 -after \
              INCPATH+=${STAGING_INCDIR}/freetype2 LIBS+=-L${STAGING_LIBDIR}" \

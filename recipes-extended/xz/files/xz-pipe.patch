@@ -1,0 +1,23 @@
+diff -u xz-5.2.1/src/xz/file_io.c xz-5.2.1/src/xz/file_io.c
+--- xz-5.2.1/src/xz/file_io.c	2015-02-26 06:54:33.000000000 -0800
++++ xz-5.2.1/src/xz/file_io.c	2015-10-29 15:32:03.000000000 -0700
+@@ -84,11 +84,6 @@
+ 
+ 	// Create a pipe for the self-pipe trick. If pipe2() is available,
+ 	// we can avoid the fcntl() calls.
+-#	ifdef HAVE_PIPE2
+-	if (pipe2(user_abort_pipe, O_NONBLOCK))
+-		message_fatal(_("Error creating a pipe: %s"),
+-				strerror(errno));
+-#	else
+ 	if (pipe(user_abort_pipe))
+ 		message_fatal(_("Error creating a pipe: %s"),
+ 				strerror(errno));
+@@ -101,7 +96,6 @@
+ 			message_fatal(_("Error creating a pipe: %s"),
+ 					strerror(errno));
+ 	}
+-#	endif
+ #endif
+ 
+ #ifdef __DJGPP__

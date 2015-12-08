@@ -1,0 +1,23 @@
+diff -Naurp webkit-1.8.3_org/Source/WTF/wtf/Platform.h webkit-1.8.3/Source/JavaScriptCore/wtf/Platform.h
+--- webkit-1.8.3_org/Source/WTF/wtf/Platform.h	2015-01-28 13:45:38.107701767 +0530
++++ webkit-1.8.3/Source/WTF/wtf/Platform.h	2015-01-28 13:57:43.517073190 +0530
+@@ -307,6 +307,10 @@
+ /* CPU(AARCH64) - Aarch64 */
+ #if defined(__aarch64__)
+ #define WTF_CPU_AARCH64 1
++/* 32-bit mode on AARCH64 */
++#if !defined(__LP64__)
++#define WTF_CPU_AARCH64_32 1
++#endif
+ #endif
+ 
+ /* ==== OS() - underlying operating system; only to be used for mandated low-level services like 
+@@ -911,7 +915,7 @@
+     || CPU(S390X) \
+     || CPU(MIPS64) \
+     || CPU(PPC64) \
+-    || CPU(AARCH64)
++    || CPU(AARCH64) && !CPU(AARCH64_32)
+ #define WTF_USE_JSVALUE64 1
+ #else
+ #define WTF_USE_JSVALUE32_64 1

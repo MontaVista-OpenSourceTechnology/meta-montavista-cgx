@@ -8,3 +8,7 @@ PR .= ".2"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 # This patch is broken and needs to be reworked for current version
 #SRC_URI += "file://0001-Add-ip-netns-get-to-get-a-processes-network-namespac.patch"
+
+RRECOMMENDS_${PN} += "kernel-module-veth \
+                     "
+

@@ -6,7 +6,7 @@
 PR .= ".5"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-SRC_URI += "file://mips-webkit.patch \
-            file://add_armeb_arch_support.patch \
-            file://check_for_aarch64_32_bit_variant.patch"
+SRC_URI += "file://add_mips_armeb_options.patch \
+            file://check_for_aarch64_and_aarch64_32_bit_variant.patch \
+	   "
 

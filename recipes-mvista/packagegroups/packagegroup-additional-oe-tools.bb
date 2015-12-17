@@ -99,6 +99,7 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	quagga \
 	strongswan \
 	tunctl \
+	iscsitarget \
 	"
 
 RDEPENDS_packagegroups-oe-logmanagement ="\

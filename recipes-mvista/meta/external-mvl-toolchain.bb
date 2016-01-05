@@ -334,8 +334,8 @@ FILES_libmudflap-dev = "\
   ${libdir}/libmudflap*.a \
   ${libdir}/libmudflap*.la"
 
-FILES_libasan = "${base_libdir}/libubsan*${SOLIBS} ${base_libdir}/libasan*${SOLIBS}"
-FILES_libasan-dev = "${base_libdir}/libubsan*${SOLIBSDEV} ${base_libdir}/libasan*${SOLIBSDEV}"
+FILES_libasan = "${libdir}/libubsan*${SOLIBS} ${libdir}/libasan*${SOLIBS}"
+FILES_libasan-dev = "${libdir}/libubsan*${SOLIBSDEV} ${libdir}/libasan*${SOLIBSDEV}"
 FILES_libasan-staticdev = "${libdir}/libubsan*.a ${libdir}/libasan*.a"
 FILES_libgomp = "${libdir}/libgomp*${SOLIBS}"
 FILES_libgomp-dev = "\
@@ -359,9 +359,9 @@ FILES_libgcov-dev = "\
 "
 #FIXME this shouldn't be empty
 ALLOW_EMPTY_libgcov-dev = "1"
-CSL_VER_GDB  = "7.4" 
-CSL_VER_MAIN = "4.9.2"
-CSL_VER_LIBC = "2.16"
+CSL_VER_GDB  = "7.9.1" 
+CSL_VER_MAIN = "5.2.0"
+CSL_VER_LIBC = "2.22"
 
 def get_mlprovides(provide,d) :
     mlvariants = d.getVar("MULTILIB_VARIANTS",True)

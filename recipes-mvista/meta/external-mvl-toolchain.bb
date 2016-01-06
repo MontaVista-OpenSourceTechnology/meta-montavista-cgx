@@ -230,7 +230,8 @@ LIBC_PACKAGES_LIST += "${PN}-dbg catchsegv sln nscd ${PN}-utils"
 LIBC_PACKAGES_LIST += "${PN}-pic libcidn libmemusage libsegfault libsotruss ${PN} glibc-extra-nss glibc-thread-db" 
 
 LIBC_PACKAGES="${@base_conditional('EXTERNAL_GLIBC', '1', bb.data.expand('${LIBC_PACKAGES_LIST}',d), 'external-mvl-toolchain' , d)}"
-PACKAGES = "libgcc libgcc-dev libssp libssp-dev libssp-staticdev libgomp libgomp-dev libgomp-staticdev libmudflap libmudflap-dev libmudflap-staticdev  \
+PACKAGES = "libgo libgo-dev libgo-staticdev libgcc libgcc-dev libssp libssp-dev libssp-staticdev \
+          libgomp libgomp-dev libgomp-staticdev libmudflap libmudflap-dev libmudflap-staticdev  \
           libstdc++ libstdc++-dev libstdc++-staticdev libatomic libatomic-dev libatomic-staticdev libgcov-dev \
           libgfortran libstdc++-precompile-dev libg2c libg2c-dev libgfortran-dev  libasan libasan-dev libasan-staticdev ${LIBC_PACKAGES} \
 	  libquadmath libquadmath-dev libquadmath-staticdev libubsan libubsan-dev" 
@@ -357,6 +358,23 @@ FILES_libatomic-staticdev = "${libdir}/libatomic.a"
 FILES_libgcov-dev = "\
     ${libdir}/${TARGET_SYS}/${BINV}/libgcov.a \
 "
+
+FILES_libgo = "\
+     ${libdir}/libgo.so.* \
+"
+
+FILES_libgo-dev = "\
+     ${libdir}/libgo.so \
+     ${libdir}/libgo.la \
+     ${libdir}/go \
+"
+FILES_libgo-staticdev = "\
+     ${libdir}/libgo.a \
+     ${libdir}/libnetgo.a \
+     ${libdir}/libgolibbegin.a \
+     ${libdir}/libgobegin.a \
+"
+
 #FIXME this shouldn't be empty
 ALLOW_EMPTY_libgcov-dev = "1"
 CSL_VER_GDB  = "7.9.1" 

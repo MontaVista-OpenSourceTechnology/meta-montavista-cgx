@@ -1,0 +1,59 @@
+diff -uNr bootcycle-1.0/bootcycle bootcycle-1.0-fixed/bootcycle
+--- bootcycle-1.0/bootcycle	Tue Aug 13 13:23:37 2002
++++ bootcycle-1.0-fixed/bootcycle	Sun Sep  1 16:49:27 2002
+@@ -19,7 +19,7 @@
+ CONF_FILE=/etc/bootcycle.conf
+ 
+ # location of status file
+-STATUS_FILE=/var/lib/misc/bootcycle.status
++STATUS_FILE=/var/misc/bootcycle.status
+ 
+ # location of bootcycle log file
+ LOG_FILE=/var/log/bootcycle.log
+@@ -28,7 +28,7 @@
+ SHUTDOWN_CMD="/sbin/poweroff"
+ 
+ # bootcycle wait command
+-WAIT_CMD=/usr/sbin/bootcycle-wait
++WAIT_CMD=/sbin/bootcycle-wait
+ 
+ # set defaults
+ BCD_ENABLED=no
+diff -uNr bootcycle-1.0/bootcycle-wait bootcycle-1.0-fixed/bootcycle-wait
+--- bootcycle-1.0/bootcycle-wait	Fri Aug  9 17:11:36 2002
++++ bootcycle-1.0-fixed/bootcycle-wait	Sun Sep  1 16:49:27 2002
+@@ -4,13 +4,13 @@
+ CONF_FILE=/etc/bootcycle.conf
+ 
+ # location of status file
+-STATUS_FILE=/var/lib/misc/bootcycle.status
++STATUS_FILE=/var/misc/bootcycle.status
+ 
+ # location of bootcycle log file
+ LOG_FILE=/var/log/bootcycle.log
+ 
+ # bootcycle wait command
+-WAIT_CMD=/usr/sbin/bootcycle-wait
++WAIT_CMD=/sbin/bootcycle-wait
+ 
+ # set defaults
+ BCD_MAX_REBOOTS=5
+diff -uNr bootcycle-1.0/bootcycle.sh bootcycle-1.0-fixed/bootcycle.sh
+--- bootcycle-1.0/bootcycle.sh	Wed Dec 31 16:00:00 1969
++++ bootcycle-1.0-fixed/bootcycle.sh	Sun Sep  1 16:49:27 2002
+@@ -0,0 +1,15 @@
++#
++# bootcycle.sh  Check if system has been rebooting repeatedly. 
++#
++# chkconfig: S 31 0
++#
++#
++
++BOOTCYCLE_FILE=/sbin/bootcycle
++
++# Execute the bootcycle program to detect frequent reboots
++if [ -x $BOOTCYCLE_FILE ];
++then
++    $BOOTCYCLE_FILE
++fi
++     

@@ -82,7 +82,8 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
         ncurses-tools \
 	drbd \
 	smartmontools \
-	"
+	bootcycle \
+        "
 
 
 RDEPENDS_packagegroups-oe-networkmanagement ="\

@@ -1,0 +1,82 @@
+diff -Naurp git_org/src/arm/Gget_proc_info.c git/src/arm/Gget_proc_info.c
+--- git_org/src/arm/Gget_proc_info.c	2015-07-29 10:46:48.259138849 +0530
++++ git/src/arm/Gget_proc_info.c	2015-07-29 10:50:59.575576942 +0530
+@@ -30,11 +30,18 @@ unw_get_proc_info (unw_cursor_t *cursor,
+   struct cursor *c = (struct cursor *) cursor;
+   int ret;
+ 
+-  /* We can only unwind using Dwarf into on ARM: return failure code
+-     if it's not present.  */
+   ret = dwarf_make_proc_info (&c->dwarf);
+   if (ret < 0)
+-    return ret;
++    {
++      /* On ARM, some key routines such as _start() and _dl_start()
++        are missing DWARF unwind info.  We don't want to fail in that
++        case, because those frames are uninteresting and just mark
++        the end of the frame-chain anyhow.  */
++      memset (pi, 0, sizeof (*pi));
++      pi->start_ip = c->dwarf.ip;
++      pi->end_ip = c->dwarf.ip + 1;
++      return 0;
++    }
+ 
+   *pi = c->dwarf.pi;
+   return 0;
+diff -Naurp git_org/src/arm/Ginit.c git/src/arm/Ginit.c
+--- git_org/src/arm/Ginit.c	2015-07-29 10:46:48.259138849 +0530
++++ git/src/arm/Ginit.c	2015-07-29 10:47:11.555179460 +0530
+@@ -220,6 +220,7 @@ HIDDEN void
+ arm_local_addr_space_init (void)
+ {
+   memset (&local_addr_space, 0, sizeof (local_addr_space));
++  local_addr_space.big_endian = (__BYTE_ORDER == __BIG_ENDIAN);
+   local_addr_space.caching_policy = UNW_CACHE_GLOBAL;
+   local_addr_space.acc.find_proc_info = arm_find_proc_info;
+   local_addr_space.acc.put_unwind_info = arm_put_unwind_info;
+diff -Naurp git_org/src/coredump/_UCD_find_proc_info.c git/src/coredump/_UCD_find_proc_info.c
+--- git_org/src/coredump/_UCD_find_proc_info.c	2015-07-29 10:46:48.267138864 +0530
++++ git/src/coredump/_UCD_find_proc_info.c	2015-07-29 10:48:30.231316607 +0530
+@@ -147,16 +147,15 @@ _UCD_find_proc_info (unw_addr_space_t as
+     ret = tdep_search_unwind_table (as, ip, &ui->edi.di_cache,
+                                     pi, need_unwind_info, arg);
+ 
++  if (ret == -UNW_ENOINFO && ui->edi.di_debug.format != -1)
++    ret = tdep_search_unwind_table (as, ip, &ui->edi.di_debug, pi,
++                                    need_unwind_info, arg);
+ #if UNW_TARGET_ARM
+   if (ret == -UNW_ENOINFO && ui->edi.di_arm.format != -1)
+     ret = tdep_search_unwind_table (as, ip, &ui->edi.di_arm, pi,
+                                     need_unwind_info, arg);
+ #endif
+ 
+-  if (ret == -UNW_ENOINFO && ui->edi.di_debug.format != -1)
+-    ret = tdep_search_unwind_table (as, ip, &ui->edi.di_debug, pi,
+-                                    need_unwind_info, arg);
+-
+   Debug(1, "returns %d\n", ret);
+ 
+   return ret;
+diff -Naurp git_org/src/ptrace/_UPT_find_proc_info.c git/src/ptrace/_UPT_find_proc_info.c
+--- git_org/src/ptrace/_UPT_find_proc_info.c	2015-07-29 10:46:48.267138864 +0530
++++ git/src/ptrace/_UPT_find_proc_info.c	2015-07-29 10:51:57.035677107 +0530
+@@ -131,15 +131,15 @@ _UPT_find_proc_info (unw_addr_space_t as
+     ret = tdep_search_unwind_table (as, ip, &ui->edi.di_cache,
+                                     pi, need_unwind_info, arg);
+ 
++  if (ret == -UNW_ENOINFO && ui->edi.di_debug.format != -1)
++    ret = tdep_search_unwind_table (as, ip, &ui->edi.di_debug, pi,
++                                    need_unwind_info, arg);
++
+ #if UNW_TARGET_ARM
+   if (ret == -UNW_ENOINFO && ui->edi.di_arm.format != -1)
+     ret = tdep_search_unwind_table (as, ip, &ui->edi.di_arm, pi,
+                                     need_unwind_info, arg);
+ #endif
+ 
+-  if (ret == -UNW_ENOINFO && ui->edi.di_debug.format != -1)
+-    ret = tdep_search_unwind_table (as, ip, &ui->edi.di_debug, pi,
+-                                    need_unwind_info, arg);
+-
+   return ret;
+ }

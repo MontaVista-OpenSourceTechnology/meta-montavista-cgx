@@ -1,0 +1,203 @@
+diff -Naurp git_org/include/libunwind-mips.h git/include/libunwind-mips.h
+--- git_org/include/libunwind-mips.h	2015-07-29 10:09:32.691241824 +0530
++++ git/include/libunwind-mips.h	2015-07-29 10:10:33.203347308 +0530
+@@ -103,7 +103,11 @@ typedef enum
+        previous frame.  */
+     UNW_MIPS_CFA,
+ 
+-    UNW_TDEP_LAST_REG = UNW_MIPS_R31,
++    /* Assigning last register as PC, to get the 
++       PC contents for the child process during ptrace and
++       to avoid array out of range for _UPT_reg_offset */
++    UNW_TDEP_LAST_REG = UNW_MIPS_PC,
++
+ 
+     UNW_TDEP_IP = UNW_MIPS_R31,
+     UNW_TDEP_SP = UNW_MIPS_R29,
+diff -Naurp git_org/include/tdep-mips/libunwind_i.h git/include/tdep-mips/libunwind_i.h
+--- git_org/include/tdep-mips/libunwind_i.h	2015-07-29 10:09:32.691241824 +0530
++++ git/include/tdep-mips/libunwind_i.h	2015-07-29 10:13:10.723621895 +0530
+@@ -248,8 +248,21 @@ dwarf_get (struct dwarf_cursor *c, dwarf
+   else if (c->as->abi == UNW_MIPS_ABI_O32)
+     return read_s32 (c, DWARF_GET_LOC (loc), val);
+   else
++  /* As unw_word_t is defined as uint64_t for N32, the value as been
++     packaged into 8 bytes. Most significant 4 bytes holds the required
++     value */
++#if _MIPS_SIM == _ABIN32 && BYTE_ORDER != LITTLE_ENDIAN
++    {
++        int ret = (*c->as->acc.access_mem) (c->as, DWARF_GET_LOC (loc), 
++                                            val, 0, c->as_arg);
++        if(*val > 0x100000000LL)
++            *val = (*val >> 32) | (*val << 32);
++        return ret;
++    }
++#else
+     return (*c->as->acc.access_mem) (c->as, DWARF_GET_LOC (loc), val,
+                                      0, c->as_arg);
++#endif /* _MIPS_SIM == _ABIN32 && BYTE_ORDER != LITTLE_ENDIAN */    
+ }
+ 
+ static inline int
+diff -Naurp git_org/src/coredump/_UCD_create.c git/src/coredump/_UCD_create.c
+--- git_org/src/coredump/_UCD_create.c	2015-07-29 10:09:32.679241801 +0530
++++ git/src/coredump/_UCD_create.c	2015-07-29 10:16:46.987998886 +0530
+@@ -199,7 +199,7 @@ _UCD_create(const char *filename)
+           cur->p_align  = hdr32.p_align ;
+           /* cur->backing_filename = NULL; - done by memset */
+           cur->backing_fd = -1;
+-          cur->backing_filesize = hdr32.p_memsz;
++          cur->backing_filesize = hdr32.p_filesz;
+           i++;
+           cur++;
+         }
+@@ -243,9 +243,63 @@ _UCD_create(const char *filename)
+             note_hdr = (Elf32_Nhdr *)ui->note_phdr;
+             while (NOTE_FITS (note_hdr, note_end))
+               {
++#ifdef __mips__ &&  _MIPS_SIM == _ABIN32
++                /* Workaround to take care size mismatch of pr_sigpend and 
++                   pr_sigpend between struct elf_prstatus and core dump file. */
++                if (note_hdr->n_type == NT_PRSTATUS)
++                  {
++                    ui->threads[n_threads++] = NOTE_DATA (note_hdr);
++                    ui->threads[n_threads] = NOTE_DATA (note_hdr);
++                    struct elf_prstatus *ptr;
++                    ptr = malloc (sizeof(struct elf_prstatus));
++                    if (!ptr) {
++		      perror("malloc failed");
++		      goto malloc_fail_end;
++		    }
++
++                    /* Get the offset/size of pr_sigpend in 
++		       struct elf_prstatus */
++                    int size_before_pr_sigpend;
++		    size_before_pr_sigpend = (char *)
++		                           &(ui->threads[n_threads]->pr_sigpend)
++		                           - (char *) (ui->threads[n_threads]);
++		    
++		    /* Copy contents of struct elf_prstatus before the 
++		       pr_sigpend member */
++                    memcpy(ptr, ui->threads[n_threads],size_before_pr_sigpend);
++
++		    /* Convert 4 bytes pr_sigpend and pr_sighold to 8 bytes */
++                    ptr->pr_sigpend = (ui->threads[n_threads]->pr_sigpend & 
++		                       0xffffffff00000000) >> 32;
++                    ptr->pr_sighold = ui->threads[n_threads]->pr_sigpend & 
++		                      0x00000000ffffffff;
++
++		    /* Get the offset/size of remaining members of struct 
++		       elf_prstatus after pr_sighold */
++                    int size_after_pr_sighold;
++		    size_after_pr_sighold = (char *) ui->threads[n_threads] +
++		                          sizeof(struct elf_prstatus) - (char *)
++		          		&(ui->threads[n_threads]->pr_pid);
++
++                    /* Copy contents of struct elf_prstatus after the 
++		       pr_sighold member */
++                    memcpy(&(ptr->pr_pid), ((char *) (ui->threads[n_threads]) + 
++		           size_before_pr_sigpend + 
++		           sizeof(ui->threads[n_threads]->pr_sigpend)), 
++		           size_after_pr_sighold);
++
++		    /* Save the modified contents back */
++                    memcpy (ui->threads[n_threads], ptr, 
++			    sizeof(struct elf_prstatus)); 
++		    /* Free up memory */
++                    free (ptr);
++malloc_fail_end:		  
++                    n_threads++;
++	          }	  
++#else                 
+                 if (note_hdr->n_type == NT_PRSTATUS)
+                   ui->threads[n_threads++] = NOTE_DATA (note_hdr);
+-
++#endif /* __mips__ && _MIPS_SIM == _ABIN32 */
+                 note_hdr = NOTE_NEXT (note_hdr);
+               }
+           }
+diff -Naurp git_org/src/mips/Gcreate_addr_space.c git/src/mips/Gcreate_addr_space.c
+--- git_org/src/mips/Gcreate_addr_space.c	2015-07-29 10:09:32.675241795 +0530
++++ git/src/mips/Gcreate_addr_space.c	2015-07-29 10:18:15.312152852 +0530
+@@ -58,8 +58,15 @@ unw_create_addr_space (unw_accessors_t *
+     as->big_endian = (byte_order == __BIG_ENDIAN);
+ 
+   /* FIXME!  There is no way to specify the ABI.  */
++#if _MIPS_SIM == _ABI64        
++  as->abi = UNW_MIPS_ABI_N64;                             
++#elif _MIPS_SIM == _ABIO32
+   as->abi = UNW_MIPS_ABI_O32;
+-  as->addr_size = 4;
++#elif _MIPS_SIM == _ABIN32                                
++  as->abi = UNW_MIPS_ABI_N32;  
++#endif /* _MIPS_SIM == _ABI64 */                          
++           
++  as->addr_size = sizeof (void *);  
+ 
+   return as;
+ #endif
+diff -Naurp git_org/src/mips/Gget_proc_info.c git/src/mips/Gget_proc_info.c
+--- git_org/src/mips/Gget_proc_info.c	2015-07-29 10:09:32.675241795 +0530
++++ git/src/mips/Gget_proc_info.c	2015-07-29 10:19:30.828284494 +0530
+@@ -34,7 +34,15 @@ unw_get_proc_info (unw_cursor_t *cursor,
+      if it's not present.  */
+   ret = dwarf_make_proc_info (&c->dwarf);
+   if (ret < 0)
+-    return ret;
++    {
++      /* On MIPS, it's relatively common to be missing DWARF unwind
++         info.  We don't want to fail in that case, because the
++         frame-chain still would let us do a backtrace at least.  */
++      memset (pi, 0, sizeof (*pi));
++      pi->start_ip = c->dwarf.ip;
++      pi->end_ip = c->dwarf.ip + 1;
++      return 0;
++    }
+ 
+   *pi = c->dwarf.pi;
+   return 0;
+diff -Naurp git_org/src/ptrace/_UPT_access_mem.c git/src/ptrace/_UPT_access_mem.c
+--- git_org/src/ptrace/_UPT_access_mem.c	2015-07-29 10:09:32.679241801 +0530
++++ git/src/ptrace/_UPT_access_mem.c	2015-07-29 10:21:56.588538580 +0530
+@@ -51,12 +51,28 @@ _UPT_access_mem (unw_addr_space_t as, un
+     }
+   else
+     {
++    /* unw_word_t is defined as uint64_t for N32,
++       and ptrace only fetches one word of data (4 bytes) via 
++       PTRACE_PEEKDATA in single call */
+ #ifdef HAVE_TTRACE
+ #       warning No support for ttrace() yet.
+ #else
++#ifdef __mips__ && _MIPS_SIM == _ABIN32
++      unw_word_t val2;
+       *val = ptrace (PTRACE_PEEKDATA, pid, addr, 0);
+       if (errno)
+         return -UNW_EINVAL;
++      *val <<=32;
++      val2 = ptrace (PTRACE_PEEKDATA, pid, addr+4, 0);
++      if (errno)
++        return -UNW_EINVAL;
++      val2 = 0x00000000ffffffff & val2 ;
++      *val = *val | val2;
++#else
++      *val = ptrace (PTRACE_PEEKDATA, pid, addr, 0);
++      if (errno)
++        return -UNW_EINVAL;
++#endif /* __mips__ && _MIPS_SIM == _ABIN32 */
+ #endif
+       Debug (16, "mem[%lx] -> %lx\n", (long) addr, (long) *val);
+     }
+diff -Naurp git_org/src/ptrace/_UPT_reg_offset.c git/src/ptrace/_UPT_reg_offset.c
+--- git_org/src/ptrace/_UPT_reg_offset.c	2015-07-29 10:09:32.679241801 +0530
++++ git/src/ptrace/_UPT_reg_offset.c	2015-07-29 10:22:25.656589250 +0530
+@@ -501,6 +501,9 @@ const int _UPT_reg_offset[UNW_REG_LAST +
+     [UNW_ARM_R14]      = 0x38,
+     [UNW_ARM_R15]      = 0x3c,
+ #elif defined(UNW_TARGET_MIPS)
++    /* Offsets of SP and PC */
++    [UNW_MIPS_R29]     = 0x10,
++    [UNW_MIPS_PC]      = 0x40
+ #elif defined(UNW_TARGET_SH)
+ #elif defined(UNW_TARGET_AARCH64)
+     [UNW_AARCH64_X0]       = 0x00,

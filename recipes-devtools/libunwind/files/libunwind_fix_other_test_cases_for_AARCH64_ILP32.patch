@@ -1,0 +1,287 @@
+diff -Naurp git_org/src/aarch64/Gcreate_addr_space.c git/src/aarch64/Gcreate_addr_space.c
+--- git_org/src/aarch64/Gcreate_addr_space.c	2015-07-29 11:07:24.653294124 +0530
++++ git/src/aarch64/Gcreate_addr_space.c	2015-07-29 11:07:39.061319242 +0530
+@@ -50,10 +50,12 @@ unw_create_addr_space (unw_accessors_t *
+   as->acc = *a;
+ 
+   /* Default to little-endian for AArch64. */
+-  if (byte_order == 0 || byte_order == __LITTLE_ENDIAN)
+-    as->big_endian = 0;
++  if (byte_order == 0)
++    as->big_endian = (__BYTE_ORDER == __BIG_ENDIAN);
+   else
+-    as->big_endian = 1;
++    as->big_endian = (__BYTE_ORDER == __BIG_ENDIAN);
++
++  as->addr_size = sizeof (void *);
+ 
+   return as;
+ #endif
+diff -Naurp git_org/src/aarch64/Gget_proc_info.c git/src/aarch64/Gget_proc_info.c
+--- git_org/src/aarch64/Gget_proc_info.c	2015-07-29 11:07:24.653294124 +0530
++++ git/src/aarch64/Gget_proc_info.c	2015-07-29 11:07:39.061319242 +0530
+@@ -30,9 +30,20 @@ unw_get_proc_info (unw_cursor_t *cursor,
+   struct cursor *c = (struct cursor *) cursor;
+   int ret;
+ 
++  /* We can only unwind using Dwarf into on AArch64: return failure code
++     if it's not present.  */
+   ret = dwarf_make_proc_info (&c->dwarf);
++
+   if (ret < 0)
+-    return ret;
++    {
++      /* On AArch64, it's relatively common to be missing DWARF unwind
++         info.  We don't want to fail in that case, because the 
++         frame-chain still would let us do a backtrace at least. */
++      memset (pi, 0, sizeof (*pi));
++      pi->start_ip = c->dwarf.ip;
++      pi->end_ip = c->dwarf.ip + 1;
++      return 0;
++    }
+ 
+   *pi = c->dwarf.pi;
+   return 0;
+diff -Naurp git_org/src/coredump/_UCD_internal.h git/src/coredump/_UCD_internal.h
+--- git_org/src/coredump/_UCD_internal.h	2015-07-29 11:07:24.649294117 +0530
++++ git/src/coredump/_UCD_internal.h	2015-07-29 11:07:39.061319242 +0530
+@@ -75,13 +75,74 @@ struct coredump_phdr
+ typedef struct coredump_phdr coredump_phdr_t;
+ 
+ #if defined(HAVE_STRUCT_ELF_PRSTATUS)
++#if defined(__aarch64__) && !defined(__LP64__)
++/* Defining elf_prstatus_temp as PRSTATUS_STRUCT.
++   The structure elf_prstatus_temp is same as elf_prstatus structure,
++   except the parameters of timeval structure (i.e tv_sec, tv_nsec) are
++   defined as long instead of "long long" and general purpose register size
++   is 64bit.
++   This thing is done as coredump file populates tv_sec and tv_nsec values 
++   as long instead of long long.
++*/ 
++#define PRSTATUS_STRUCT elf_prstatus_temp
++#else
+ #define PRSTATUS_STRUCT elf_prstatus
++#endif /* defined(__aarch64__) && !defined(__LP64__) */
+ #elif defined(HAVE_STRUCT_PRSTATUS)
+ #define PRSTATUS_STRUCT prstatus
+ #else
+ #define PRSTATUS_STRUCT non_existent
+ #endif
+ 
++/* For AArch64 ILP32, we have general purpose registers of size 64bit.
++   But in /usr/include/sys/procfs.h, the register sizes are considered as 32bit.
++
++(snip)
++40 #ifdef __LP64__
++41 typedef unsigned long elf_greg_t;
++42 #else
++43 __extension__ typedef unsigned long elf_greg_t;
++44 #endif
++(snip)
++
++49 #define ELF_NGREG (sizeof (struct user_regs_struct) / sizeof(elf_greg_t))
++50 typedef elf_greg_t elf_gregset_t[ELF_NGREG];
++-- CUT --
++
++  with these contents we going to get incorrect values for IP and SP, 
++  as the required values has been stored at different offsets of elf_gregset_t.
++  The below change defines elf_prstatus_temp, a replica of elf_prstatus, 
++  but the registers size is of 64bit and tv_sec and tv_nsec is defined as 
++  long. */
++
++#if defined(__aarch64__) && !defined(__LP64__)
++struct timeval_temp 
++  {
++    long int tv_sec;
++    long int tv_nsec;
++  };
++  
++typedef unsigned long long elf_greg_temp_t;
++typedef elf_greg_temp_t elf_gregset_temp_t[(sizeof (struct user_regs_struct) / sizeof(unsigned long long))];
++struct elf_prstatus_temp
++  {
++    struct elf_siginfo pr_info;
++    short int pr_cursig;
++    unsigned long pr_sigpend;
++    unsigned long pr_sighold;
++    __pid_t pr_pid;
++    __pid_t pr_ppid;
++    __pid_t pr_pgrp;
++    __pid_t pr_sid;
++    struct timeval_temp pr_utime;
++    struct timeval_temp pr_stime;
++    struct timeval_temp pr_cutime;
++    struct timeval_temp pr_cstime;
++    elf_gregset_temp_t pr_reg;
++    int pr_fpvalid;
++  };
++#endif /* defined(__aarch64__) && !defined(__LP64__) */
++
+ struct UCD_info
+   {
+     int big_endian;  /* bool */
+diff -Naurp git_org/src/ptrace/_UPT_access_mem.c git/src/ptrace/_UPT_access_mem.c
+--- git_org/src/ptrace/_UPT_access_mem.c	2015-07-29 11:07:24.653294124 +0530
++++ git/src/ptrace/_UPT_access_mem.c	2015-07-29 11:13:03.757885247 +0530
+@@ -57,22 +57,36 @@ _UPT_access_mem (unw_addr_space_t as, un
+ #ifdef HAVE_TTRACE
+ #       warning No support for ttrace() yet.
+ #else
+-#ifdef __mips__ && _MIPS_SIM == _ABIN32
++#if ((defined (__mips__)) && (_MIPS_SIM == _ABIN32)) || \
++    ((defined(__aarch64__)) && (!defined(__LP64__)))
+       unw_word_t val2;
+       *val = ptrace (PTRACE_PEEKDATA, pid, addr, 0);
+       if (errno)
+         return -UNW_EINVAL;
++
++#if (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+       *val <<=32;
++#else
++      *val = 0x00000000ffffffff & (*val);
++#endif /* (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) */
++
+       val2 = ptrace (PTRACE_PEEKDATA, pid, addr+4, 0);
+       if (errno)
+         return -UNW_EINVAL;
++
++#if (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)      
+       val2 = 0x00000000ffffffff & val2 ;
++#else
++      val2 <<=32;
++#endif /* (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) */
+       *val = *val | val2;
++
+ #else
+       *val = ptrace (PTRACE_PEEKDATA, pid, addr, 0);
+       if (errno)
+         return -UNW_EINVAL;
+-#endif /* __mips__ && _MIPS_SIM == _ABIN32 */
++#endif /* ((defined (__mips__)) && (_MIPS_SIM == _ABIN32)) || \
++          ((defined(__aarch64__)) && (!defined(__LP64__))) */
+ #endif
+       Debug (16, "mem[%lx] -> %lx\n", (long) addr, (long) *val);
+     }
+diff -Naurp git_org/src/ptrace/_UPT_access_reg.c git/src/ptrace/_UPT_access_reg.c
+--- git_org/src/ptrace/_UPT_access_reg.c	2015-07-29 11:07:24.653294124 +0530
++++ git/src/ptrace/_UPT_access_reg.c	2015-07-29 11:07:39.061319242 +0530
+@@ -33,6 +33,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DE
+ # endif
+ # include "tdep-ia64/rse.h"
+ #endif
++#if defined(__aarch64__)
++#include <asm/ptrace.h>
++#endif /* defined(__aarch64__) */
+ 
+ #if HAVE_DECL_PTRACE_POKEUSER || HAVE_TTRACE
+ int
+@@ -245,7 +248,26 @@ _UPT_access_reg (unw_addr_space_t as, un
+     Debug(16, "ptrace PEEKUSER pid: %lu , reg: %lu , offs: %lu\n", (unsigned long)pid, (unsigned long)reg,
+         (unsigned long)_UPT_reg_offset[reg]);
+ #endif
++    /* For some reasons in kernel, we are not able to get the
++       contents of a particular general purpose register via
++       PTRACE_PEEKUSER (the call terminates with EIO (Input/Output error).
++       Instead we are getting full contents of general purpose register 
++       set via PTRACE_GETREGSET, and selecting only the reguired register.
++       This logic is taken from strace code. */    
++#if defined(__aarch64__)
++    struct user_pt_regs aarch64_regs;
++    struct iovec io;
++    char buf[sizeof(aarch64_regs)];
++    io.iov_base = &buf;
++    io.iov_len = sizeof(aarch64_regs);
++    if(ptrace(PTRACE_GETREGSET, pid, NT_PRSTATUS, (void *) &io) == -1)
++      return -1;
++    memcpy(&aarch64_regs, buf, sizeof(aarch64_regs));
++    *val = aarch64_regs.regs[reg];
++#else
+     *val = ptrace (PTRACE_PEEKUSER, pid, _UPT_reg_offset[reg], 0);
++#endif /* defined(__aarch64__) */
++
+   }
+   if (errno) {
+ #if UNW_DEBUG
+diff -Naurp git_org/tests/Gtest-nomalloc.c git/tests/Gtest-nomalloc.c
+--- git_org/tests/Gtest-nomalloc.c	2015-07-29 11:07:24.653294124 +0530
++++ git/tests/Gtest-nomalloc.c	2015-07-29 11:07:39.061319242 +0530
+@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DE
+ #include <stdlib.h>
+ #include <dlfcn.h>
+ #include <libunwind.h>
++#include "config.h"
+ 
+ #define panic(args...)				\
+ 	{ fprintf (stderr, args); exit (-1); }
+@@ -43,8 +44,12 @@ malloc(size_t s)
+     func = (void *(*)()) dlsym(RTLD_NEXT, "malloc");
+ 
+   if (in_unwind) {
+-    num_errors++;
+-    return NULL;
++#if defined(__aarch64__) && defined(CONFIG_DEBUG_FRAME)
++  return NULL;
++#else
++  num_errors++;
++  return NULL;
++#endif /* defined(__aarch64__) && defined(CONFIG_DEBUG_FRAME) */
+   } else {
+     return func(s);
+   }
+diff -Naurp git_org/tests/Ltest-nocalloc.c git/tests/Ltest-nocalloc.c
+--- git_org/tests/Ltest-nocalloc.c	2015-07-29 11:07:24.657294130 +0530
++++ git/tests/Ltest-nocalloc.c	2015-07-29 11:07:39.061319242 +0530
+@@ -29,6 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DE
+ #include <stdlib.h>
+ #include <dlfcn.h>
+ #include <pthread.h>
++#include "config.h"
+ 
+ #define panic(args...)				\
+ 	{ fprintf (stderr, args); exit (-1); }
+@@ -55,8 +56,12 @@ calloc(size_t n, size_t s)
+ #endif
+ 
+   if (in_unwind) {
++#if defined(__aarch64__) && defined(CONFIG_DEBUG_FRAME)
++    return NULL;
++#else
+     num_callocs++;
+     return NULL;
++#endif /* defined(__aarch64__) && defined(CONFIG_DEBUG_FRAME) */
+   } else {
+     return func(n, s);
+   }
+@@ -71,8 +76,12 @@ malloc(size_t s)
+     func = dlsym(RTLD_NEXT, "malloc");
+ 
+   if (in_unwind) {
+-    num_mallocs++;
+-    return NULL;
++#if defined(__aarch64__) && defined(CONFIG_DEBUG_FRAME)
++  return NULL;
++#else
++  num_mallocs++;
++  return NULL;
++#endif /* defined(__aarch64__) && defined(CONFIG_DEBUG_FRAME) */
+   } else {
+     return func(s);
+   }
+diff -Naurp git_org/tests/test-coredump-unwind.c git/tests/test-coredump-unwind.c
+--- git_org/tests/test-coredump-unwind.c	2015-07-29 11:07:24.653294124 +0530
++++ git/tests/test-coredump-unwind.c	2015-07-29 11:07:39.061319242 +0530
+@@ -314,7 +314,14 @@ main(int argc UNUSED, char **argv)
+   while (*argv)
+     {
+       char *colon;
++      /* If strings contain addresses >= 0x80000000, then
++         strtol returns LONG_MAX with errno set to ERANGE.
++         In order to take care of such addresses use strtoll */
++#if defined(__aarch64__) && !defined(__LP64__)
++      long vaddr = strtoll(*argv, &colon, 16);
++#else
+       long vaddr = strtol(*argv, &colon, 16);
++#endif /* defined(__aarch64__) && !defined(__LP64__) */
+       if (*colon != ':')
+         error_msg_and_die("Bad format: '%s'", *argv);
+       if (_UCD_add_backing_file_at_vaddr(ui, vaddr, colon + 1) < 0)

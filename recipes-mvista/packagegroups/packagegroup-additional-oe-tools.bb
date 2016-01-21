@@ -80,7 +80,6 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	libc-client \
 	libol \
         ncurses-tools \
-	drbd \
 	smartmontools \
 	bootcycle \
         "

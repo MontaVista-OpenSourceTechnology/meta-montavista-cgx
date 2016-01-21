@@ -16,3 +16,10 @@ SRCREV_pn-pyelftools = "546e692243895888cb2a6201b3bc263fd2cbc1ad"
 SRCREV_pn-pyelftools-native = "546e692243895888cb2a6201b3bc263fd2cbc1ad"
 LIC_FILES_CHKSUM_pn-pyelftools = "file://LICENSE;md5=5ce2a2b07fca326bc7c146d10105ccfc"
 LIC_FILES_CHKSUM_pn-pyelftools-native = "file://LICENSE;md5=5ce2a2b07fca326bc7c146d10105ccfc"
+
+RDEPENDS_packagegroup-tpm_remove = "kernel-module-tpm-nsc"
+RDEPENDS_packagegroup-tpm_remove = "kernel-module-tpm-atmel"
+RDEPENDS_packagegroup-tpm_remove = "kernel-module-tpm-infineon"
+
+# Fix for meta-security
+EXTRA_OEMAKE_pn-nmap_append = "PYTHON=/usr/bin/python"

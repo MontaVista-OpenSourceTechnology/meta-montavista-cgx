@@ -1,0 +1,36 @@
+diff -Naurp git_org/tests/Gperf-simple.c git/tests/Gperf-simple.c
+--- git_org/tests/Gperf-simple.c	2016-01-21 07:30:20.132180878 -0800
++++ git/tests/Gperf-simple.c	2016-01-21 07:30:43.429180934 -0800
+@@ -87,7 +87,7 @@ measure_unwind (int maxlevel, double *st
+   return 0;
+ }
+ 
+-static int f1 (int, int, double *);
++static int f1 (int, int, double *) __attribute__((used));
+ 
+ static int NOINLINE
+ g1 (int level, int maxlevel, double *step)
+diff -Naurp git_org/tests/Gperf-trace.c git/tests/Gperf-trace.c
+--- git_org/tests/Gperf-trace.c	2016-01-21 07:24:00.603179958 -0800
++++ git/tests/Gperf-trace.c	2016-01-21 07:30:55.369180963 -0800
+@@ -73,7 +73,7 @@ measure_unwind (int maxlevel, double *st
+   return 0;
+ }
+ 
+-static int f1 (int, int, double *);
++static int f1 (int, int, double *) __attribute__((used));
+ 
+ static int NOINLINE
+ g1 (int level, int maxlevel, double *step)
+diff -Naurp git_org/tests/Makefile.am git/tests/Makefile.am
+--- git_org/tests/Makefile.am	2016-01-21 07:24:00.605179958 -0800
++++ git/tests/Makefile.am	2016-01-21 07:31:38.828181068 -0800
+@@ -75,7 +75,7 @@ endif # HAVE_LZMA
+ endif # BUILD_COREDUMP
+ endif # OS_LINUX
+ 
+-perf: perf-startup Gperf-simple Lperf-simple Lperf-trace
++perf: perf-startup Gperf-simple Lperf-simple Lperf-trace forker
+ 	@echo "########## Basic performance of generic libunwind:"
+ 	@./Gperf-simple
+ 	@echo "########## Basic performance of local-only libunwind:"

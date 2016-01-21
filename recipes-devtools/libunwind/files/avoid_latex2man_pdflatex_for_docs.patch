@@ -1,0 +1,13 @@
+--- git_org/doc/Makefile.am	2013-05-29 16:44:34.378059069 +0530
++++ git/doc/Makefile.am	2013-05-29 16:48:49.139847707 +0530
+@@ -49,8 +49,8 @@ EXTRA_DIST = NOTES libunwind.trans					\
+ 	_U_dyn_cancel.tex						\
+ 	$(man3_MANS)
+ 
+-L2M	= latex2man
+-L2P	= pdflatex
++L2M	= echo 
++L2P	= echo 
+ L2M_CMD	= $(L2M) -t $(srcdir)/libunwind.trans
+ L2H_CMD	= $(L2M) -H -t $(srcdir)/libunwind.trans
+ 

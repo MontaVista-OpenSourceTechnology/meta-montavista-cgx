@@ -25,6 +25,7 @@ PACKAGES = "\
 	packagegroup-oe-graphics \
 	packagegroup-oe-security \
         packagegroup-oe-debug  \
+	packagegroup-oe-webserver \
 	"
 RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-filesystemutilities \
@@ -40,6 +41,7 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-graphics \
 	packagegroup-oe-security \
         packagegroup-oe-debug \
+	packagegroup-oe-webserver \
 	"
 
 
@@ -151,6 +153,10 @@ RDEPENDS_packagegroup-oe-graphics = "\
 	xset \ 
 	xvinfo  \ 
 	libxpm \
+	"
+
+RDEPENDS_packagegroup-oe-webserver =" \
+        apache2 \
 	"
 
 

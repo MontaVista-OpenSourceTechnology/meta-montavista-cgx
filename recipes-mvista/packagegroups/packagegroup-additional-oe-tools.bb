@@ -102,6 +102,7 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	strongswan \
 	tunctl \
 	iscsitarget \
+	iscsi-initiator-utils \
 	"
 
 RDEPENDS_packagegroups-oe-logmanagement ="\

@@ -26,6 +26,7 @@ PACKAGES = "\
 	packagegroup-oe-security \
         packagegroup-oe-debug  \
 	packagegroup-oe-webserver \
+        packagegroup-oe-virtualization  \
 	"
 RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-filesystemutilities \
@@ -42,9 +43,12 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-security \
         packagegroup-oe-debug \
 	packagegroup-oe-webserver \
+	packagegroup-oe-virtualization \
 	"
 
-
+RDEPENDS_packagegroup-oe-virtualization = " \
+	libvirt \
+	"
 
 RDEPENDS_packagegroup-oe-filesystemutilities = "\
 	squashfs-tools \

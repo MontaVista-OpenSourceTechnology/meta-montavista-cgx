@@ -88,6 +88,7 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
         ncurses-tools \
 	smartmontools \
 	bootcycle \
+	vim \
         "
 
 

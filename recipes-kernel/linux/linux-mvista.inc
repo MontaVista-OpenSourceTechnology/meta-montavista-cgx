@@ -18,6 +18,7 @@ KMETA = "meta"
 LINUX_KERNEL_TYPE = "standard"
 
 LINUX_VERSION_EXTENSION ?= "-mvista"
+KCONFIG_MODE = "--alldefconfig"
 
 COMPATIBLE_MACHINE = "qemuarm|qemuarm64|qemux86|qemuppc|qemumips|qemumips64|qemux86-64"
 

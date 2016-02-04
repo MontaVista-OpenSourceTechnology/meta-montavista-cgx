@@ -1,9 +1,11 @@
-PR .= ".4"
+PR .= ".5"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI += "file://mcs-sshd"
-SRC_URI += "file://mcs-sshd_config"
+SRC_URI += "file://mcs-sshd \
+            file://mcs-sshd_config \
+	    file://Add_1024-bit-group-primes-for-DH-key-exchange.patch \
+	   "
 
 do_install_append() {
     if ${@base_contains('DISTRO_FEATURES', 'OpenLDAP', 'true', 'false', d)}; then

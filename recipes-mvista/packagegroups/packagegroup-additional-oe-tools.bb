@@ -89,6 +89,7 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	smartmontools \
 	bootcycle \
 	vim \
+	cdrkit \
         "
 
 

@@ -1,0 +1,12 @@
+[Unit]
+Description=MontaVista Target information daemon
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/mvtargetdaemon
+ExecStop=/usr/sbin/mvtargetdaemon
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

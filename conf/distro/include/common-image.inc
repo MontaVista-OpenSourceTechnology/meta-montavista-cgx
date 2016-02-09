@@ -23,3 +23,5 @@ RDEPENDS_packagegroup-tpm_remove = "kernel-module-tpm-infineon"
 
 # Fix for meta-security
 EXTRA_OEMAKE_pn-nmap_append = "PYTHON=/usr/bin/python"
+
+CFLAGS_pn-cacao-initial-native_append = " -fno-strict-aliasing "

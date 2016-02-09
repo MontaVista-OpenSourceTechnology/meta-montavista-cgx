@@ -10,11 +10,17 @@ PACKAGES = "\
          packagegroup-profile-iot \
 "
 
-RDEPENDS_packagegroup-profile-iot = " \
-         lua \
+OPENJDK = " \
          openjdk-8 \
          classpath \
          classpath-common \
          classpath-examples \
          classpath-tools \
+"
+
+OPENJDK_aarch64 = ""
+
+RDEPENDS_packagegroup-profile-iot = " \
+         lua \
+         ${OPENJDK} \
 " 

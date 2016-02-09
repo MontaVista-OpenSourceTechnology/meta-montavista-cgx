@@ -26,6 +26,7 @@ RDEPENDS_${PN} = " \
            file \
            glibc-utils \
            ${@base_conditional("LTTNG_VERSION", None, "", "lttng-control lttng-viewer", d)} \
+           mv-target-daemon \
 "
 #           libmtraq \
 #          gdbserver \

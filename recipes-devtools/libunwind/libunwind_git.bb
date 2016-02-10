@@ -4,7 +4,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=3fced11d6df719b47505837a51c16ae5 \
                     file://COPYING;md5=2d80c8ed4062b8339b715f90fa68cc9f \
 		    "
-PR = "r13"
+PR = "r14"
 
 SRCREV="396b6c7ab737e2bff244d640601c436a26260ca1"
 SRC_URI = "git://git.sv.gnu.org/libunwind.git;protocal=git \

@@ -1,6 +1,6 @@
 diff -Naurp git_org/src/arm/Gget_proc_info.c git/src/arm/Gget_proc_info.c
---- git_org/src/arm/Gget_proc_info.c	2015-07-29 10:46:48.259138849 +0530
-+++ git/src/arm/Gget_proc_info.c	2015-07-29 10:50:59.575576942 +0530
+--- git_org/src/arm/Gget_proc_info.c	2016-02-07 20:35:18.203852887 -0800
++++ git/src/arm/Gget_proc_info.c	2016-02-07 20:32:45.102852516 -0800
 @@ -30,11 +30,18 @@ unw_get_proc_info (unw_cursor_t *cursor,
    struct cursor *c = (struct cursor *) cursor;
    int ret;
@@ -24,8 +24,8 @@ diff -Naurp git_org/src/arm/Gget_proc_info.c git/src/arm/Gget_proc_info.c
    *pi = c->dwarf.pi;
    return 0;
 diff -Naurp git_org/src/arm/Ginit.c git/src/arm/Ginit.c
---- git_org/src/arm/Ginit.c	2015-07-29 10:46:48.259138849 +0530
-+++ git/src/arm/Ginit.c	2015-07-29 10:47:11.555179460 +0530
+--- git_org/src/arm/Ginit.c	2016-02-07 20:35:18.203852887 -0800
++++ git/src/arm/Ginit.c	2016-02-07 20:32:45.102852516 -0800
 @@ -220,6 +220,7 @@ HIDDEN void
  arm_local_addr_space_init (void)
  {
@@ -35,8 +35,8 @@ diff -Naurp git_org/src/arm/Ginit.c git/src/arm/Ginit.c
    local_addr_space.acc.find_proc_info = arm_find_proc_info;
    local_addr_space.acc.put_unwind_info = arm_put_unwind_info;
 diff -Naurp git_org/src/coredump/_UCD_find_proc_info.c git/src/coredump/_UCD_find_proc_info.c
---- git_org/src/coredump/_UCD_find_proc_info.c	2015-07-29 10:46:48.267138864 +0530
-+++ git/src/coredump/_UCD_find_proc_info.c	2015-07-29 10:48:30.231316607 +0530
+--- git_org/src/coredump/_UCD_find_proc_info.c	2016-02-07 20:35:18.198852887 -0800
++++ git/src/coredump/_UCD_find_proc_info.c	2016-02-07 20:32:45.096852516 -0800
 @@ -147,16 +147,15 @@ _UCD_find_proc_info (unw_addr_space_t as
      ret = tdep_search_unwind_table (as, ip, &ui->edi.di_cache,
                                      pi, need_unwind_info, arg);
@@ -58,8 +58,8 @@ diff -Naurp git_org/src/coredump/_UCD_find_proc_info.c git/src/coredump/_UCD_fin
  
    return ret;
 diff -Naurp git_org/src/ptrace/_UPT_find_proc_info.c git/src/ptrace/_UPT_find_proc_info.c
---- git_org/src/ptrace/_UPT_find_proc_info.c	2015-07-29 10:46:48.267138864 +0530
-+++ git/src/ptrace/_UPT_find_proc_info.c	2015-07-29 10:51:57.035677107 +0530
+--- git_org/src/ptrace/_UPT_find_proc_info.c	2016-02-07 20:35:18.203852887 -0800
++++ git/src/ptrace/_UPT_find_proc_info.c	2016-02-07 20:32:45.102852516 -0800
 @@ -131,15 +131,15 @@ _UPT_find_proc_info (unw_addr_space_t as
      ret = tdep_search_unwind_table (as, ip, &ui->edi.di_cache,
                                      pi, need_unwind_info, arg);
@@ -80,3 +80,83 @@ diff -Naurp git_org/src/ptrace/_UPT_find_proc_info.c git/src/ptrace/_UPT_find_pr
 -
    return ret;
  }
+diff -Naurp git_org/tests/Gtest-nomalloc.c git/tests/Gtest-nomalloc.c
+--- git_org/tests/Gtest-nomalloc.c	2016-02-07 20:35:18.208852887 -0800
++++ git/tests/Gtest-nomalloc.c	2016-02-07 20:32:45.113852516 -0800
+@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DE
+ #include <stdlib.h>
+ #include <dlfcn.h>
+ #include <libunwind.h>
++#include "config.h"
+ 
+ #define panic(args...)				\
+ 	{ fprintf (stderr, args); exit (-1); }
+@@ -43,8 +44,12 @@ malloc(size_t s)
+     func = (void *(*)()) dlsym(RTLD_NEXT, "malloc");
+ 
+   if (in_unwind) {
++#if (defined(__arm__) || defined(__aarch64__)) && defined(CONFIG_DEBUG_FRAME)
++    return NULL;
++#else
+     num_errors++;
+     return NULL;
++#endif /* (defined(__arm__) || defined(__aarch64__)) && defined(CONFIG_DEBUG_FRAME) */    
+   } else {
+     return func(s);
+   }
+diff -Naurp git_org/tests/Ltest-nocalloc.c git/tests/Ltest-nocalloc.c
+--- git_org/tests/Ltest-nocalloc.c	2016-02-07 20:35:18.209852887 -0800
++++ git/tests/Ltest-nocalloc.c	2016-02-07 20:32:45.114852516 -0800
+@@ -29,6 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DE
+ #include <stdlib.h>
+ #include <dlfcn.h>
+ #include <pthread.h>
++#include "config.h"
+ 
+ #define panic(args...)				\
+ 	{ fprintf (stderr, args); exit (-1); }
+@@ -55,8 +56,12 @@ calloc(size_t n, size_t s)
+ #endif
+ 
+   if (in_unwind) {
++#if (defined(__arm__) || defined(__aarch64__)) && defined(CONFIG_DEBUG_FRAME)
++    return NULL;
++#else
+     num_callocs++;
+     return NULL;
++#endif /* (defined(__arm__) || defined(__aarch64__)) && defined(CONFIG_DEBUG_FRAME) */
+   } else {
+     return func(n, s);
+   }
+@@ -71,8 +76,12 @@ malloc(size_t s)
+     func = dlsym(RTLD_NEXT, "malloc");
+ 
+   if (in_unwind) {
++#if (defined(__arm__) || defined(__aarch64__)) && defined(CONFIG_DEBUG_FRAME)
++    return NULL;
++#else
+     num_mallocs++;
+     return NULL;
++#endif /* (defined(__arm__) || defined(__aarch64__)) && defined(CONFIG_DEBUG_FRAME) */
+   } else {
+     return func(s);
+   }
+--- git_org/tests/run-coredump-unwind	2014-03-12 12:22:49.258588212 +0530
++++ git/tests/run-coredump-unwind	2014-03-12 18:03:54.999385114 +0530
+@@ -27,8 +27,15 @@ add_minidebug()
+   mini_debuginfo="${mini_debuginfo}.xz"
+   objcopy --add-section .gnu_debugdata="$mini_debuginfo" "$binary"
+   rm -f "$dynsyms" "$funcsyms" "$keep_symbols" "$mini_debuginfo"
+-
+-  strip "$binary" ## throw away the symbol table
++  case $(uname -m) in
++    arm*)
++        # We need debug info fields to get unwind info
++        # in arm, so avoid discarding symbols
++        ;;
++    *)
++        strip "$binary" ## throw away the symbol table
++        ;;
++  esac
+ }
+ 

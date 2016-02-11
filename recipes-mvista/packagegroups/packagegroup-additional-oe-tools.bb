@@ -121,6 +121,7 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	tunctl \
 	iscsitarget \
 	iscsi-initiator-utils \
+	ethtool \
 	"
 
 RDEPENDS_packagegroups-oe-logmanagement ="\

@@ -15,6 +15,8 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 
 KMETA = "meta"
 
+DEPENDS += "meta-toolchain-scripts"
+
 LINUX_KERNEL_TYPE = "standard"
 
 LINUX_VERSION_EXTENSION ?= "-mvista"
@@ -74,5 +76,14 @@ do_install_prepend () {
 	echo 'export MVL_TOOL_DIR="${MVL_TOOL_DIR}"'
         echo "export TOOL_PREFIX=\"/tools/${MVL_TOOL_DIR}/bin:\"" >> $kvnsh
         cp ${STAGING_KERNEL_DIR}/kenv.sh ${D}/boot/ 
+        install -d ${D}/boot/sdk
+        install -d ${D}${KERNEL_SRC_PATH}/sdk
+        if [ -d ${STAGING_DIR_TARGET}${includedir}/mv-sdk/ ] ; then
+           cp ${STAGING_DIR_TARGET}${includedir}/mv-sdk/* ${D}/boot/sdk
+           cp ${STAGING_DIR_TARGET}${includedir}/mv-sdk/* ${D}${KERNEL_SRC_PATH}/sdk
+        elif [ -d sdk ] ; then
+           cp sdk/* ${D}/boot/sdk
+           cp sdk/* ${D}${KERNEL_SRC_PATH}/sdk
+        fi
 }
 

@@ -124,6 +124,81 @@ python multilib_virtclass_handler_mvista-cgx () {
         e.data.setVar("DEFAULTTUNE", newtune)
 }
 
+SDKTARGETSYSROOT_mvista-cgx="${SDKPATH}/sysroots/${MACHINE}-montavista-linux"
+
+toolchain_create_sdk_env_script_append () {
+	rm -f $script
+	touch $script
+	echo 'if [ -z "${SDK_ROOT}" ] ; then' >> $script
+	echo '   SDK_ROOT="${SDKTARGETSYSROOT}"' >> $script
+	echo 'fi' >> $script
+	echo 'if [ -z "${SDK_PATH_NATIVE}" ] ; then' >> $script
+	echo '   SDK_PATH_NATIVE="${SDKPATHNATIVE}"' >> $script
+	echo '   export OECORE_NATIVE_SYSROOT="${SDKPATHNATIVE}"' >> $script
+        echo 'else' >> $script
+	echo '   export OECORE_NATIVE_SYSROOT="${SDK_PATH_NATIVE}"' >> $script
+	echo 'fi' >> $script
+	echo 'export TARGET_PREFIX="${TARGET_PREFIX}"' >> $script
+	echo 'export MVL_TOOL_DIR="${MVL_TOOL_DIR}"' >> $script
+	echo 'export CSL_TARGET_SYS="${CSL_TARGET_SYS}"' >> $script
+	echo 'COMPILER=$(which $(echo ${TARGET_PREFIX})gcc 2>/dev/null)' >> $script
+	echo 'BITBAKE=$(which bitbake-real 2>/dev/null)' >> $script
+	echo '' >> $script
+        echo 'if [ -z "${COMPILER}" -a -n "${BITBAKE}" ] ; then' >> $script
+        echo '     PATH_SAVE=$PATH' >> $script
+        echo '     CCPATH=$(dirname $(dirname ${BITBAKE}))/tools/${MVL_TOOL_DIR}/bin' >> $script
+        echo '     export PATH=${CCPATH}:${PATH_SAVE}' >> $script
+        echo '     COMPILER=$(which $(echo ${TARGET_PREFIX})gcc 2>/dev/null)' >> $script
+        echo '     if [ -z "${COMPILER}" ] ; then' >> $script
+        echo '        export PATH=${PATH_SAVE}' >> $script
+        echo '     fi' >> $script
+        echo 'fi' >> $script
+        echo '' >> $script
+	echo 'export PATH=${SDK_PATH_NATIVE}${bindir_nativesdk}:${SDK_PATH_NATIVE}${bindir_nativesdk}/${REAL_MULTIMACH_TARGET_SYS}:$PATH' >> $script
+        echo 'if [ -n "${COMPILER}" ] ; then' >> $script
+        echo 'if [ -z "${TOOL_ROOT}" ] ; then' >> $script
+        echo '   TOOL_ROOT=$(dirname $(dirname ${COMPILER}))' >> $script
+        echo 'fi' >> $script
+        echo 'export TOOL_INCLUDE=${TOOL_ROOT}/${CSL_TARGET_SYS}/sys-root/usr/include' >> $script
+	echo 'export PKG_CONFIG_SYSROOT_DIR=${SDK_ROOT}' >> $script
+	echo 'export PKG_CONFIG_PATH=${SDK_ROOT}${libdir}/pkgconfig' >> $script
+	echo 'export CONFIG_SITE=${SDKPATH}/site-config-${REAL_MULTIMACH_TARGET_SYS}' >> $script
+	echo 'export CC="${TARGET_PREFIX}gcc ${TARGET_CC_ARCH} --sysroot=${SDK_ROOT}"' >> $script
+	echo 'export CXX="${TARGET_PREFIX}g++ ${TARGET_CC_ARCH} --sysroot=${SDK_ROOT}"' >> $script
+	echo 'export CPP="${TARGET_PREFIX}gcc -E ${TARGET_CC_ARCH} --sysroot=${SDK_ROOT}"' >> $script
+	echo 'export AS="${TARGET_PREFIX}as ${TARGET_AS_ARCH}"' >> $script
+	echo 'export LD="${TARGET_PREFIX}ld ${TARGET_LD_ARCH} --sysroot=${SDK_ROOT}"' >> $script
+	echo 'export GDB=${TARGET_PREFIX}gdb' >> $script
+	echo 'export STRIP=${TARGET_PREFIX}strip' >> $script
+	echo 'export RANLIB=${TARGET_PREFIX}ranlib' >> $script
+	echo 'export OBJCOPY=${TARGET_PREFIX}objcopy' >> $script
+	echo 'export OBJDUMP=${TARGET_PREFIX}objdump' >> $script
+	echo 'export AR=${TARGET_PREFIX}ar' >> $script
+	echo 'export NM=${TARGET_PREFIX}nm' >> $script
+	echo 'export CONFIGURE_FLAGS="--target=${TARGET_SYS} --host=${TARGET_SYS} --build=${SDK_ARCH}-linux --with-libtool-sysroot=${SDK_ROOT}"' >> $script
+	echo 'export CFLAGS=$(echo ${TARGET_CFLAGS} | sed -e "s|##STAGINGDIRTARGET##|${SDK_ROOT}|g" -e "s|##MVLSDKPREFIX##|${TOOL_ROOT}/|g")' >> $script
+	echo 'export CXXFLAGS=$(echo ${TARGET_CXXFLAGS} | sed -e "s|##STAGINGDIRTARGET##|${SDK_ROOT}|g" -e "s|##MVLSDKPREFIX##|${TOOL_ROOT}/|g")' >> $script
+	echo 'export LDFLAGS=$(echo ${TARGET_LDFLAGS} | sed -e "s|##STAGINGDIRTARGET##|${SDK_ROOT}|g" -e "s|##MVLSDKPREFIX##|${TOOL_ROOT}/|g")' >> $script
+	echo 'export CPPFLAGS=$(echo ${TARGET_CPPFLAGS} | sed -e "s|##STAGINGDIRTARGET##|${SDK_ROOT}|g" -e "s|##MVLSDKPREFIX##|${TOOL_ROOT}/|g") ' >> $script
+	echo 'export ARCH=${ARCH}' >> $script
+	echo 'else' >> $script
+        echo ' echo "Could not find external toolchain $(echo ${TARGET_PREFIX})gcc. Please add path to toolchain install."' >> $script
+	echo 'fi' >> $script
+	echo 'export OECORE_TARGET_SYSROOT="${SDK_ROOT}"' >> $script
+        echo 'export OECORE_ACLOCAL_OPTS="-I ${SDK_PATH_NATIVE}/usr/share/aclocal"' >> $script
+	echo 'export OECORE_DISTRO_VERSION="${DISTRO_VERSION}"' >> $script
+	echo 'export OECORE_SDK_VERSION="${SDK_VERSION}"' >> $script
+
+	# Replace ${MVL_SDK_PREFIX} and ${STAGING_DIR_TARGET} 
+	# with ##MVLSDKPREFIX## and ##STAGINGDIRTARGET## respectively 
+	# to avoid populating actual paths in environment-setup-* scripts.
+	# Replace $PATH with ${PATH}.
+	RAW_PATH1="$"
+	RAW_PATH2="{PATH}"
+	sed -i -e "s|${MVL_SDK_PREFIX}|##MVLSDKPREFIX##|g" \
+	-e "s|${STAGING_DIR_TARGET}|##STAGINGDIRTARGET##|g" \
+	-e "s|\$PATH|${RAW_PATH1}${RAW_PATH2}|g" $script
+}
 
 P2BUILDDIR="${WORKDIR}/p2"
 P2DIR="${DEPLOY_DIR}/p2/${SDK_ARCH}"

@@ -142,7 +142,7 @@ toolchain_create_sdk_env_script_append () {
 	echo 'export MVL_TOOL_DIR="${MVL_TOOL_DIR}"' >> $script
 	echo 'export CSL_TARGET_SYS="${CSL_TARGET_SYS}"' >> $script
 	echo 'COMPILER=$(which $(echo ${TARGET_PREFIX})gcc 2>/dev/null)' >> $script
-	echo 'BITBAKE=$(which bitbake-real 2>/dev/null)' >> $script
+	echo 'BITBAKE=$(which bitbake 2>/dev/null)' >> $script
 	echo '' >> $script
         echo 'if [ -z "${COMPILER}" -a -n "${BITBAKE}" ] ; then' >> $script
         echo '     PATH_SAVE=$PATH' >> $script

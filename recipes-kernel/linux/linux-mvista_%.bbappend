@@ -9,6 +9,8 @@ SRCREV_mvista-cgx ?= "${MV_KERNEL_TREE_SRCREV}"
 SRCPV_mvista-cgx ?= "${MV_KERNEL_TREE_SRCREV}"
 BRANCH_mvista-cgx ?= "${MV_KERNEL_TREE_BRANCH}"
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/linux-mvista:"
+
 SRC_URI = " \ 
            file://defconfig \
            ${MV_KERNEL_TREE};branch=${BRANCH};name=machine \

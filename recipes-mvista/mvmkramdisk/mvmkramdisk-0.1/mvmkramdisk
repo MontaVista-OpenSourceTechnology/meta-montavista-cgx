@@ -1,0 +1,414 @@
+#!/bin/sh -e
+#
+#    mvmkramdisk - An initrd generation tool for MontaVista Linux
+#    Copyright (C) 2010  Corey Minyard
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 51 Franklin Street, Fifth Floor,
+#      Boston, MA  02110-1301  USA
+
+REQ_BIN="/usr/share/mvmkramdisk/required_binaries"
+REQ_MOD="/usr/share/mvmkramdisk/required_modules"
+REQ_FILE="/usr/share/mvmkramdisk/required_files"
+INIT_TMPL="/usr/share/mvmkramdisk/init_template"
+HOTPLUG="/usr/share/mvmkramdisk/hotplug"
+
+TMPFILE=/tmp/mkinitrd.$$.working
+TMPFILE2=/tmp/mkinitrd.$$.working2
+NEWTMPFILE=/tmp/mkinitrd.$$.new
+PROCFILE=/tmp/mkinitrd.$$.files
+BUILDDIR=/tmp/mkinitrd.$$
+TMPIMAGE=/tmp/mkinitrd.$$.image
+
+if test -d /lib64; then
+	libdir='lib64'
+else
+	libdir='lib'
+fi
+
+error=0
+
+remove_dot_dot() {
+	local v
+
+	v="$1"
+	while echo "${v}" | grep '\.\.' >/dev/null; do
+		v=`echo "$v" | sed 's/\/[^\/][^\/]*\/\.\.//'`
+	done
+	echo "$v"
+}
+
+process_tmp_file() {
+	while read bin target dummy; do
+		local bin target l name
+		if test -z "${bin}"; then
+			continue
+		fi
+		if echo "${bin}" | grep '^#' >/dev/null; then
+			# Ignore comments
+			continue
+		fi
+
+		if echo "${bin}" | grep '^(' >/dev/null; then
+			# Ignore libraries that are special, like linux-vdso
+			# and ld.so
+			continue
+		fi
+
+		if [ "${bin}" == "busybox" ]; then
+			# special handling here for busybox links
+			if [ "x${target}" == "x" ]; then
+				echo "Target for busybox missing" 1>&2
+				error=1
+				continue
+			fi
+			echo "  Processing ${bin} -> ${target}"
+			echo "${bin} ${target}" >>"${PROCFILE}"
+			continue
+		fi
+
+		bin=`echo "${bin}" | sed "s/%LIB%/${libdir}/"`
+
+		if ! test -r "${bin}"; then
+			echo "File ${bin} does not exist" 1>&2
+			error=1
+			continue
+		fi
+
+		if [ "x$target" = "x" ]; then
+			target=${bin}
+		fi
+
+		echo "  Processing ${bin} -> ${target}"
+		echo "${bin} ${target}" >>"${PROCFILE}"
+
+		# Chase down the shared libraries.  We don't want to copy
+		# whole files, in case we are using busybox or other linked
+		# type things.
+		while test -h "${bin}"; do
+			l=`ls -l $bin | sed 's/^.*-> //'`
+			if echo "${l}" | grep '^/' >/dev/null; then
+				# Link starts with /, absolute
+				bin="${l}"
+			else
+				# Link is relative
+				bin="`dirname $bin`/$l"
+				bin=`remove_dot_dot "${bin}"`
+			fi
+			echo "  Processing ${bin} -> ${bin}"
+			echo "${bin} ${bin}" >>"${PROCFILE}"
+		done
+
+		ldd "${bin}" | while read name p shlib dummy; do
+			# NOTE: In pipe scope, can't assign global variables.
+
+			if test "x${name}" = "x"; then
+				continue
+			fi
+
+			case "${name}" in
+			"linux-gate.so.1")
+				# An "internal" library, ignore it.
+				continue
+				;;
+
+			static)
+				# Statically linked
+				continue
+				;;
+
+			not)
+				# not an executable
+				continue
+				;;
+
+			esac
+			echo "$shlib" >>"${NEWTMPFILE}"
+		done
+	done <"${TMPFILE}"
+
+	if test -r "${NEWTMPFILE}"; then
+		cat "${NEWTMPFILE}" | sort | uniq >"${TMPFILE}"
+		rm -f "${NEWTMPFILE}"
+	else
+		rm -f "${TMPFILE}"
+	fi
+}
+
+make_base() {
+	cp ${REQ_BIN} ${TMPFILE}
+	touch ${PROCFILE}
+	rm -f ${NEWTMPFILE}
+	while test -r "${TMPFILE}"; do
+		process_tmp_file
+	done
+	if test "$error" = "1"; then
+		echo "Got an error processing the files, giving up" 1>&2
+		rm -f "${PROCFILE}"
+		exit 1
+	fi
+	cat "${PROCFILE}" | sort | uniq >"${TMPFILE}"
+	mv "${TMPFILE}" "${PROCFILE}"
+
+	echo "Now copying files"
+	rm -rf ${BUILDDIR}
+	mkdir ${BUILDDIR}
+	while read source target; do
+		mkdir -p `dirname "${BUILDDIR}${target}"`
+		if [ "${source}" = "busybox" ]; then
+			ln -sf /bin/busybox "${BUILDDIR}${target}"
+		else
+			cp -a "${source}" "${BUILDDIR}${target}"
+		fi
+	done <"${PROCFILE}"
+
+	rm -f "${PROCFILE}"
+
+	while read filename; do
+                if test "x${filename}" == "x"; then
+                        continue
+                fi
+		dir=`dirname "${filename}"`
+		mkdir -p "${BUILDDIR}${dir}"
+		cp -a ${filename} "${BUILDDIR}${dir}"
+	done <"${REQ_FILE}"
+
+	mkdir -p ${BUILDDIR}/sbin
+	# Note that there is a race condition at boot time when booting
+	# on an initrd if /sbin/hotplug is available.  The hotplug script
+	# runs before the serial console is really ready, and it crashes
+	# in the serial code.  So name it something different and handle
+	# setting it up in the init script.
+        cp -a ${HOTPLUG} ${BUILDDIR}/sbin/hotplug.final
+
+	cp -a /${libdir}/ld-* ${BUILDDIR}/${libdir}
+
+	mkdir ${BUILDDIR}/dev
+	cp -a /dev/tty /dev/null /dev/console /dev/urandom ${BUILDDIR}/dev
+
+	mkdir ${BUILDDIR}/tmp
+	mkdir ${BUILDDIR}/etc
+	mkdir ${BUILDDIR}/proc
+	mkdir ${BUILDDIR}/sys
+	mkdir -p ${BUILDDIR}/var/lock
+
+	cp /etc/mdadm.conf ${BUILDDIR}/etc
+}
+
+get_deps() {
+	local l path
+        path=`echo $2 | cut -d "/" -f 5-`
+        l=`grep "^${path}:" "${1}" | if read v; then echo $v; fi`
+	if test -z "${l}"; then
+		echo "Module ${2} not in module dependencies ${1}" 1>&2
+		echo -n "ERROR"
+		return
+	fi
+	echo "${l}" | sed "s:^${2}\:::"
+}
+
+copy_kernel_modules() {
+	local deps moddep pf pfx pcount i j k
+	echo "Copying kernel modules needed for booting"
+
+	# If no modules, just don't process them.
+	pfx="/lib/modules/${1}/"
+	moddep="${pfx}modules.dep"
+	if ! test -r "$moddep"; then
+		echo "Module dependency file ${moddep} does not exist," 1>&2
+		echo "can't process modules" 1>&2
+		return 0
+	fi
+
+	# List of files for the ramdisk to modprobe
+	olist="${BUILDDIR}/modules"
+	echo -n "" >"${olist}"
+
+	#
+	# This is a rather complicated algorithm to extract all the modules
+	# required so that all dependencies are met properly and modprobe
+	# can load all the requested modules.
+	#
+	# It works by scanning the required modules and putting a list
+	# of them into ${TMPFILE}.  As it puts them into ${TMPFILE},
+	# it extracts the modules it depends on and puts them in
+	# ${NEWTMPFILE}.  The next run through the loop moves
+	# ${NEWTMPFILE} to ${PROCFILE} and processes ${PROCFILE}.  It
+	# does this until it doesn't find any dependencies.  So at the
+	# end you have ${TMPFILE} holding a list of modules to put
+	# onto the ramdisk.  Then run that through sort and uniq to
+	# remove duplicates and put that in ${PROCFILE}.
+	#
+
+	pf="${REQ_MOD}"
+	pcount=1
+	echo -n "" >"${TMPFILE}"
+	while test $pcount -gt 0; do
+		echo -n "" >"${NEWTMPFILE}"
+		pcount=0
+		while read i; do
+			# Shell expand
+			for j in ${pfx}${i}; do
+				if ! test -r "${j}"; then
+					continue
+				fi
+				if grep "^${j}\$" "${TMPFILE}" >/dev/null; then
+					# Already been processed
+					continue
+				fi
+
+				echo "  Processing ${j}"
+				if ! test -z "${pfx}"; then
+					# Only add the first level modules
+					# to the modprobe list.
+					basename "${j}" \
+						| sed 's/\.ko$//' >>${olist}
+				fi
+				echo "${j}" >>"${TMPFILE}"
+				deps=`get_deps "${moddep}" "${j}"`
+				if test "${deps}" = "ERROR"; then
+					error=1
+				else
+					for k in ${deps}; do
+						echo "$k" >>"${NEWTMPFILE}"
+						pcount=`expr $pcount + 1`
+					done
+				fi
+			done
+		done <"${pf}"
+		mv "${NEWTMPFILE}" "${PROCFILE}"
+		pf="${PROCFILE}"
+		# Filenames now have the full prefix, no need for this any more
+		pfx=""
+	done
+	cat "${TMPFILE}" | sort | uniq >"${PROCFILE}"
+	rm "${TMPFILE}"
+
+	# Copy the files to the ramdisk image area
+	rm -rf "${BUILDDIR}"/lib/modules
+	cat "${PROCFILE}" | cpio -o | \
+		(cd "${BUILDDIR}"; cpio -id --no-absolute-filenames)
+	rm "${PROCFILE}"
+
+	# Now create modules.dep so modprobe will work
+	mkdir -p "${BUILDDIR}/lib/modules/${1}"
+	depmod -b "${BUILDDIR}" -e -F "/boot/System.map-${1}" "${1}"
+}
+
+# Copy the firmware files required for all modules from the previous
+# step
+copy_kernel_firmware()
+{
+        local ver modname fwfiles fname
+
+	# We can't pull firmware without modules.
+	moddep="${pfx}modules.dep"
+	if ! test -r "$moddep"; then
+		return 0
+	fi
+
+        ver="${1}"
+        rm -rf "${BUILDDIR}/lib/firmware"
+        while read modname; do
+                modinfo -k "${ver}" -F firmware "${modname}" | \
+                while read fwfiles; do
+                        find /lib/firmware -name "${fwfiles}" | \
+                        while read fname; do
+                                echo "Copying firmware: $fname"
+                                mkdir -p `dirname "${BUILDDIR}${fname}"`
+                                cp -a "${fname}" "${BUILDDIR}${fname}"
+                        done
+                done
+        done < "${BUILDDIR}/modules"
+}
+
+kernel_is_valid ()
+{
+	if test -f "$1" ; then
+		case "$1" in
+		grub*) return 1 ;; # grub info
+		README*)  return 1 ;; # documentation
+		esac
+	else
+		return 1
+	fi
+	return 0
+}
+
+gen_init()
+{
+	cp "${INIT_TMPL}" "${BUILDDIR}/init"
+	chmod +x "${BUILDDIR}/init"
+}
+
+if test -z "${1}"; then
+	echo "No kernel specified.  Enter the kernel version, or --all to" 1>&2
+	echo "build initrd for all kernels in /boot."
+	exit 1
+fi
+
+# First determine the list of kernels to process
+if test "x$1" == "x--all"; then
+	KERNELS=`for i in /boot/vmlinu[xz]-* /boot/bzImage-*; do
+		   if kernel_is_valid "$i"; then
+		     echo -n "$i ";
+		   fi
+		 done`
+else
+	KERNELS=""
+	for k in $*; do
+		if test -r "/boot/$k"; then
+			KERNELS="$KERNELS $k"
+		elif test -r "/boot/vmlinux-$k"; then
+			KERNELS="$KERNELS vmlinux-$k"
+		elif test -r "/boot/vmlinuz-$k"; then
+			KERNELS="$KERNELS vmlinuz-$k"
+		elif test -r "/boot/bzImage-$k"; then
+			KERNELS="$KERNELS bzImage-$k"
+		else
+			echo "Kernel for version $k does not exist in" 1>&2
+			echo "/boot, there must be either vmlinux-$k," 1>&2
+			echo "vmlinuz-$k, or bzImage-$k" 1>&2
+			error=1
+		fi
+	done
+fi
+
+if test "$error" = "1"; then
+	exit 1
+fi
+
+if test -z "${KERNELS}"; then
+	echo "No kernels to process, exiting" 1>&2
+	exit 1
+fi
+
+echo "Generating base for initrd"
+make_base
+
+for k in ${KERNELS}; do
+	echo "Setting up for kernel ${k}"
+	ver=`echo "$k" | sed 's/^[^0-9]*-//'`
+	copy_kernel_modules "${ver}"
+	copy_kernel_firmware "${ver}"
+	gen_init
+	cd "${BUILDDIR}"
+	rm -f ${TMPIMAGE}
+	find * | cpio --create --file="${TMPIMAGE}" --format=newc
+	gzip -c <"${TMPIMAGE}" >"/boot/initrd.img-${ver}"
+	rm -f ${TMPIMAGE}
+done
+
+rm -rf ${BUILDDIR}
+exit 0

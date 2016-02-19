@@ -1,0 +1,13 @@
+/bin/busybox
+busybox /bin/sh
+busybox /bin/ln
+busybox /bin/rm
+busybox /bin/mknod
+/bin/mount
+/bin/umount
+/sbin/modprobe
+/sbin/vgchange
+/sbin/mdadm
+/sbin/blkid
+/usr/bin/stat.coreutils /usr/bin/stat
+/%LIB%/udev/firmware

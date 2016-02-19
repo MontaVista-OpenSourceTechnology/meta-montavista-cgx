@@ -1,0 +1,51 @@
+diff -r c7a4ebd86b42 mvpartition/Partitioner.py
+--- a/mvpartition/Partitioner.py	Mon Jun 13 16:20:35 2011 -0500
++++ b/mvpartition/Partitioner.py	Thu Jun 23 17:31:26 2011 -0500
+@@ -2686,6 +2686,24 @@
+ 
+     return (info, extra)
+ 
++def read_from_file(fn):
++    l = ""
++    try:
++        f = open(fn)
++        try:
++            l = f.readline().strip()
++            pass
++        except:
++            pass
++        close(f)
++        pass
++    except:
++        pass
++    return l
++
++def is_a_disk(dev):
++    return read_from_file("/sys/block/" + dev + "/device/media") == "disk"
++
+ def _add_disks(p, input_fstab):
+     startup_errs = ""
+ 
+@@ -2708,6 +2726,12 @@
+             w = l.split()
+             if (w[2].startswith("sd") and not w[2].endswith(alldigits)):
+                 disks.append("/dev/" + w[2])
++            elif (w[2].startswith("hd") and not w[2].endswith(alldigits)):
++                # Make sure it is actually a disk
++                if (is_a_disk(w[2])):
++                    disks.append("/dev/" + w[2])
++                    pass
++                pass
+             elif (w[2].startswith("md") and ('p' not in w[2])):
+                 # Note that the "p" above is important, we need to ignore
+                 # RAID partitions and just get the main RAID devices.
+@@ -2850,6 +2874,9 @@
+             break
+         devname = w[0]
+         (pvol, rline) = p.findObjLine(devname)
++        if pvol is None:
++            startup_errs += "Unable to find LVM PV %s\n" % (devname,)
++            continue
+         if (len(w[1]) > 0):
+             vgdevname = "/dev/" + w[1]
+             vg = p.findObj(vgdevname)

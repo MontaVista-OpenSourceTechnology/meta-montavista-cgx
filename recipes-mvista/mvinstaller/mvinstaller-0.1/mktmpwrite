@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Make tmp writable by copying it to a temporary location, remounting
+# on a tmpfs, and copying back.
+
+echo "Mounting /proc"
+mount -t proc proc /proc
+
+echo "Mounting /tmp"
+mount -o mode=0777 -t tmpfs none /tmp
+
+echo "Copying /etc to make it writable"
+cp -a /etc /tmp
+mount -o mode=1777 -t tmpfs tmpfs /etc
+mv /tmp/etc/* /etc
+
+# Set the terminal type for the console...
+if grep 'console=ttyS' /proc/cmdline >/dev/null 2>&1; then
+	TERM=vt100
+	DEV=`cat /proc/cmdline | sed 's/^.*console=\(ttyS[0-9*]*\).*$/\1/'`
+else
+	TERM=linux
+	DEV=tty1
+fi
+SPEED=`stty speed`
+
+# Add some virtual consoles to init.  The installer runs on the
+# console device determined above.  It does result in splatter from
+# the OS getting into the user's display, though.
+sed -i 's/SUBSYSTEM/#SUBSYSTEM/' /etc/udev/rules.d/automount.rules
+sed -i "s/getty console/getty -n -l \/installer.py $SPEED $DEV $TERM/" /etc/inittab
+echo "t2:2345:respawn:/sbin/getty tty2 38400 linux" >>/etc/inittab
+echo "t3:2345:respawn:/sbin/getty tty3 38400 linux" >>/etc/inittab
+echo "t4:2345:respawn:/sbin/getty tty4 38400 linux" >>/etc/inittab
+
+# Tell init to re-read so we get the consoles.
+telinit q
+
+# HACK - Why isn't this there?
+ln -sf ../init.d/sysklogd.busybox /etc/rcS.d/S07sysklogd
+
+# Disable automouting for udev
+sed 's/^\(.*mount.sh.*\)$/#\1/' </etc/udev/rules.d/local.rules >/tmp/local.rules
+mv -f /tmp/local.rules /etc/udev/rules.d

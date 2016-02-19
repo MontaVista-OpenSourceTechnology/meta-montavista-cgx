@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Activate loopback interface because some network daemons need it.
+
+echo "ifup lo"
+ifconfig lo up

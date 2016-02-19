@@ -1,0 +1,37 @@
+diff -r bc3ab435b50b mvpartition/Partitioner.py
+--- a/mvpartition/Partitioner.py	Wed Oct 27 19:19:23 2010 -0500
++++ b/mvpartition/Partitioner.py	Fri Dec 10 17:00:15 2010 -0600
+@@ -2756,7 +2756,7 @@
+                 pass
+             elif (found):
+                 if (len(w) < 7):
+-                    break
++                    continue
+                 if (w[6].startswith("/dev/md/")):
+                     # In case /dev/md/x ends up in the raid detail
+                     dobj = p.findObj("/dev/md" + w[6].rsplit("/", 1)[1])
+@@ -2922,18 +2922,18 @@
+         errs = ""
+         if (input_fstab):
+             try:
+-                infstab = open(input_fstab)
++                infstab = open(input_fstab, "r")
+             except Exception, e:
+-                errs = "Unable to process fstab %s: %s" % (input_fstab, str(e))
++                errs = "Unable to open fstab %s: %s" % (input_fstab, str(e))
+                 pass
+             pass
++
++        self.linepos = 0
++        self.colpos = 0
++        errs += self.initInfo(infstab)
+         if (infstab):
+             infstab.close()
+             pass
+-
+-        self.linepos = 0
+-        self.colpos = 0
+-        errs += self.initInfo(infstab)
+         if (errs):
+             self.popupWin(errs)
+             pass

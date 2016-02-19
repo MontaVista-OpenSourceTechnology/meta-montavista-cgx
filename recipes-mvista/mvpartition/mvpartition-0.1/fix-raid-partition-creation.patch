@@ -1,0 +1,59 @@
+diff -r f3902e20f28b mvpartition/Partitioner.py
+--- a/mvpartition/Partitioner.py	Thu Mar 10 15:47:23 2011 -0600
++++ b/mvpartition/Partitioner.py	Thu Mar 10 16:39:01 2011 -0600
+@@ -1398,7 +1398,7 @@
+             _sizelen, self.addEditDone, o)
+         return
+     
+-    def partitionUpdatedHook(self, part, created):
++    def partitionUpdatedHook(self):
+         # Hook for special ties when a partitions is created.
+         return
+ 
+@@ -1484,6 +1484,8 @@
+                 pass
+             pass
+ 
++        self.partitionUpdatedHook()
++
+         # We used to have parted return the added partition id (which
+         # itself required a hack, since for some odd reason parted
+         # didn't do this by default) and use that to add the proper
+@@ -1524,7 +1526,7 @@
+         del self.partitions[i]
+         p.deleteLine(line + i + 1)
+         
+-        self.partitionUpdatedHook(part, created=False)
++        self.partitionUpdatedHook()
+ 
+         # Recalculate free space
+         self.freesects += part.numsects
+@@ -1818,8 +1820,8 @@
+         p.setSizeColumn(self, line, 2, self.sectstart)
+         return
+ 
+-    def partitionUpdatedHook(self, part, created):
+-        self.parent.partitionUpdatedHook(part, created)
++    def partitionUpdatedHook(self):
++        self.parent.partitionUpdatedHook()
+         return
+ 
+     def Command(self, p, c):
+@@ -1992,7 +1994,7 @@
+         PartitionOwner.reUnit(self, p, line)
+         return
+ 
+-    def partitionUpdatedHook(self, part, created):
++    def partitionUpdatedHook(self):
+         # For some reason parted doesn't tell the kernel about new partitions
+         # on md devices.  So force it.
+         _reread_partition_table(self.devname)
+@@ -3258,7 +3260,7 @@
+             self.units = self.units.allocNext()
+             self._reUnit()
+         elif (c == 'P'):
+-            for d in self.disks:
++            for d in self.disks + self.raids:
+                 try:
+                     _reread_partition_table(d)
+                 except CmdErr, e:

@@ -1,0 +1,71 @@
+#!/bin/sh
+#
+# A cheesy little hotplug script, just enough to get firmware loading
+# working on the ramdisk.
+
+# NOTE: You cannot do any IO to the console in this script, at least at the
+# very beginning.  The serial console driver is not ready the first time
+# this script runs.
+
+# All the mdadm calls race with each other at startup and mess things
+# up.  Use this to run them one at a time.
+mdlock() {
+	while ! mkdir /dev/.md.lock; do
+		sleep 1
+	done
+}
+mdunlock() {
+	rm -rf /dev/.md.lock
+}
+
+if test -d /lib64; then
+	libdir='lib64'
+else
+	libdir='lib'
+fi
+
+if ! test -d /sys/kernel; then
+	/bin/mount -t sysfs none /sys
+fi
+
+if test "x$1" == "xfirmware"; then
+	echo 1 > /sys/$DEVPATH/loading
+	/${libdir}/udev/firmware --firmware="${FIRMWARE}" --devpath=${DEVPATH}
+	echo 0 > /sys/$DEVPATH/loading
+	exit 0
+fi
+
+# Create device/remove nodes as necessary
+if test "x${SUBSYSTEM}" == "xblock"; then
+	devnode="/dev/${DEVNAME}"
+	if test "x${ACTION}" == "xadd"; then
+		/bin/mknod -m 0600 "${devnode}" b ${MAJOR} ${MINOR}
+	elif test "x${ACTION}" == "xremove"; then
+		/bin/rm "${devnode}"
+	fi
+fi
+
+# Auto-start MD arrays as they come in.
+if test "x${SUBSYSTEM}" == "xblock" -a "x${ACTION}" == "xadd"; then
+	case "${devnode}" in
+	/dev/md*)
+		mdlock
+		/sbin/mdadm --run "${devnode}"
+		mdunlock
+		;;
+	esac
+fi
+
+# Auto-assemble MD arrays as they come in.
+if test "x${SUBSYSTEM}" == "xblock" -a \
+	\( "x${ACTION}" == "xadd" -o "x${ACTION}" == "xchange" \)
+then
+	eval `/sbin/blkid -o udev -p "${devnode}"`
+	if test "x${ID_FS_TYPE}" == "xlinux_raid_member"; then
+		mdlock
+		/sbin/mdadm --incremental "${devnode}"
+		mdunlock
+	fi
+fi
+
+exit 0

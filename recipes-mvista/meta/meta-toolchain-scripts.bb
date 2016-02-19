@@ -5,6 +5,8 @@ ALLOW_EMPTY_${PN} = "1"
 PR = "r5"
 
 inherit toolchain-scripts
+DEPENDS += "external-mvl-toolchain"
+
 FILES_${PN} = "${includedir}/sdk/"
 python do_external_sdk_files() {
     pn = d.getVar('PN', True)

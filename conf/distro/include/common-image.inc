@@ -52,3 +52,7 @@ PACKAGECONFIG_pn-strongswan = "charon curl gmp openssl stroke sqlite3 \
 EXTRA_OEMAKE_pn-nmap_append = "PYTHON=/usr/bin/python"
 
 CFLAGS_pn-cacao-initial-native_append = " -fno-strict-aliasing "
+
+PREFERRED_VERSION_python-sqlalchemy = "1.0.8"
+PREFERRED_VERSION_python-greenlet = "0.4.7"
+

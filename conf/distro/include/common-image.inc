@@ -21,6 +21,33 @@ RDEPENDS_packagegroup-tpm_remove = "kernel-module-tpm-nsc"
 RDEPENDS_packagegroup-tpm_remove = "kernel-module-tpm-atmel"
 RDEPENDS_packagegroup-tpm_remove = "kernel-module-tpm-infineon"
 
+# Meta measured bbappend breaks strongswan package config
+MEASURED_STRONGSWAN = " \
+    aikgen \
+    imc-test \
+    imv-test \
+    imc-scanner \
+    imv-scanner \
+    imc-os \
+    imv-os \
+    imc-attestation \
+    imv-attestation \
+    imc-swid \
+    tnc-ifmap \
+    tnc-imc \
+    tnc-imv \
+    tnc-pdp \
+    tnccs-11 \
+    tnccs-20 \
+    tnccs-dynamic \
+    tss-trousers \
+"
+PACKAGECONFIG_pn-strongswan = "charon curl gmp openssl stroke sqlite3 \
+                               ${@base_contains('DISTRO_FEATURES', 'systemd', 'systemd-charon', '', d)} \
+                               ${@base_contains('DISTRO_FEATURES', 'ldap', 'ldap', '', d)} \
+                               ${@bb.utils.contains("BBFILE_COLLECTIONS", "measured", "${MEASURED_STRONGSWAN}", "", d)} \
+"
+
 # Fix for meta-security
 EXTRA_OEMAKE_pn-nmap_append = "PYTHON=/usr/bin/python"
 

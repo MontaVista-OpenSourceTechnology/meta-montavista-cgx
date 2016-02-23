@@ -51,3 +51,4 @@ do_install () {
 
 
 addtask external_sdk_files before do_install
+do_external_sdk_files[depends] += "external-mvl-toolchain:do_populate_sysroot"

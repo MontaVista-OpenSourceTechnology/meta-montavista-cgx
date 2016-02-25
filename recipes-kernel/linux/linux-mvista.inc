@@ -36,11 +36,13 @@ do_install_prepend () {
             kernel_arch="${TARGET_CC_ARCH}"
         fi
         echo 'export ARCH="${@map_kernel_arch(d.getVar("TARGET_ARCH", 1), d)}"' > $kvnsh
+        echo 'export TARGET_ARCH="${TARGET_ARCH}"' >> $kvnsh
         echo "export KCFLAGS=\"$kernel_arch\"" >> $kvnsh
         echo 'export CROSS_COMPILE="${TARGET_PREFIX}"' >> $kvnsh
         echo 'export KERNEL_CC="${KERNEL_CC}"' >> $kvnsh
         echo 'export KERNEL_LD="${KERNEL_LD}"' >> $kvnsh
         echo 'export KERNEL_AR="${KERNEL_AR}"' >> $kvnsh
+        echo 'export OBJCOPY="${OBJCOPY}"' >> $kvnsh
         echo 'export KERNEL_IMAGETYPE="${KERNEL_IMAGETYPE}"' >> $kvnsh
         echo 'export KERNEL_OUTPUT="${KERNEL_OUTPUT}"' >> $kvnsh
         echo 'export KMACHINE="${MACHINE}"' >> $kvnsh

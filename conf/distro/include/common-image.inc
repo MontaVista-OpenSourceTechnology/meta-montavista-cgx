@@ -17,6 +17,18 @@ SRCREV_pn-pyelftools-native = "546e692243895888cb2a6201b3bc263fd2cbc1ad"
 LIC_FILES_CHKSUM_pn-pyelftools = "file://LICENSE;md5=5ce2a2b07fca326bc7c146d10105ccfc"
 LIC_FILES_CHKSUM_pn-pyelftools-native = "file://LICENSE;md5=5ce2a2b07fca326bc7c146d10105ccfc"
 
+#From meta-selinux, make sure BB_NO_NETWORK continues to work.
+SRCREV_refpolicy_pn-refpolicy-mls = "a2de14b61fb240b499fe2760c3d4bcb50449e68a"
+SRCREV_refpolicy-contrib_pn-refpolicy-mls = "322064c551d1a82248bdd7217df4c56ea5401d73"
+SRCREV_refpolicy_pn-refpolicy-standard = "a2de14b61fb240b499fe2760c3d4bcb50449e68a"
+SRCREV_refpolicy-contrib_pn-refpolicy-standard = "322064c551d1a82248bdd7217df4c56ea5401d73"
+SRCREV_refpolicy_pn-refpolicy-mcs = "a2de14b61fb240b499fe2760c3d4bcb50449e68a"
+SRCREV_refpolicy-contrib_pn-refpolicy-mcs = "322064c551d1a82248bdd7217df4c56ea5401d73"
+SRCREV_refpolicy_pn-refpolicy-minimum = "a2de14b61fb240b499fe2760c3d4bcb50449e68a"
+SRCREV_refpolicy-contrib_pn-refpolicy-minimum = "322064c551d1a82248bdd7217df4c56ea5401d73"
+SRCREV_refpolicy_pn-refpolicy-targeted = "a2de14b61fb240b499fe2760c3d4bcb50449e68a"
+SRCREV_refpolicy-contrib_pn-refpolicy-targeted = "322064c551d1a82248bdd7217df4c56ea5401d73"
+
 RDEPENDS_packagegroup-tpm_remove = "kernel-module-tpm-nsc"
 RDEPENDS_packagegroup-tpm_remove = "kernel-module-tpm-atmel"
 RDEPENDS_packagegroup-tpm_remove = "kernel-module-tpm-infineon"

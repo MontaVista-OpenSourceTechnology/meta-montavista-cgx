@@ -167,6 +167,11 @@ do_install() {
      [ -e "${D}/usr/lib/libpthread.so" ] && sed -i -e "s# /lib# ../../lib#g" -e "s# /usr/lib# ../../usr/lib#g" ${D}/usr/lib/libpthread.so
      # Don't include broken symbolic links
      chmod 755 `find -L ${D}/lib*/ld*.so* -not -type l`
+     localeinclude="$(ls -d ${D}/${includedir}/glibc-locale-internal-*)"
+     if [ "$localeinclude" != "${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}" ] ; then
+           rm -rf ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
+           mv $localeinclude ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
+     fi 
 }
 oe_multilib_header () {
 :

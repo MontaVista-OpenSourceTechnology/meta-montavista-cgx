@@ -9,6 +9,7 @@ RDEPENDS_kernel-modules += "kernel-map kmod"
 RDEPENDS_kernel-image += "kernel-map"
 RDEPENDS_kernel += "kernel-image"
 FILES_kernel-image += "/boot/vmlinuz-*"
+BB_GENERATE_MIRROR_TARBALLS = "0"
 
 python __anonymous() {
     devicetree = d.getVar("KERNEL_DEVICETREE", True) or ''

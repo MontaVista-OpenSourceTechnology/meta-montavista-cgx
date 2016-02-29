@@ -45,6 +45,7 @@ SRCREV="${MV_KERNEL_TREE_BRANCH}"
 KORG_ARCHIVE_COMPRESSION ?= "bz2"
 SRC_URI = "${MV_KERNEL_TREE};branch=${MV_KERNEL_TREE_BRANCH}"
 S = "${WORKDIR}/git"
+BB_GENERATE_MIRROR_TARBALLS = "0"
 
 do_configure() {
 	oe_runmake allnoconfig

@@ -28,6 +28,24 @@ do_install_append () {
      rm ${STAGING_KERNEL_DIR}/.config
 }
 
+DEVSHELL_STARTDIR = "${B}"
+do_devshell[depends] += "${PN}:do_kernel_postconfigure"
+
+def fix_up_pkgconfig (d):
+    d.setVar("PKG_CONFIG_DIR", "%s/%s/pkgconfig" % (d.getVar("STAGING_DIR_NATIVE", True), d.getVar("libdir_native", True)))
+    oeterm_exports = d.getVar("OE_TERMINAL_EXPORTS", True)
+    oeterm_exports += " PKG_CONFIG_DIR PKG_CONFIG_PATH PKG_CONFIG_LIBDIR PKG_CONFIG_SYSROOT_DIR " 
+    oeterm_exports += " KERNEL_CC KERNEL_LD KENREL_AR KERNEL_EXTRA_ARGS KERNEL_IMAGETYPE CROSS_COMPILE" 
+    d.setVar("OE_TERMINAL_EXPORTS", oeterm_exports)
+
+python do_devshell_prepend () {
+    d.delVarFlag("do_devshell", "manualfakeroot")
+    fix_up_pkgconfig (d)
+}
+python do_menuconfig_prepend () {
+    fix_up_pkgconfig (d)
+}
+
 do_install_prepend () {
         install -d ${STAGING_KERNEL_DIR}
         install -d ${D}/boot

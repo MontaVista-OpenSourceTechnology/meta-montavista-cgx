@@ -126,8 +126,21 @@ def emit_kernel_shellscript(fn, d):
     kcflags = d.getVar("TARGET_CC_KERNEL_ARCH", 1)
     if not kcflags:
         kcflags = d.getVar("TARGET_CC_ARCH", 1) or ""
-    f.write('export KCFLAGS="%s"\n' % kcflags.strip())
-
+    kernelcc = d.getVar("KERNEL_CC", 1) or ""
+    kernelld = d.getVar("KERNEL_LD", 1) or ""
+    kernelar = d.getVar("KERNEL_AR", 1) or ""
+    kobjdump = d.getVar("OBJCOPY", 1) or ""
+    kcrosscompile= d.getVar("CROSS_COMPILE", 1) or ""
+    kernelextra = d.getVar("KERNEL_EXTRA_ARGS", 1) or ""
+    kerneltarget = d.getVar("KERNEL_IMAGETYPE", 1) or ""
+    f.write('export KERNEL_CC="%s"\n' % kernelcc)
+    f.write('export KERNEL_LD="%s"\n' % kernelld)
+    f.write('export KERNEL_EXTRA_ARGS="%s"\n' % kernelextra)
+    f.write('export KERNEL_IMAGETYPE="%s"\n' % kerneltarget)
+    f.write('export KERNEL_AR="%s"\n' % kernelar)
+    f.write('export CROSS_COMPILE="%s"\n' % kcrosscompile)
+    f.write('export OBJDUMP="%s"\n' % kobjdump)
+    
     f.write('export LDFLAGS=\n')
 
     target_prefix = d.getVar("TARGET_PREFIX", 1) or ""
@@ -152,7 +165,7 @@ python emit_shellscript_eh () {
     from bb.event import ConfigParsed, RecipeParsed
     var=None
 
-    if isinstance(e, ConfigParsed):
+    if isinstance(e, RecipeParsed) and bb.data.inherits_class('kernel',e.data):
        var="EMIT_SHELLSCRIPT_KFN"
        script=emit_kernel_shellscript
 

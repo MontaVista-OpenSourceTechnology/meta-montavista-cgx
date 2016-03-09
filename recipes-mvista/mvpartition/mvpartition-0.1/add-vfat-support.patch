@@ -1,0 +1,21 @@
+diff -r 24b06c2330c7 mvpartition/Partitioner.py
+--- a/mvpartition/Partitioner.py	Thu Mar 10 16:43:36 2011 -0600
++++ b/mvpartition/Partitioner.py	Mon Jun 13 16:19:12 2011 -0500
+@@ -332,7 +332,16 @@
+ 
+     pass
+ 
+-_fs_types = [ FSType(), Ext4FS(), Ext3FS(), Ext2FS(), XFSFS() ]
++class VFATFS(FSType):
++    name = "vfat"
++    file_str = "mkdosfs"
++    
++    def newInst(self):
++        return VFATFS()
++
++    pass
++
++_fs_types = [ FSType(), Ext4FS(), Ext3FS(), Ext2FS(), XFSFS(), VFATFS() ]
+ 
+ def _valid_filesystem(f):
+     for t in _fs_types[1:]:

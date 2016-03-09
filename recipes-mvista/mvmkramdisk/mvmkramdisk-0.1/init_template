@@ -1,0 +1,218 @@
+#!/bin/sh
+#
+#    mvmkramdisk - An initrd generation tool for MontaVista Linux
+#    Copyright (C) 2010  Corey Minyard
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 51 Franklin Street, Fifth Floor,
+#      Boston, MA  02110-1301  USA
+
+
+startswith() {
+	return echo "$2" | grep "^$1" >/dev/null
+}
+
+add_device_table() {
+	lvm="False"
+	case "$1" in
+	/dev/mapper/*)
+		# We need to re-do LVMs as they may move
+		lvm="True"
+		dev="$1"
+		;;
+	UUID=*)
+		eval "$1"
+		dev=`blkid -U ${UUID}`
+		;;
+	*)
+		# Everything else should be fine
+		dev="$1"
+		return
+	esac
+
+	if [ "${lvm}" != "True" ]; then
+		if grep "${dev}" /new-root/etc/device_table >/dev/null 2>&1;
+		then
+			# No need to do anything, it's already there
+			return
+		fi
+	fi
+
+	if test ${ro} = "ro"; then
+		mount -o remount,rw /new-root
+	fi
+
+	# Avoid multiple directory create entries.
+	sed -i "\?^/dev/mapper?d" /new-root/etc/device_table
+
+	if [ "${lvm}" == "True" ]; then
+		# We need remove this from the device table first.
+		sed -i "\?^${dev}?d" /new-root/etc/device_table
+
+		echo "/dev/mapper	d	755	0	0	-	-	-	-	-" >>/new-root/etc/device_table
+	fi
+
+	PERM=`/usr/bin/stat -c "%a" $dev`
+	MAJOR=`ls -l ${dev} | /bin/awk -F ' ' '{ print $5 }' | sed 's/,//'`
+	MINOR=`ls -l ${dev} | /bin/awk -F ' ' '{ print $6 }'`
+	echo "${dev}	b	${PERM}	0	0	${MAJOR}	${MINOR}	-	-	-" >>/new-root/etc/device_table
+	if test ${ro} = "ro"; then
+		mount -o remount,ro /new-root
+	fi
+}
+
+# A symlink takes a whole block on the initrd image, and this takes a few bytes
+ln -sf busybox /bin/mkdir
+ln -sf busybox /bin/true
+ln -sf busybox /bin/false
+ln -sf busybox /bin/cp
+ln -sf busybox /bin/ln
+ln -sf busybox /bin/cat
+ln -sf busybox /bin/cut
+ln -sf busybox /bin/awk
+ln -sf busybox /bin/ls
+ln -sf busybox /bin/ln
+ln -sf busybox /bin/sed
+ln -sf busybox /bin/pwd
+ln -sf busybox /bin/grep
+ln -sf busybox /bin/sleep
+ln -sf vgchange /sbin/vgscan
+mkdir -p /usr/bin
+ln -sf ../../bin/busybox /usr/bin/expr
+mkdir -p /sbin
+ln -sf ../bin/busybox /sbin/switch_root
+
+mount -t proc none /proc
+if ! test -d /sys/kernel; then
+	mount -t sysfs none /sys
+fi
+
+# Activate hotplug processing.
+echo "/sbin/hotplug.final" >/proc/sys/kernel/hotplug
+
+# Create any device nodes for devices that already exist.
+while read maj min name read; do
+        mknod /dev/${name} b ${maj} ${min}
+done </proc/diskstats
+
+# Start any raid devices that now exist.
+mdadm --assemble --scan
+
+# Make sure modules exists and process it.
+cat </dev/null >>/modules
+while read i; do
+	modprobe "${i}"
+done </modules
+
+init=
+root=
+ro=
+for w in `cat /proc/cmdline`; do
+	case "$w" in
+	init=*)
+		init=`echo "$w" | sed 's/^init=//'`
+		;;
+
+	root=*)
+		root=`echo "$w" | sed 's/^root=//'`
+		;;
+
+	ro)
+		ro="ro"
+		;;
+
+	rw)
+		ro="rw"
+		;;
+	esac
+done
+
+if test -z "${root}"; then
+	echo "No root specified on the kernel command line, giving up"
+	exec /bin/sh
+fi
+
+mkdir /new-root
+
+# Wait up to 10 minutes for the root device to appear.
+timeout=`expr 600 / 5`
+while true; do
+    # md changes and device creation are handled by hotplug, just scan
+    # for vg changes here.
+    /sbin/vgscan
+    /sbin/vgchange --available y --noudevsync 
+
+    if ! mount -o ${ro} "${root}" /new-root; then
+	if test ${timeout} -lt 0; then
+	    echo "Unable to mount ${root}, giving up"
+	    exec /bin/sh
+	fi
+	echo "Unable to mount ${root}, waiting 5 seconds and retrying"
+	timeout=`expr ${timeout} - 5`
+	sleep 5
+    else
+	break
+    fi
+done
+
+# Let everything settle a bit
+sleep 2
+
+# Make sure /dev/console is in on the new root
+if ! test -e /new-root/dev/console; then
+	if test ${ro} = "ro"; then
+		mount -o remount,rw /new-root
+	fi
+	mknod -m 600 /new-root/dev/console c 5 1
+	if test ${ro} = "ro"; then
+		mount -o remount,ro /new-root
+	fi
+fi
+
+# Make sure the root device is in /etc/devices, too, so it will be
+# properly created.
+add_device_table ${root}
+
+if test -z "${init}"; then
+	for i in /sbin/init /etc/init /bin/init /bin/sh; do
+		# Some things, like /sbin/init, get linked to /sbin, not
+		# relative, so the -h test below covers that.
+		if test -x "/new-root${i}" -o -h "/new-root${i}"; then
+			init="${i}"
+			break
+		fi
+	done
+	if test -z "${init}"; then
+		echo "Could not find a default init process on the new"
+		echo "filesystem, giving up"
+		exec /bin/sh
+	fi
+elif ! test -x "/new-root${init}"; then
+	echo "${init} does not exist on the new filesystem, giving up"
+	exec /bin/sh
+elif test -d "/new-root${init}"; then
+	echo "${init} is on the new filesystem but a directory, giving up"
+	exec /bin/sh
+fi
+
+# Disable hotplug and let udev take over in the new root fs.
+echo "" >/proc/sys/kernel/hotplug
+
+umount /proc
+umount /sys
+
+exec switch_root -c /dev/console /new-root ${init} $@
+
+echo "switch_root failed, giving up"
+exec /bin/sh

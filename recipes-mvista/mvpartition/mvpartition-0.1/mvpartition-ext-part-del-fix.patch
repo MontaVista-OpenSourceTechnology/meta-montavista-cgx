@@ -1,0 +1,14 @@
+diff -r b05eceb6b3f0 mvpartition/Partitioner.py
+--- a/mvpartition/Partitioner.py	Tue Sep 21 10:40:19 2010 -0500
++++ b/mvpartition/Partitioner.py	Thu Oct 14 17:47:53 2010 -0500
+@@ -1519,7 +1519,9 @@
+             pass
+ 
+         # Remove it from whatever it belongs to.
+-        part.dest.shutdown(p)
++        if (part.dest):
++            part.dest.shutdown(p)
++            pass
+ 
+         line = p.lineOf(0, self)
+ 

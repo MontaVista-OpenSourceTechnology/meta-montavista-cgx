@@ -1,0 +1,12 @@
+--- mvmkramdisk/mvmkramdisk.orig	2014-03-19 22:18:14.416644283 +0530
++++ mvmkramdisk/mvmkramdisk	2014-03-19 22:18:33.688644648 +0530
+@@ -50,8 +50,8 @@
+ }
+ 
+ process_tmp_file() {
++	local bin target l name
+ 	while read bin target dummy; do
+-		local bin target l name
+ 		if test -z "${bin}"; then
+ 			continue
+ 		fi

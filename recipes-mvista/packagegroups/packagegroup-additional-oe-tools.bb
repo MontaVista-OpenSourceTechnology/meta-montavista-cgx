@@ -47,7 +47,8 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-virtualization \
 	packagegroup-oe-tools-profile-utilities \
 	"
-RDEPENDS_packagegroup-oe-tools-profile-utilities = "${VALGRIND}"
+RDEPENDS_packagegroup-oe-tools-profile-utilities = "${VALGRIND} \
+                                                    perf"
 
 VALGRIND = ""
 VALGRIND_x86-64 = "valgrind"

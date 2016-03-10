@@ -60,6 +60,8 @@ PACKAGECONFIG_pn-strongswan = "charon curl gmp openssl stroke sqlite3 \
                                ${@bb.utils.contains("BBFILE_COLLECTIONS", "measured", "${MEASURED_STRONGSWAN}", "", d)} \
 "
 
+PACKAGECONFIG_append_pn-gdb = " python "
+
 # Fix for meta-security
 EXTRA_OEMAKE_pn-nmap_append = "PYTHON=/usr/bin/python"
 

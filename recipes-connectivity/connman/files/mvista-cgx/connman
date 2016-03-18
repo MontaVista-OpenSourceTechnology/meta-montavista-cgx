@@ -27,7 +27,7 @@ while read dev mtpt fstype rest; do
 done
 
 do_start() {
-	EXTRA_PARAM=""
+	EXTRA_PARAM=" --nodnsproxy "
 	if test $nfsroot -eq 1 ; then
 	    NET_DEVS=`cat /proc/net/dev | sed -ne 's/^\([a-zA-Z0-9 ]*\):.*$/\1/p'`
 	    NET_ADDR=`cat /proc/cmdline | sed -ne 's/^.*ip=\([^ :]*\).*$/\1/p'`
@@ -45,13 +45,13 @@ do_start() {
 			fi
 		    done
 		    if [ ! -z "$iterfaces_to_skip" ]; then
-			EXTRA_PARAM="-I $iterfaces_to_skip"
+			EXTRA_PARAM=`echo $EXTRA_PARAM`" -I $iterfaces_to_skip"
 		    fi
 		else
 		    for i in $NET_DEVS; do
 			ADDR=`ifconfig $i | sed 's/addr://g' | sed -ne 's/^.*inet \([0-9.]*\) .*$/\1/p'`
 			if [ "$NET_ADDR" = "$ADDR" ]; then
-			    EXTRA_PARAM="-I $i"
+			    EXTRA_PARAM=`echo $EXTRA_PARAM`" -I $i"
 			    break
 			fi
 		    done

@@ -36,6 +36,11 @@ sysconf_cmd () {
 [ -f /etc/udev/udev.conf ] && . /etc/udev/udev.conf
 [ -f /etc/default/rcS ] && . /etc/default/rcS
 
+# Assume link to pts is a container
+# Set CONTAINER_OK in /etc/default/rcS to use in container
+[ -z "$CONTAINER_OK" -a "$(/usr/bin/dirname $(/usr/bin/readlink -f /dev/console))" = "/dev/pts" ] && exit 0
+
+
 kill_udevd () {
     pid=`pidof -x udevd`
     [ -n "$pid" ] && kill $pid

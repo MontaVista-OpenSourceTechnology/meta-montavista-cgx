@@ -3,7 +3,7 @@
 # Released under the MIT license (see LICENSE.MIT for the terms)
 #
 
-PR .= ".5"
+PR .= ".6"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
@@ -13,5 +13,5 @@ do_install_append () {
     # is created (via populate-volatile.sh) after udev script 
     # is executed. So, let udev create control files in non-volatile /run 
     # directory instead of /var/run.
-    sed -i 's:^udev_run="/var/run/udev":udev_run="/run":g' ${D}${sysconfdir}/udev/udev.conf
+    sed -i 's:^udev_run="/var/run/udev":udev_run="/run/udev":g' ${D}${sysconfdir}/udev/udev.conf
 }

@@ -335,3 +335,13 @@ python do_kernel_postconfigure() {
 kernel_reconfigure () {
    eval ${KERNEL_CONFIG_COMMAND}
 }
+
+do_make_scripts[depends] += "openssl-native:do_populate_sysroot"
+do_make_scripts_mvista-cgx() {
+        unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
+        make CC="${KERNEL_CC}" LD="${KERNEL_LD}" AR="${KERNEL_AR}" \
+                   -C ${STAGING_KERNEL_DIR} O=${STAGING_KERNEL_BUILDDIR} \
+                   HOSTCC='gcc -I${STAGING_INCDIR_NATIVE} -L${STAGING_DIR_NATIVE}/lib -Wl,-rpath,${STAGING_DIR_NATIVE}/lib' \
+                   scripts
+}
+

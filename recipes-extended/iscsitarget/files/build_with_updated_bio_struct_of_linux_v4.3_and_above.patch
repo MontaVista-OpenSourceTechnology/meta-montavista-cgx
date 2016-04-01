@@ -1,0 +1,46 @@
+diff -Naurp iscsitarget-1.4.20.3+svn502_org/kernel/block-io.c iscsitarget-1.4.20.3+svn502/kernel/block-io.c
+--- iscsitarget-1.4.20.3+svn502_org/kernel/block-io.c	2016-04-01 09:07:12.891810059 +0530
++++ iscsitarget-1.4.20.3+svn502/kernel/block-io.c	2016-04-01 09:15:59.076469313 +0530
+@@ -33,7 +33,11 @@ static void blockio_bio_endio(struct bio
+ {
+ 	struct tio_work *tio_work = bio->bi_private;
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 3, 0)
++	error = bio->bi_error ? -EIO : error;
++#else
+ 	error = test_bit(BIO_UPTODATE, &bio->bi_flags) ? error : -EIO;
++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 3, 0) */	
+ 
+ 	if (error)
+ 		atomic_set(&tio_work->error, error);
+@@ -61,6 +65,10 @@ blockio_make_request(struct iet_volume *
+ 	u32 size = tio->size;
+ 	u32 tio_index = 0;
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 3, 0)
++	int err = 0;
++	loff_t ppos = tio->offset;	
++#else	
+ 	int max_pages = 1;
+ 	int err = 0;
+ 
+@@ -69,6 +77,7 @@ blockio_make_request(struct iet_volume *
+ 	/* Calculate max_pages for bio_alloc (memory saver) */
+ 	if (bdev_q)
+ 		max_pages = bio_get_nr_vecs(bio_data->bdev);
++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 3, 0) */
+ 
+ 	tio_work = kzalloc(sizeof (*tio_work), GFP_KERNEL);
+ 	if (!tio_work)
+@@ -80,7 +89,11 @@ blockio_make_request(struct iet_volume *
+ 
+ 	/* Main processing loop, allocate and fill all bios */
+ 	while (size && tio_index < tio->pg_cnt) {
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 3, 0)
++		bio = bio_alloc(GFP_KERNEL, BIO_MAX_PAGES);
++#else    		
+ 		bio = bio_alloc(GFP_KERNEL, min(max_pages, BIO_MAX_PAGES));
++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 3, 0) */		
+ 		if (!bio) {
+ 			err = -ENOMEM;
+ 			goto out;

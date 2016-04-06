@@ -123,6 +123,7 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	iscsitarget \
 	iscsi-initiator-utils \
 	ethtool \
+	portmap \
 	"
 
 RDEPENDS_packagegroups-oe-logmanagement ="\

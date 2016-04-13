@@ -36,6 +36,7 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-console-utilities \
 	packagegroups-oe-networkmanagement \
 	packagegroups-oe-logmanagement \
+	packagegroup-core-ssh-openssh \
 	packagegroups-oe-ftpserver \
 	packagegroups-oe-ftpclient \
 	packagegroups-oe-mailclient \

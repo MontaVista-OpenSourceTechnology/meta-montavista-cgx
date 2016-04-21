@@ -105,7 +105,6 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	vim \
 	cdrkit \
 	glibc-scripts \
-	kexec-tools \
         "
 
 

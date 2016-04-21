@@ -104,6 +104,7 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	bootcycle \
 	vim \
 	cdrkit \
+	glibc-scripts \
         "
 
 

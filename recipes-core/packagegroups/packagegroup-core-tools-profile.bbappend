@@ -1,7 +1,16 @@
 LTTNGUST_mips = "lttng2-ust"
 PR .= ".1"
 SYSTEMTAP=""
-VALGRIND=""
+
+VALGRIND = ""
+VALGRIND_x86-64 = "valgrind"
+VALGRIND_x86-generic-64 = "valgrind"
+VALGRIND_i686 = "valgrind"
+VALGRIND_mips = "valgrind"
+VALGRIND_powerpc = "valgrind"
+VALGRIND_powerpc64 = "valgrind"
+VALGRIND_armv7a = "valgrind"
+
 PROFILETOOLS = "\
     powertop \
     latencytop \

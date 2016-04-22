@@ -27,7 +27,6 @@ PACKAGES = "\
         packagegroup-oe-debug  \
 	packagegroup-oe-webserver \
         packagegroup-oe-virtualization  \
-	packagegroup-oe-tools-profile-utilities \
 	"
 RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-filesystemutilities \
@@ -46,19 +45,8 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
         packagegroup-oe-debug \
 	packagegroup-oe-webserver \
 	packagegroup-oe-virtualization \
-	packagegroup-oe-tools-profile-utilities \
+	packagegroup-core-tools-profile \
 	"
-RDEPENDS_packagegroup-oe-tools-profile-utilities = "${VALGRIND} \
-                                                    perf"
-
-VALGRIND = ""
-VALGRIND_x86-64 = "valgrind"
-VALGRIND_x86-generic-64 = "valgrind"
-VALGRIND_i686 = "valgrind"
-VALGRIND_mips = "valgrind"
-VALGRIND_powerpc = "valgrind"
-VALGRIND_powerpc64 = "valgrind"
-VALGRIND_armv7a = "valgrind"
 
 RDEPENDS_packagegroup-oe-virtualization = " \
 	libvirt \

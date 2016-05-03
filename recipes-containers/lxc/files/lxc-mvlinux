@@ -652,7 +652,7 @@ create_container() {
 	echo "    ${TBRSETUPFILE}"
     fi
     echo "    # Create container using the config"
-    echo "    lxc-create -n ${NAME} -f ${TCONFFILE}"
+    echo "    lxc-create -n ${NAME} -f ${TCONFFILE} -t /bin/true"
     echo "    # Launch the container"
     echo "    lxc-start -n ${NAME}"
 }

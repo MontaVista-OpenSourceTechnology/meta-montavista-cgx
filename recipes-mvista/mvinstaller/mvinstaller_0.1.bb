@@ -16,7 +16,6 @@ RDEPENDS_${PN} = "grub efibootmgr python python-readline \
                 mdadm \
                 lvm2 \
                 e2fsprogs e2fsprogs-e2fsck e2fsprogs-mke2fs e2fsprogs-tune2fs \
-                xfsprogs \
                 dosfstools \
                 "
 SRC_URI = "file://mktmpwrite \

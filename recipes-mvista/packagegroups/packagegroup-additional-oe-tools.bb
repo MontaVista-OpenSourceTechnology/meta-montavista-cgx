@@ -27,7 +27,9 @@ PACKAGES = "\
         packagegroup-oe-debug  \
 	packagegroup-oe-webserver \
         packagegroup-oe-virtualization  \
+        packagegroup-oe-database-utilities  \
 	"
+
 RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-filesystemutilities \
 	packagegroup-oe-hotplugutilities \
@@ -46,6 +48,7 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-webserver \
 	packagegroup-oe-virtualization \
 	packagegroup-core-tools-profile \
+	packagegroup-oe-database-utilities \
 	"
 
 RDEPENDS_packagegroup-oe-virtualization = " \
@@ -95,6 +98,15 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	glibc-scripts \
         "
 
+RDEPENDS_packagegroup-oe-database-utilities ="\
+	postgresql \
+	postgresql-client \
+	postgresql-timezone \
+	mariadb-setupdb \
+	mariadb-client \
+	mariadb-server \
+	libmysqlclient \
+"
 
 RDEPENDS_packagegroups-oe-networkmanagement ="\
 	ntp \

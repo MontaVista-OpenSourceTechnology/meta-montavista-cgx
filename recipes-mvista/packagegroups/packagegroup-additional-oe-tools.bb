@@ -139,6 +139,7 @@ RDEPENDS_packagegroups-oe-ftpserver ="\
 
 RDEPENDS_packagegroups-oe-ftpclient ="\
         netkit-ftp \
+        lftp \
 	"
 
 RDEPENDS_packagegroups-oe-mailclient ="\

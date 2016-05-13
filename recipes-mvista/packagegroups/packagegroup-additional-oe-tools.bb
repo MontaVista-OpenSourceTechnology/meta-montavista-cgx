@@ -53,6 +53,9 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 
 RDEPENDS_packagegroup-oe-virtualization = " \
 	libvirt \
+	libvirt-libvirtd \
+	libvirt-virsh \
+	libvirt-python \
 	"
 
 RDEPENDS_packagegroup-oe-filesystemutilities = "\

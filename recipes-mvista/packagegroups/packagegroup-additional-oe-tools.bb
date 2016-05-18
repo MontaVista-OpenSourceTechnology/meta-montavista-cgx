@@ -28,6 +28,7 @@ PACKAGES = "\
 	packagegroup-oe-webserver \
         packagegroup-oe-virtualization  \
         packagegroup-oe-database-utilities  \
+        packagegroup-oe-netprotocol-utilities \
 	"
 
 RDEPENDS_packagegroup-additional-oe-tools = "\
@@ -49,6 +50,7 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-virtualization \
 	packagegroup-core-tools-profile \
 	packagegroup-oe-database-utilities \
+        packagegroup-oe-netprotocol-utilities \
 	"
 
 RDEPENDS_packagegroup-oe-virtualization = " \
@@ -223,3 +225,6 @@ RDEPENDS_packagegroup-oe-debug = "\
 	libunwind \
 	"
 
+RDEPENDS_packagegroup-oe-netprotocol-utilities = " \
+	ptpd \
+"

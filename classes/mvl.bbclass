@@ -345,3 +345,26 @@ do_make_scripts_mvista-cgx() {
                    scripts
 }
 
+
+# KERNEL_CFG_LOCATION contains internal kernel fragment files (.cfg files)
+# EXTRA_CFG_DIRECTORY_LIST contains list of directories containing external 
+# kernel fragment files (.cfg files). The list is delimited by colon (:).
+EXTRA_KERNEL_CFG_DIRECTORY_LIST ?= ""
+KERNEL_CFG_LOCATION := "${@ bb.data.getVar("MVLBASE",d,1)}/recipes-kernel/linux/cfg-files/:${EXTRA_KERNEL_CFG_DIRECTORY_LIST}"
+
+# KERNEL_CFG_AVAILABLE - lists available internal kernel fragment files 
+# via getCfgs function
+def getCfgs(d):
+     import glob
+     cfgloc = d.getVar("KERNEL_CFG_LOCATION", True).split(":")
+     cfgs=""
+     for loc in cfgloc:
+         cfgs += " ".join(glob.glob(os.path.join(loc, "*.cfg"))) or ""
+	 cfgs += " "
+     normalizedCfgs = ""
+     for cfg in cfgs.split():
+         normalizedCfgs += os.path.basename(cfg) + " "
+     return normalizedCfgs
+
+KERNEL_CFG_AVAILABLE := "${@getCfgs(d)}"
+

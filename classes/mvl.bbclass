@@ -212,7 +212,13 @@ FEATURE_NAME ?="MontaVista SDK ${MACHINE}-${SDK_ARCH}"
 VENDOR_NAME ?= "MontaVista Software, LLC."
 ADK_VERSION ?= "2.0.0"
 MSD_REVISION ?= "${MSD_VERSION}"
- 
+
+fakeroot create_shar_append_mvista-cgx () {
+	# Make sure OECORE_NATIVE_SYSROOT doesn't read user
+	# defined SDK_PATH_NATIVE variable during SDK installation.
+	sed -i "s:^native_sysroot=\(.*\)OECORE_NATIVE_SYSROOT=\(.*\)|cut\(.*\):native_sysroot=\1OECORE_NATIVE_SYSROOT=\2| grep -v SDK_PATH_NATIVE | cut\3:g" ${T}/post_install_command ${SDK_DEPLOY}/${TOOLCHAIN_OUTPUTNAME}.sh
+}
+
 create_shar_append () {
 	SDK2P2=$(which sdk2p2)
 	if [ -n "$SDK2P2" ] ; then

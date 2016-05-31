@@ -26,6 +26,6 @@ LINUX_VERSION_EXTENSION ?= "-mvista"
 KCONFIG_MODE = "--alldefconfig"
 
 FILESEXTRAPATHS_prepend := "${KERNEL_CFG_LOCATION}:"
-SRC_URI += "${KERNEL_CFG_FILES}"
+SRC_URI += "${@appendKernelCfgFiles(d)}"
 
 COMPATIBLE_MACHINE = "qemuarm|qemuarm64|qemux86|qemuppc|qemumips|qemumips64|qemux86-64"

@@ -358,15 +358,15 @@ do_make_scripts_mvista-cgx() {
 EXTRA_KERNEL_CFG_DIRECTORY_LIST ?= ""
 KERNEL_CFG_LOCATION := "${@ bb.data.getVar("MVLBASE",d,1)}/recipes-kernel/linux/cfg-files/:${EXTRA_KERNEL_CFG_DIRECTORY_LIST}"
 
-# KERNEL_CFG_AVAILABLE - lists available internal kernel fragment files 
-# via getCfgs function
+# KERNEL_CFG_AVAILABLE - lists available internal and external kernel fragment 
+# files via getCfgs function
 def getCfgs(d):
      import glob
      cfgloc = d.getVar("KERNEL_CFG_LOCATION", True).split(":")
      cfgs=""
      for loc in cfgloc:
          cfgs += " ".join(glob.glob(os.path.join(loc, "*.cfg"))) or ""
-	 cfgs += " "
+         cfgs += " "
      normalizedCfgs = ""
      for cfg in cfgs.split():
          normalizedCfgs += os.path.basename(cfg) + " "
@@ -374,3 +374,10 @@ def getCfgs(d):
 
 KERNEL_CFG_AVAILABLE := "${@getCfgs(d)}"
 
+# Adds "file://" string to each entries of KERNEL_CFG_FILES
+def appendKernelCfgFiles(d):
+    cfgfiles = d.getVar("KERNEL_CFG_FILES", True).split()
+    appendedcfgfiles = ""
+    for iter in cfgfiles:
+        appendedcfgfiles += "file://" + iter + " "
+    return appendedcfgfiles

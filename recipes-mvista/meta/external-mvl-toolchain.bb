@@ -6,6 +6,9 @@ DEPENDS="external-mvl-toolchain-cross-${TARGET_ARCH}"
 ERROR_QA_remove = "instalned-vs-shipped"
 ERROR_QA_remove = "dev-deps"
 ERROR_QA_remove ="already-stripped"
+#Even after chowning all files some still are locally owned, however when
+#put in rpms the owner is converted to root.
+WARN_QA_remove ="host-user-contaminated"
 
 INHIBIT_DEFAULT_DEPS = "1"
 
@@ -17,6 +20,8 @@ HOST_SYS_aarch64be-32 = "${CSL_TARGET_SYS}"
 TARGET_SYS_aarch64be = "${CSL_TARGET_SYS}"
 HOST_SYS_aarch64be = "${CSL_TARGET_SYS}"
 INSANE_SKIP_${PN} +="already-stripped"
+INSANE_SKIP_linux-libc-headers += "dev-deps"
+
 LIBC_PROVIDES_LIST = " \
      virtual/libc \
      virtual/libintl \
@@ -219,6 +224,7 @@ do_install_append () {
      fi
      install -d ${D}/usr/lib
      touch ${D}/usr/lib/.empty
+     chown -R root.root ${D}
 }
 
 sysroot_stage_all_append () {
@@ -235,10 +241,12 @@ LIBC_PACKAGES_LIST += "${PN}-dbg catchsegv sln nscd ${PN}-utils"
 LIBC_PACKAGES_LIST += "${PN}-pic libcidn libmemusage libsegfault libsotruss ${PN} glibc-extra-nss glibc-thread-db" 
 
 LIBC_PACKAGES="${@base_conditional('EXTERNAL_GLIBC', '1', bb.data.expand('${LIBC_PACKAGES_LIST}',d), 'external-mvl-toolchain' , d)}"
-PACKAGES = "libgo libgo-dev libgo-staticdev libgcc libgcc-dev libssp libssp-dev libssp-staticdev \
+PACKAGES = "gcc-sanitizers libgo libgo-dev libgo-staticdev libgcc libgcc-dev libssp libssp-dev libssp-staticdev \
           libgomp libgomp-dev libgomp-staticdev libmudflap libmudflap-dev libmudflap-staticdev  \
           libstdc++ libstdc++-dev libstdc++-staticdev libatomic libatomic-dev libatomic-staticdev libgcov-dev \
-          libgfortran libstdc++-precompile-dev libg2c libg2c-dev libgfortran-dev  libasan libasan-dev libasan-staticdev ${LIBC_PACKAGES} \
+          libgfortran libstdc++-precompile-dev libg2c libg2c-dev libgfortran-dev libtsan libtsan-dev \
+          libtsan-staticdev libasan libasan-dev libasan-staticdev \
+          liblsan liblsan-dev liblsan-staticdev ${LIBC_PACKAGES} \
 	  libquadmath libquadmath-dev libquadmath-staticdev libubsan libubsan-dev" 
 
 do_install_locale_append () {
@@ -291,6 +299,7 @@ RPROVIDES_${PN}-thread-db += "glibc-thread-db glibc-thread-db"
 RDEPENDS_glibc-dbg += "${PN}-dbg glibc-dbg"
 RDEPENDS_glibc-staticdev += "${PN}-staticdev glibc-staticdev"
 RDEPENDS_linux-libc-headers += "linux-libc-headers-dev"
+RDEPENDS_nscd += "bash"
 ALLOW_EMPTY_external-mvl-toolchain = "1"
 #ALLOW_EMPTY_glibc-dbg = "1"
 ALLOW_EMPTY_linux-libc-headers = "1"
@@ -321,8 +330,30 @@ FILES_${PN} += "/etc/ld.so.conf"
 # include python debugging scripts
 FILES_${PN}-dbg += "\
     ${libdir}/libstdc++.so.*-gdb.py \
-    ${datadir}/gcc-${BINV}/python/libstdcxx \
+    ${datadir}/gcc-*/python/libstdcxx \
 "
+#GCC sanitizers
+RDEPENDS_libasan += "libstdc++"
+RDEPENDS_libubsan += "libstdc++"
+RDEPENDS_liblsan += "libstdc++"
+RDEPENDS_libtsan += "libstdc++"
+RDEPENDS_libasan-dev += "gcc-sanitizers"
+RDEPENDS_libubsan-dev += "gcc-sanitizers"
+RDEPENDS_liblsan-dev += "gcc-sanitizers"
+RDEPENDS_libtsan-dev += "gcc-sanitizers"
+RRECOMMENDS_gcc-sanitizers += "libasan libubsan"
+RRECOMMENDS_gcc-sanitizers_append_x86-64 = " liblsan libtsan"
+RRECOMMENDS_gcc-sanitizers_append_x86 = " liblsan"
+
+FILES_gcc-sanitizers = "${libdir}/libsanitizer.spec ${libdir}/gcc/${TARGET_SYS}/${BINV}/include/sanitizer/*.h"
+
+FILES_liblsan += "${libdir}/liblsan.so.* ${libdir}/sanitizer.spec"
+FILES_liblsan-dbg += "${libdir}/.debug/liblsan.so.*"
+FILES_liblsan-dev += "\
+    ${libdir}/liblsan.so \
+    ${libdir}/liblsan.la \
+"
+FILES_liblsan-staticdev += "${libdir}/liblsan.a"
 
 FILES_libssp = "${base_libdir}/libssp.so.* ${libdir}/libssp.so.*"
 FILES_libssp-dev = " \
@@ -343,6 +374,16 @@ FILES_libmudflap-dev = "\
 FILES_libasan = "${libdir}/libubsan*${SOLIBS} ${libdir}/libasan*${SOLIBS}"
 FILES_libasan-dev = "${libdir}/libubsan*${SOLIBSDEV} ${libdir}/libasan*${SOLIBSDEV}"
 FILES_libasan-staticdev = "${libdir}/libubsan*.a ${libdir}/libasan*.a"
+
+FILES_libtsan += "${libdir}/libtsan.so.*"
+FILES_libtsan-dbg += "${libdir}/.debug/libtsan.so.*"
+FILES_libtsan-dev += "\
+    ${libdir}/libtsan.so \
+    ${libdir}/libtsan.la \
+"
+FILES_libtsan-staticdev += "${libdir}/libtsan.a"
+
+
 FILES_libgomp = "${libdir}/libgomp*${SOLIBS}"
 FILES_libgomp-dev = "\
   ${libdir}/libgomp*${SOLIBSDEV} \

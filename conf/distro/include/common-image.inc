@@ -62,9 +62,6 @@ PACKAGECONFIG_pn-strongswan = "charon curl gmp openssl stroke sqlite3 \
 
 PACKAGECONFIG_append_pn-gdb = " python "
 
-# Fix for meta-security
-EXTRA_OEMAKE_pn-nmap_append = "PYTHON=/usr/bin/python"
-
 CFLAGS_pn-cacao-initial-native_append = " -fno-strict-aliasing "
 CFLAGS_pn-efivar-native_append = " -fno-strict-aliasing "
 

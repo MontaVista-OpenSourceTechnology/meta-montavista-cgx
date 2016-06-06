@@ -3,7 +3,7 @@
 # Released under the MIT license (see LICENSE.MIT for the terms)
 #
 
-PR .= ".7"
+PR .= ".8"
 
 # If host machine contains older perl (older than v5.10.0), then
 # dpkg build fails during configure. So add below lines
@@ -13,11 +13,16 @@ export PERL="${STAGING_BINDIR_NATIVE}/perl-native/perl"
 
 PACKAGES =+ "start-stop-daemon"
 FILES_start-stop-daemon = "${base_sbindir}/start-stop-daemon.${PN}"
+do_compile_append () {
+     oe_runmake -C scripts clean
+     oe_runmake -C scripts PERL=/usr/bin/perl 
+}
 
 do_install_append () {
-
      install -d ${D}${base_sbindir}
      mv ${D}${sbindir}//start-stop-daemon ${D}${base_sbindir}
+     rm -rf  ${D}${sbindir}
+     chown root.root ${D}${libdir}/*.a 
 }
 
 

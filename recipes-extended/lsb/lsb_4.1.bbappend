@@ -2,7 +2,7 @@
 #
 # Released under the MIT license (see LICENSE.MIT for the terms)
 #
-PR .= ".3"
+PR .= ".4"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/lsb:"
 
@@ -16,6 +16,9 @@ SRC_URI += "file://lsb_killproc \
 	    "
 RDEPENDS_${PN} += " lsbinitscripts"
 RDEPENDS_${PN}_virtclass-native = ""
+
+DEPENDS += "bash"
+RDEPENDS_${PN} += "bash"
 
 do_install_virtclass-native() {
 	oe_runmake install prefix=${D}${prefix} mandir=${D}/${datadir}/man/ DESTDIR=${D}

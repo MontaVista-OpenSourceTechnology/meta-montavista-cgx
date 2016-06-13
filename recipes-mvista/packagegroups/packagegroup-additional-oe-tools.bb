@@ -125,6 +125,8 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	openl2tp \
 	openldap \
 	quagga \
+	quagga-watchquagga \
+	quagga-ospfclient \
 	strongswan \
 	tunctl \
 	iscsitarget \

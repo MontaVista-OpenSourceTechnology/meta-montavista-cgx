@@ -47,7 +47,6 @@ python multilib_virtclass_handler_global_mvista-cgx () {
             for clsextend in clsextends:
                 provs = provs + " " + clsextend.map_variable("PROVIDES", setvar=False)
             e.data.setVar("PROVIDES", provs)
-
             # Process RPROVIDES
             origrprovs = rprovs = e.data.getVar("RPROVIDES", True) or ""
             for clsextend in clsextends:
@@ -63,10 +62,8 @@ python multilib_virtclass_handler_global_mvista-cgx () {
                 e.data.setVar("RPROVIDES_%s" % pkg, rprovs)
 }
 
-python multilib_virtclass_handler_mvista-cgx () {
-    if not isinstance(e, bb.event.RecipePreFinalise):
-        return
 
+python multilib_virtclass_handler_mvista-cgx () {
     cls = e.data.getVar("BBEXTENDCURR", True)
     variant = e.data.getVar("BBEXTENDVARIANT", True)
     if cls != "multilib" or not variant:
@@ -77,7 +74,7 @@ python multilib_virtclass_handler_mvista-cgx () {
     # There should only be one kernel in multilib configs
     # We also skip multilib setup for module packages.
     provides = (e.data.getVar("PROVIDES", True) or "").split()
-    if "virtual/kernel" in provides:
+    if "virtual/kernel" in provides :
         raise bb.parse.SkipPackage("We shouldn't have multilib variants for the kernel")
 
     save_var_name=e.data.getVar("MULTILIB_SAVE_VARNAME", True) or ""
@@ -86,9 +83,18 @@ python multilib_virtclass_handler_mvista-cgx () {
         if val:
             e.data.setVar(name + "_MULTILIB_ORIGINAL", val)
 
+    overrides = e.data.getVar("OVERRIDES", False)
+    pn = e.data.getVar("PN", False)
+    overrides = overrides.replace("pn-${PN}", "pn-${PN}:pn-" + pn)
+    e.data.setVar("OVERRIDES", overrides)
+
     if bb.data.inherits_class('image', e.data):
         e.data.setVar("MLPREFIX", variant + "-")
         e.data.setVar("PN", variant + "-" + e.data.getVar("PN", False))
+        e.data.setVar('SDKTARGETSYSROOT', e.data.getVar('SDKTARGETSYSROOT', True))
+        target_vendor = e.data.getVar("TARGET_VENDOR_" + "virtclass-multilib-" + variant, False)
+        if target_vendor:
+            e.data.setVar("TARGET_VENDOR", target_vendor)
         return
 
     if bb.data.inherits_class('cross-canadian', e.data):
@@ -115,15 +121,21 @@ python multilib_virtclass_handler_mvista-cgx () {
 
     e.data.setVar("MLPREFIX", variant + "-")
     e.data.setVar("PN", variant + "-" + e.data.getVar("PN", False))
-    e.data.setVar("SHLIBSDIR_virtclass-multilib-" + variant ,e.data.getVar("SHLIBSDIR", False) + "/" + variant)
     e.data.setVar("OVERRIDES", e.data.getVar("OVERRIDES", False) + override)
+
+    # Expand the WHITELISTs with multilib prefix
+    for whitelist in ["HOSTTOOLS_WHITELIST_GPL-3.0", "WHITELIST_GPL-3.0", "LGPLv2_WHITELIST_GPL-3.0"]:
+        pkgs = e.data.getVar(whitelist, True)
+        for pkg in pkgs.split():
+            pkgs += " " + variant + "-" + pkg
+        e.data.setVar(whitelist, pkgs)
 
     # DEFAULTTUNE can change TARGET_ARCH override so expand this now before update_data
     newtune = e.data.getVar("DEFAULTTUNE_" + "virtclass-multilib-" + variant, False)
     if newtune:
         e.data.setVar("DEFAULTTUNE", newtune)
+        e.data.setVar('DEFAULTTUNE_ML_%s' % variant, newtune)
 }
-
 SDKTARGETSYSROOT_mvista-cgx="${SDKPATH}/sysroots/${MACHINE}-montavista-linux"
 
 toolchain_create_sdk_env_script_append () {

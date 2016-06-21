@@ -19,6 +19,14 @@ python () {
        if configs:
           d.setVar('KERNEL_CONF_LIST',get_kernel_config_env(d)) 
           bb.build.addtask('do_kernel_postconfigure', 'do_compile', 'do_configure', d)
+    if bb.data.inherits_class("module",d) and d.getVar("MULTILIB_VARIANTS", True) != "":
+          errorQA = d.getVar("ERROR_QA", True)
+          errorList = errorQA.split()
+          if 'arch' in errorList:
+             errorList.remove('arch')
+             errorQA = " ".join(errorList)
+             d.setVar("ERROR_QA", errorQA)
+          
 }
 python multilib_virtclass_handler_global_mvista-cgx () {
     if not e.data:

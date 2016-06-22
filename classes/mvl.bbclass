@@ -351,6 +351,9 @@ do_make_scripts_mvista-cgx() {
                    scripts
 }
 
+# KERNEL_INTERNAL_CFG_LOCATION holds location of internal 
+# kernel fragment files (.cfg files)
+KERNEL_INTERNAL_CFG_LOCATION := "${@ bb.data.getVar("MVLBASE",d,1)}/recipes-kernel/linux/cfg-files/"
 
 # KERNEL_CFG_LOCATION contains internal kernel fragment files (.cfg files)
 # EXTRA_CFG_DIRECTORY_LIST contains list of directories containing external 

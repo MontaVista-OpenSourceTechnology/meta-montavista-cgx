@@ -29,6 +29,7 @@ PACKAGES = "\
         packagegroup-oe-virtualization  \
         packagegroup-oe-database-utilities  \
         packagegroup-oe-netprotocol-utilities \
+        packagegroup-oe-test-tools \
 	"
 
 RDEPENDS_packagegroup-additional-oe-tools = "\
@@ -51,6 +52,7 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-core-tools-profile \
 	packagegroup-oe-database-utilities \
         packagegroup-oe-netprotocol-utilities \
+        packagegroup-oe-test-tools \
 	"
 
 RDEPENDS_packagegroup-oe-virtualization = " \
@@ -230,4 +232,8 @@ RDEPENDS_packagegroup-oe-debug = "\
 
 RDEPENDS_packagegroup-oe-netprotocol-utilities = " \
 	ptpd \
+"
+
+RDEPENDS_packagegroup-oe-test-tools = " \
+        rt-tests \
 "

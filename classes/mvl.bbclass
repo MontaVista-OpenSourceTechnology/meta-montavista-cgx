@@ -404,3 +404,7 @@ def appendKernelCfgFiles(d):
     for iter in cfgfiles:
         appendedcfgfiles += "file://" + iter + " "
     return appendedcfgfiles
+
+PERLLIBDIRS_class-target = "${libdir}/perl"
+PERLLIBDIRS_class-native = "${libdir}/perl-native"
+

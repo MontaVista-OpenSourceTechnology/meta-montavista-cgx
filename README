@@ -1,0 +1,93 @@
+This README file contains information on the contents of the MontaVista CGX layer.
+Please see the corresponding sections below for details.
+
+
+Dependencies
+============
+
+This layer depends on:
+
+  URI: git://git.yoctoproject.org/poky
+  branch: jethro
+ 
+  or
+
+  URI: git://git.openembedded.org/openembedded-core
+  branch: jethro
+
+  URI: git://git.openembedded.org/bitbake
+  branch: 1.28
+
+  URI: git://git.openembedded.org/meta-openembedded
+  layers: meta-oe, meta-pytho, meta-networking, meta-filesystems, meta-webserver
+  branch: jethro
+
+  URI: git://git.yoctoproject.org/meta-virtualization
+  branch: jethro
+
+
+Source code
+===========
+
+https://support.mvista.com/cgx2.0/collections/com.mvista/meta-montavista-cgx-2.0/releases/meta-montavista-cgx
+
+
+Maintenance
+===========
+
+Maintainers:
+    support@mvista.com
+
+
+Contributing
+============
+
+Contributions and patches can be sent to the MontaVista  mailing
+list: support@mvista.com"
+
+When sending patches please take a look at the contribution guide available
+here: https://wiki.yoctoproject.org/wiki/Contribution_Guidelines
+
+example:
+git send-email -1 -M --to support@mvista.com  --subject-prefix=meta-montavista-cgx][PATCH
+
+
+Table of Contents
+=================
+
+  I. Adding the meta-montavista-cgx layer to your build
+ II. Misc
+III. Layer specific information
+ IV. Specific terms and information
+
+
+I. Adding the meta-montavista-cgx layer to your build
+=================================================
+
+In order to use this layer, you need to make the build system aware of
+it.
+
+Assuming the meta-montavista-cgx layer exists at the top-level of your
+yocto build tree, you can add it to the build system by adding the
+location of the meta-montavista-cgx layer to bblayers.conf, along with any
+other layers needed. Adapt the below list to proper format.
+
+  BBLAYERS:
+
+    meta
+    meta-meta-montavista-cgx
+    meta-openembedded/meta-networking
+    meta-openembedded/meta-filesystems
+    meta-openembedded/meta-oe
+    meta-openembedded/meta-python
+    meta-openembedded/meta-webserver
+    meta-virtualization
+
+
+II. Misc
+========
+
+The layer contains a core package group (packagegroup-meta-montavista-cgx.bb) that
+should aggregate all the other available package groups.
+
+The core image name is: default-image

@@ -143,7 +143,9 @@ do_install() {
     if [ "x${ALTBINDIR_SUFFIX}" != "x" -a -d ${D}/usr/bin${ALTBINDIR_SUFFIX}${BASELIB_SUFFIX} ] ; then
         for dir in ${GLIBC_UTILS_DIRS} ; do
             [ -e ${D}/$dir ] && mv ${D}/$dir ${D}/$dir.base
-            mv ${D}/$dir$(echo ${ALTBINDIR_SUFFIX}${BASELIB_SUFFIX}) ${D}/$dir
+            if [ -e "${D}/$dir$(echo ${ALTBINDIR_SUFFIX}${BASELIB_SUFFIX})" ] ; then
+             mv ${D}/$dir$(echo ${ALTBINDIR_SUFFIX}${BASELIB_SUFFIX}) ${D}/$dir
+            fi
         done
     fi
     rm  -f ${D}/${libdir}/libstdc++.so
@@ -172,63 +174,80 @@ do_install() {
      [ -e "${D}/usr/lib/libpthread.so" ] && sed -i -e "s# /lib# ../../lib#g" -e "s# /usr/lib# ../../usr/lib#g" ${D}/usr/lib/libpthread.so
      # Don't include broken symbolic links
      chmod 755 `find -L ${D}/lib*/ld*.so* -not -type l`
-     localeinclude="$(ls -d ${D}/${includedir}/glibc-locale-internal-*)"
-     if [ "$localeinclude" != "${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}" ] ; then
-           rm -rf ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
-           mv $localeinclude ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
-     fi 
+#     localeinclude="$(ls -d ${D}/${includedir}/glibc-locale-internal-* | head -n 1)"
+#     if [ "$localeinclude" != "${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}" ] ; then
+#           rm -rf ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
+#           mv $localeinclude ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
+#     fi 
+
+# Clean up alternate abi lib directories.
+     for each in ${D}/lib*; do
+         if [ "x$each" != "x${D}${base_libdir}" ] ; then
+               rm -rf $each
+         fi
+     done
+     for each in ${D}/usr/lib*; do
+         if [ "x$each" != "x${D}${libdir}" ] ; then
+               rm -rf $each
+         fi
+     done
+     if [ "${TARGET_VENDOR_MULTILIB_ORIGINAL}" != "" -a "${TARGET_VENDOR}" != "${TARGET_VENDOR_MULTILIB_ORIGINAL}" ]; then
+       for each in ${D}/${includedir}/glibc-locale-internal-*; do 
+         if [ "x$each" != "x${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}" ] ; then
+               rm -rf $each
+         fi
+       done
+     else
+        rm -rf ${D}/${includedir}/glibc-locale-internal-*mllib*  
+        localeinclude="$(ls -d ${D}/${includedir}/glibc-locale-internal-* | head -n 1)"
+        rm -rf ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
+        mv $localeinclude ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
+     fi
+     for each in ${D}/usr/bin*; do
+         if [ "x$each" != "x${D}${bindir}" ] ; then
+               rm -rf $each
+         fi
+     done
+     for each in ${D}/usr/sbin*; do
+         if [ "x$each" != "x${D}${sbindir}" ] ; then
+               rm -rf $each
+         fi
+     done
+
+     install -d ${D}/usr/lib
+     touch ${D}/usr/lib/.empty
+     GCCDIR="$(echo ${D}${libdir}/*ml*/5.2.0)"
+     if [ "${PACKAGE_ARCH}" == "i586" ] ; then
+             if [ -n "${MULTILIB_VARIANTS}" ] ; then
+                install -d ${D}/usr/lib64
+                touch ${D}/usr/lib64/.empty
+                ln -s . $GCCDIR/32
+                ln -s $(basename $(dirname $GCCDIR)) ${D}${libdir}/${TARGET_SYS_MULTILIB_ORIGINAL}
+             fi
+     fi
+
+
 }
+glibc_package_preprocess_append () {
+    mkdir -p ${PKGD}${exec_prefix}/lib
+    touch ${PKGD}${exec_prefix}/lib/.empty
+    if [ "${PACKAGE_ARCH}" == "i586" ] ; then
+             if [ -n "${MULTILIB_VARIANTS}" ] ; then
+                touch ${D}/usr/lib64/.empty
+             fi
+    fi
+}
+
 oe_multilib_header () {
 :
 }
 
-#No need to multilibize syscall. The external toolchain header is already mutlilibized. 
-do_install_append () {
-     GCCDIR="$(echo ${D}${libdir}/gcc/*/4.7.0/)"
-     if [ "${PACKAGE_ARCH}" == "mips64_nf" ] ; then
-             if [ -n "${MULTILIB_VARIANTS}" ] ; then
-                mkdir -p $GCCDIR/64
-                cp -a $GCCDIR/octeon* $GCCDIR/*.a $GCCDIR/*.o $GCCDIR/64
-             fi
-                
-             cp -r ${D}${libdir}/gcc/*/4.7.0/n32/* ${D}${libdir}/gcc/*/4.7.0/
-     fi
-     if [ "${PACKAGE_ARCH}" == "mips64" ] ; then
-                mkdir -p $GCCDIR/64
-                cp -a $GCCDIR/octeon3/*  $GCCDIR/64
-                [ -e "${D}/lib64" ] && rm -rf ${D}/lib64
-                ln -s ${base_libdir} ${D}/lib64
-     fi
-
-     if [ "${PACKAGE_ARCH}" == "i586" ] ; then
-             if [ -n "${MULTILIB_VARIANTS}" ] ; then
-                mkdir -p $GCCDIR/64
-                cp -a $GCCDIR/*.a $GCCDIR/*.o $GCCDIR/64
-             fi
-             cp -r $GCCDIR/32/* $GCCDIR/
-     fi
-     if [ "${PACKAGE_ARCH}" = "aarch64be_32" ] ; then
-             if [ -n "${MULTILIB_VARIANTS}" ] ; then
-                mkdir -p $GCCDIR/lp64/
-                cp -a $GCCDIR/*.a $GCCDIR/*.o $GCCDIR/lp64
-             fi
-             cp -r ${D}${libdir}/gcc/*/4.7.0/ilp32/* ${D}${libdir}/gcc/*/4.7.0/
-     fi
-
-     if [ "${PACKAGE_ARCH}" == "ppce5500" ] ; then
-             if [ -n "${MULTILIB_VARIANTS}" ] ; then
-                mkdir -p $GCCDIR/64
-                cp -a $GCCDIR/*.a $GCCDIR/*.o $GCCDIR/64
-             fi
-             cp -r $GCCDIR/32/* $GCCDIR/
-     fi
-     install -d ${D}/usr/lib
-     touch ${D}/usr/lib/.empty
-     chown -R root.root ${D}
-}
-
 sysroot_stage_all_append () {
        install -d  ${SYSROOT_DESTDIR}/usr/lib
+       if [ "${PACKAGE_ARCH}" == "i586" ] ; then
+                install -d ${SYSROOT_DESTDIR}/usr/lib64/
+                touch ${SYSROOT_DESTDIR}/usr/lib64/.empty
+       fi
 }
 
 #tmp hack
@@ -249,14 +268,14 @@ PACKAGES = "gcc-sanitizers libgo libgo-dev libgo-staticdev libgcc libgcc-dev lib
           liblsan liblsan-dev liblsan-staticdev ${LIBC_PACKAGES} \
 	  libquadmath libquadmath-dev libquadmath-staticdev libubsan libubsan-dev" 
 
-do_install_locale_append () {
+do_install_locale_prepend () {
      if [ "x${ALTBINDIR_SUFFIX}" != "x" ] ; then
             altbindir="${bindir}$(echo ${ALTBINDIR_SUFFIX})" 
      else
             altbindir="${bindir}" 
      fi  
-        if [ -e ${D}${altbindir}/localedef ]; then
-                mv -f ${D}${altbindir}/localedef ${dest}${altbindir}
+        if [ -e ${D}$altbindir/localedef ]; then
+                mv -f ${D}$altbindir/localedef ${dest}$altbindir
         fi
 }
 
@@ -287,7 +306,7 @@ PKGV_gdbserver = "${CSL_VER_GDB}"
 PKGV_gdbserver-dbg = "${CSL_VER_GDB}"
 EXTRALIBDIR = "${@base_conditional('PACKAGE_ARCH', 'mips64', '/lib64', '', d)}"
 GLIBC_FILE_LIST="/lib/ld-* ${libc_baselibs} ${EXTRALIBDIR} ${libexecdir}/* ${@base_conditional('USE_LDCONFIG', '1', '${base_sbindir}/ldconfig ${sysconfdir}/ld.so.conf', '', d)}"
-FILES_${PN} = "${@base_conditional('EXTERNAL_GLIBC', '1', bb.data.expand('${GLIBC_FILE_LIST}',d) , '' , d)}' /usr/lib/.empty"
+FILES_${PN} = "${@base_conditional('EXTERNAL_GLIBC', '1', bb.data.expand('${GLIBC_FILE_LIST}',d) , '' , d)}' /usr/lib*/.empty"
 RDEPENDS_${PN}-dev += "linux-libc-headers libgcc-dev"
 RPROVIDES_${PN} += "glibc-pcprofile glibc-pcprofile glibc-pic glibc-pic glibc libc-mtrace glibc-mtrace glibc"
 RPROVIDES_${PN}-dbg += "glibc-dbg glibc-dbg"

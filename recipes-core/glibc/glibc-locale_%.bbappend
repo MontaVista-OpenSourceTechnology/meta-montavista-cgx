@@ -2,7 +2,7 @@ TOOLCHAIN_DIR ?= "${MULTIMACH_TARGET_SYS}"
 
 do_install () {
         set -x 
-        LOCALETREESRC=$(ls -d ${STAGING_INCDIR}/glibc-locale-internal-* | head -n 1)
+        LOCALETREESRC=$(ls -d ${STAGING_INCDIR}/glibc-locale-internal-${MULTIMACH_TARGET_SYS} | head -n 1)
 	mkdir -p ${D}${bindir} ${D}${datadir} ${D}${libdir}
 	if [ -n "$(ls $LOCALETREESRC/${bindir})" ]; then
 		cp -fpPR $LOCALETREESRC/${bindir}/* ${D}${bindir}
@@ -24,7 +24,7 @@ do_install () {
 	cp -fpPR $LOCALETREESRC/SUPPORTED ${WORKDIR}
 }
 do_prep_locale_tree() {
-        LOCALETREESRC=$(ls -d ${STAGING_INCDIR}/glibc-locale-internal-* | head -n 1)
+        LOCALETREESRC=$(ls -d ${STAGING_INCDIR}/glibc-locale-internal-${MULTIMACH_TARGET_SYS} | head -n 1)
         treedir=${WORKDIR}/locale-tree
         rm -rf $treedir
         mkdir -p $treedir/${base_bindir} $treedir/${base_libdir} $treedir/${datadir} $treedir/${localedir}
@@ -37,7 +37,7 @@ do_prep_locale_tree() {
         if [ -f ${STAGING_DIR_NATIVE}${prefix_native}/lib/libgcc_s.* ]; then
                 tar -cf - -C ${STAGING_DIR_NATIVE}/${prefix_native}/${base_libdir} -p libgcc_s.* | tar -xf - -C $treedir/${base_libdir}
         fi
-        install -m 0755 $LOCALETREESRC${bindir}/localedef $treedir/${base_bindir}
+        install -m 0755 $LOCALETREESRC${bindir}${ALTBINDIR_SUFFIX}/localedef $treedir/${base_bindir}
 }
 
 inherit libc-package

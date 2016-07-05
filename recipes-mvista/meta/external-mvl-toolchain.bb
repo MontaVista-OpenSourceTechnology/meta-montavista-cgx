@@ -56,6 +56,7 @@ INSANE_SKIP="1"
 INSANE_SKIP_${PN}-dbg="1"
 INSANE_SKIP_${PN}="1 installed_vs_shipped"
 BINV="${PV}"
+PR .= ".1"
 
 #SRC_URI = "http://www.codesourcery.com/public/gnu_toolchain/${CSL_TARGET_SYS}/arm-${PV}-${TARGET_PREFIX}i686-pc-linux-gnu.tar.bz2"
 QAPATHTEST[arch]=""
@@ -198,10 +199,12 @@ do_install() {
          fi
        done
      else
-        rm -rf ${D}/${includedir}/glibc-locale-internal-*mllib*  
-        localeinclude="$(ls -d ${D}/${includedir}/glibc-locale-internal-* | head -n 1)"
-        rm -rf ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
-        mv $localeinclude ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
+         rm -rf ${D}/${includedir}/glibc-locale-internal-*mllib*
+         localeinclude="$(ls -d ${D}/${includedir}/glibc-locale-internal-* | head -n 1)"
+         if [ "$localeinclude" != "${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}"] ; then
+            rm -rf ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
+            mv $localeinclude ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
+         fi
      fi
      for each in ${D}/usr/bin*; do
          if [ "x$each" != "x${D}${bindir}" ] ; then

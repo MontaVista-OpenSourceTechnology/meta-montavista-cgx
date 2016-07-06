@@ -201,7 +201,7 @@ do_install() {
      else
          rm -rf ${D}/${includedir}/glibc-locale-internal-*mllib*
          localeinclude="$(ls -d ${D}/${includedir}/glibc-locale-internal-* | head -n 1)"
-         if [ "$localeinclude" != "${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}"] ; then
+         if [ "$localeinclude" != "${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}" ] ; then
             rm -rf ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
             mv $localeinclude ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
          fi

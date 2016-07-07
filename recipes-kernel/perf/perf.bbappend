@@ -12,5 +12,10 @@ SET_ARCH_FOR_ARM_armv6 := " ARM_ARCH="6" "
 EXTRA_OEMAKE += '\
 		${SET_ARCH_FOR_ARM} \
 		CC="${CC} ${CFLAGS} ${TARGET_LDFLAGS} -fPIC" \
-		'
+                LD="${LD}" \
+                '
+
+do_configure () {
+       sed -i ${S}/tools/perf/Makefile.perf -e /^LD/d
+}
 

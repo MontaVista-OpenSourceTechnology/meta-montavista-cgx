@@ -4,8 +4,8 @@ do_install () {
         set -x 
         LOCALETREESRC=$(ls -d ${STAGING_INCDIR}/glibc-locale-internal-${MULTIMACH_TARGET_SYS} | head -n 1)
 	mkdir -p ${D}${bindir} ${D}${datadir} ${D}${libdir}
-	if [ -n "$(ls $LOCALETREESRC/${bindir})" ]; then
-		cp -fpPR $LOCALETREESRC/${bindir}/* ${D}${bindir}
+	if [ -n "$(ls $LOCALETREESRC/${bindir}${ALTBINDIR_SUFFIX})" ]; then
+		cp -fpPR $LOCALETREESRC/${bindir}${ALTBINDIR_SUFFIX}/* ${D}${bindir}
 	fi
 	if [ -n "$(ls $LOCALETREESRC/${localedir})" ]; then
 		mkdir -p ${D}${localedir}

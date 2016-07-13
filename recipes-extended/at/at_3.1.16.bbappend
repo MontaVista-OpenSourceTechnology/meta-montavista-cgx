@@ -1,5 +1,6 @@
-PR .= ".1"
+PR .= ".2"
 
+DEPENDS += "bison-native base-passwd"
 # Change username and group to daemon, to allow normal users to schedule
 # at jobs.
 EXTRA_OECONF += "--with-daemon_username=daemon \
@@ -20,6 +21,7 @@ pkg_postinst_${PN} () {
     chmod 1770 /var/spool/at/spool
     chown daemon:daemon ${bindir}/at
     chmod ug+s ${bindir}/at
+    chmod 755 ${sbindir}/atd
     chmod 644 /etc/at.deny
 }
 

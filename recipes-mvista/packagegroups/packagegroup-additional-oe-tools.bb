@@ -103,6 +103,7 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	vim \
 	cdrkit \
 	glibc-scripts \
+	glibc-gconv-utf-16 \
         "
 
 RDEPENDS_packagegroup-oe-database-utilities ="\

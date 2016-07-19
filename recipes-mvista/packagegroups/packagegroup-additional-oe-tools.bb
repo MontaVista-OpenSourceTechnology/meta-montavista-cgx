@@ -104,7 +104,8 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	cdrkit \
 	glibc-scripts \
 	glibc-gconv-utf-16 \
-        "
+	udev-extraconf \
+"
 
 RDEPENDS_packagegroup-oe-database-utilities ="\
 	postgresql \

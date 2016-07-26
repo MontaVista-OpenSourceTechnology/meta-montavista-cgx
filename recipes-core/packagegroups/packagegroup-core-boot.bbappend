@@ -5,7 +5,7 @@ PACKAGES += "${PN}-busyboxless"
 RDEPENDS_${PN}-busyboxless = "\
     base-files \
     base-passwd \
-    ${@base_contains("MACHINE_FEATURES", "keyboard", "${VIRTUAL-RUNTIME_keymaps}", "", d)} \
+    ${@bb.utils.contains("MACHINE_FEATURES", "keyboard", "${VIRTUAL-RUNTIME_keymaps}", "", d)} \
     modutils-initscripts \
     netbase \
     init-ifupdown \

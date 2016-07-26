@@ -55,8 +55,8 @@ MEASURED_STRONGSWAN = " \
     tss-trousers \
 "
 PACKAGECONFIG_pn-strongswan = "charon curl gmp openssl stroke sqlite3 \
-                               ${@base_contains('DISTRO_FEATURES', 'systemd', 'systemd-charon', '', d)} \
-                               ${@base_contains('DISTRO_FEATURES', 'ldap', 'ldap', '', d)} \
+                               ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd-charon', '', d)} \
+                               ${@bb.utils.contains('DISTRO_FEATURES', 'ldap', 'ldap', '', d)} \
                                ${@bb.utils.contains("BBFILE_COLLECTIONS", "measured", "${MEASURED_STRONGSWAN}", "", d)} \
 "
 

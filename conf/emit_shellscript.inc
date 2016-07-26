@@ -65,7 +65,7 @@ def emit_shellscript(fn, d):
     def emit(var, val, weak = False):
         # If the value isn't a string, or the variable name is one that shell
         # will choke on, skip this variable.
-        if not isinstance(val, basestring) or \
+        if not isinstance(val, str) or \
            var != quote(var) or \
            var.find("-") != -1:
            note("emit_shellscript: skipping emission of %s (%s)" % (var, val))
@@ -102,7 +102,7 @@ def emit_shellscript(fn, d):
               wval = d.getVar(wvar, 1) or ""
               val = val.replace(wval, "${%s}" % wvar)
            emit(var, val)
-
+    f.close()
 def emit_kernel_shellscript(fn, d):
     """ Write a shell script to fn containing variable definitions
     needed by the linux kernel Makefile. """
@@ -160,6 +160,7 @@ def emit_kernel_shellscript(fn, d):
     f.write('*:"$CROSS_COMPILE_PATH":*)\n\t;;\n')
     f.write('*)\n\tPATH="$CROSS_COMPILE_PATH:$PATH"\n\t;;\n')
     f.write('esac\n')
+    f.close()
 
 python emit_shellscript_eh () {
     from bb.event import ConfigParsed, RecipeParsed
@@ -177,7 +178,7 @@ python emit_shellscript_eh () {
        fn = e.data.getVar(var, 1) or ""
        try:
           script(fn, e.data)
-       except (IOError, OSError), e:
+       except (IOError, OSError) as e:
           print_exception(e, "emit_shellscript: unable to emit vars into %s" % fn)
           raise SystemExit()
 }

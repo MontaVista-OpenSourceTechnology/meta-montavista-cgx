@@ -17,14 +17,14 @@ def csl_run(d, cmd, *args):
 
 def csl_get_version(d):
         try:
-		stdout, stderr = csl_run(d, 'gcc', '-v')
-	except bb.process.CmdError as exc:
-	        target_prefix = d.getVar('TARGET_PREFIX', True)
-		bb.error('Failed to obtain MontaVista toolchain version: %s' % exc)
-		bb.fatal('Could not execute ' + target_prefix + 'gcc')
-	else:
-		last_line = stderr.splitlines()[-1]
-		return last_line
+                stdout, stderr = csl_run(d, 'gcc', '-v')
+        except bb.process.CmdError as exc:
+                target_prefix = d.getVar('TARGET_PREFIX', True)
+                bb.error('Failed to obtain MontaVista toolchain version: %s' % exc)
+                bb.fatal('Could not execute ' + target_prefix + 'gcc')
+        else:
+                last_line = stderr.splitlines()[-1]
+                return last_line
 
 def csl_get_main_version(d):
 	version = csl_get_version(d)

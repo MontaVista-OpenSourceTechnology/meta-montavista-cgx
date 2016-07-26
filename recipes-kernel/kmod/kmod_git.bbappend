@@ -1,2 +1,2 @@
 PR .=".1"
-DEPENDS += "gnome-doc-utils-native"
+DEPENDS += "docbook-utils-native"

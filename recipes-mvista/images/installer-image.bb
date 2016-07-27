@@ -71,11 +71,12 @@ addtask install_installerbinary after do_rootfs before do_bootimg
 
 do_bootimg[depends] += "${PN}:do_rootfs ${PN}:do_install_installerbinary"
 
-python () {
-      deps = (d.getVarFlag('do_bootimg', 'depends') or "").split()
-      deps.remove('${INITRD_IMAGE}:do_rootfs')
-      d.setVarFlag('do_bootimg', 'depends', " ".join(deps))
-}
+#FIXME
+#python () {
+#      deps = (d.getVarFlag('do_bootimg', 'depends') or "").split()
+#      deps.remove('${INITRD_IMAGE}:do_rootfs')
+#      d.setVarFlag('do_bootimg', 'depends', " ".join(deps))
+#}
 #def remove_initrd_image_dependency(d):
 #      localdata = d.createCopy()
 #      task_depends = (localdata.getVarFlag('do_bootimg', 'depends') or "").split()

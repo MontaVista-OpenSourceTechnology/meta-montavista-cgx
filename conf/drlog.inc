@@ -3,7 +3,7 @@
 # Released under the MIT license (see LICENSE.MIT for the terms)
 
 DRLOG ?= "${TMPDIR}/dr.log"
-
+DRLOG_HANDLER = ""
 def add_drlog(d):
     import logging
     from os.path import join
@@ -17,12 +17,16 @@ def add_drlog(d):
 
     logger = logging.getLogger("BitBake")
     logger.addHandler(dr_logfile)
-
+    d.setVar("DRLOG_HANDLER",dr_logfile)
 python drlog_eventhandler () {
-    from bb.event import ConfigParsed
-
+    from bb.event import ConfigParsed,BuildCompleted
+    import logging, sys
     if isinstance(e, ConfigParsed):
         add_drlog(e.data)
+    if isinstance(e, BuildCompleted):
+        drloghandler = e.data.getVar("DRLOG_HANDLER",True)
+        drloghandler.close()
+        sys.stderr.write("WOW\n")
 }
 
 addhandler drlog_eventhandler

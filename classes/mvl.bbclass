@@ -12,7 +12,7 @@ python () {
     if not d.getVar("PACKAGES", True):
         d.setVar("DEBIANRDEP", "")
 #   Remove CSL_VER_MAIN     
-    toolchainflags = d.getVarFlag('TOOLCHAIN_OPTIONS', 'vardeps') or ""
+    toolchainflags = d.getVarFlag('TOOLCHAIN_OPTIONS', 'vardeps', True) or ""
     d.setVarFlag('TOOLCHAIN_OPTIONS', 'vardeps' , toolchainflags.replace('CSL_VER_MAIN',''))
     if bb.data.inherits_class("kernel",d):
        configs=get_kernel_config_env(d)
@@ -148,7 +148,7 @@ OE_TERMINAL_EXPORTS += "MVL_SDK_PREFIX PATH"
 
 
 CORE_IMAGE_BASE_INSTALL_mvista-cgx = '\
-    ${@base_contains("IMAGE_FEATURES", "busyboxless", "packagegroup-core-boot-busyboxless", "packagegroup-core-boot", d)} \
+    ${@bb.utils.contains("IMAGE_FEATURES", "busyboxless", "packagegroup-core-boot-busyboxless", "packagegroup-core-boot", d)} \
     packagegroup-base-extended \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 '
@@ -158,13 +158,13 @@ PRECONFIGURE_PREFIX ?= "KERNEL_"
 do_kernel_postconfigure[vardeps] += "KERNEL_CONF_LIST"
 do_kernel_postconfigure[doc] = "Adds kernel config values from the environment"
 def get_kernel_config_env(d):
-    preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX')
+    preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX',True)
     prefix_len = len(preconfigure_prefix)
     startswith_var = preconfigure_prefix + 'CONFIG_'
     new_var = []
     for var in d.keys():
         if var.startswith(startswith_var) and var != "KERNEL_CONFIG_COMMAND":
-            val = d.getVar(var)
+            val = d.getVar(var,True)
             new_var += [var + "=" + val]
     new_var.sort()
     return " ".join(new_var)
@@ -177,13 +177,13 @@ python do_kernel_postconfigure() {
        return
 
     def get_kernel_config_vars():
-        preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX')
+        preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX', True)
         prefix_len = len(preconfigure_prefix)
         startswith_var = preconfigure_prefix + 'CONFIG_'
         new_vars = {}
         for var in d.keys():
             if var.startswith(startswith_var) and var != 'KERNEL_CONFIG_BUILD':
-                val = d.getVar(var)
+                val = d.getVar(var,True)
                 bb.debug(2, 'config: %s=%s' % (var, val))
                 var = var[prefix_len:]
                 new_vars[var] = val
@@ -233,7 +233,7 @@ python do_kernel_postconfigure() {
         os.rename(tmp_config, new_config)
     new_vars = get_kernel_config_vars()
     if new_vars:
-        builddir = d.expand(d.getVar('B'))
+        builddir = d.expand(d.getVar('B',True))
         config = os.path.join(builddir,".config")
         if os.path.exists(config):
            save = config + ".mvsave"

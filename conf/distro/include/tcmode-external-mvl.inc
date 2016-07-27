@@ -60,7 +60,7 @@ MV_TAR_RELEASE ?= "${@mvl_toolchain_tar_version(d)}"
 MV_TAR_RELEASE="150303"
 def mvl_toolchain_tar_version(d):
     import glob
-    toolchain=d.getVar("EXTERNAL_TOOLCHAIN",1)
+    toolchain=d.getVar("EXTERNAL_TOOLCHAIN", True)
     files=glob.glob("%s/sources/gcc*.tar.bz2" % (toolchain))
     files.sort(reverse=True) # Make sure to get the newest version
     gcc=os.path.basename(files[0])

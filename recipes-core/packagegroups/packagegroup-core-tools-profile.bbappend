@@ -16,5 +16,6 @@ PROFILETOOLS = "\
     latencytop \
     lttng-tools \
     lttng-modules \
+    babeltrace \
     "
 PROFILE_TOOLS_X_aarch64 = ""

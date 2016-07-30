@@ -50,6 +50,7 @@ PROVIDES += "\
      linux-libc-headers \
      virtual/linux-libc-headers \
      ${LIBC_PROVIDES} \
+     gcc-runtime \
 "
 
 INSANE_SKIP="1"

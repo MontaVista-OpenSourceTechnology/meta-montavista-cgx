@@ -1,94 +1,94 @@
 # Modified version of csl-versions.inc for montavista.
 
 def csl_run(d, cmd, *args):
-	import bb.process
-	import subprocess
+     import bb.process
+     import subprocess
 
-	topdir = d.getVar('TOPDIR', True)
-	toolchain_path = d.getVar('EXTERNAL_TOOLCHAIN', True)
-	if not toolchain_path:
-		return 'UNKNOWN', 'UNKNOWN'
+     topdir = d.getVar('TOPDIR', True)
+     toolchain_path = d.getVar('EXTERNAL_TOOLCHAIN', True)
+     if not toolchain_path:
+          return 'UNKNOWN', 'UNKNOWN'
 
-	target_prefix = d.getVar('TARGET_PREFIX', True)
-	path = os.path.join(toolchain_path, 'bin', target_prefix + cmd)
-	args = [path] + list(args)
+     target_prefix = d.getVar('TARGET_PREFIX', True)
+     path = os.path.join(toolchain_path, 'bin', target_prefix + cmd)
+     args = [path] + list(args)
 
-	return bb.process.run(args, cwd=topdir, stderr=subprocess.PIPE)
+     return bb.process.run(args, cwd=topdir, stderr=subprocess.PIPE)
 
 def csl_get_version(d):
-        try:
-		stdout, stderr = csl_run(d, 'gcc', '-v')
-	except bb.process.CmdError as exc:
-	        target_prefix = d.getVar('TARGET_PREFIX', True)
-		bb.error('Failed to obtain MontaVista toolchain version: %s' % exc)
-		bb.fatal('Could not execute ' + target_prefix + 'gcc')
-	else:
-		last_line = stderr.splitlines()[-1]
-		return last_line
+     try:
+          stdout, stderr = csl_run(d, 'gcc', '-v')
+     except bb.process.CmdError as exc:
+          target_prefix = d.getVar('TARGET_PREFIX', True)
+          bb.error('Failed to obtain MontaVista toolchain version: %s' % exc)
+          bb.fatal('Could not execute ' + target_prefix + 'gcc')
+     else:
+          last_line = stderr.splitlines()[-1]
+          return last_line
 
 def csl_get_main_version(d):
-	version = csl_get_version(d)
-	if version != 'UNKNOWN':
-		return version.split()[-1].rstrip(')')
-	else:
-		return version
+     version = csl_get_version(d)
+     if version != 'UNKNOWN':
+          return version.split()[-1].rstrip(')')
+     else:
+          return version
 
 def csl_get_gcc_version(d):
-	version = csl_get_version(d)
-	if version != 'UNKNOWN':
-		return version.split()[2]
-	else:
-		return version
+     version = csl_get_version(d)
+     if version != 'UNKNOWN':
+          return version.split()[2]
+     else:
+          return version
 
 def csl_get_libc_version(d):
-	syspath = d.expand('${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}')
-	if not syspath:
-	        return 'UNKNOWN'
+     syspath = d.expand('${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}')
+     if not syspath:
+             return 'UNKNOWN'
 
-	libpath = syspath + '/libc/lib/'
-	if not os.path.exists(libpath):
-		libpath = syspath + '/libc/sgxx-glibc/lib/'
+     libpath = syspath + '/libc/lib/'
+     if not os.path.exists(libpath):
+          libpath = syspath + '/libc/sgxx-glibc/lib/'
 
-	if os.path.exists(libpath):
-		for file in os.listdir(libpath):
-			if file.find('libc-') == 0:
-				return file[5:-3]
-	return 'UNKNOWN'
+     if os.path.exists(libpath):
+          for file in os.listdir(libpath):
+               if file.find('libc-') == 0:
+                    return file[5:-3]
+     return 'UNKNOWN'
 
 def csl_get_kernel_version(d):
-	syspath = d.expand('${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}')
-	if not syspath:
-	        return 'UNKNOWN'
+     syspath = d.expand('${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}')
+     if not syspath:
+             return 'UNKNOWN'
 
-	vf = syspath + '/libc/usr/include/linux/version.h'
-	if not os.path.exists(vf):
-		vf = syspath + '/libc/sgxx-glibc/usr/include/linux/version.h'
+     vf = syspath + '/libc/usr/include/linux/version.h'
+     if not os.path.exists(vf):
+          vf = syspath + '/libc/sgxx-glibc/usr/include/linux/version.h'
 
-	try:
-		f = open(vf, 'r')
-	except (OSError, IOError):
-		return 'UNKNOWN'
+     try:
+          f = open(vf, 'r')
+     except (OSError, IOError):
+          return 'UNKNOWN'
 
-	l = f.readlines();
-	f.close();
-	for s in l:
-		if s.find('LINUX_VERSION_CODE') > 0:
-			ver = int(s.split()[2])
-			maj = ver / 65536
-			ver = ver % 65536
-			min = ver / 256
-			ver = ver % 256
-			return str(maj)+'.'+str(min)+'.'+str(ver)
-	return 'UNKNOWN'
+     l = f.readlines();
+     f.close();
+     for s in l:
+          if s.find('LINUX_VERSION_CODE') > 0:
+               ver = int(s.split()[2])
+               maj = ver / 65536
+               ver = ver % 65536
+               min = ver / 256
+               ver = ver % 256
+               return str(maj)+'.'+str(min)+'.'+str(ver)
+     return 'UNKNOWN'
 
 def csl_get_gdb_version(d):
-	try:
-		stdout, stderr = csl_run(d, 'gdb', '-v')
-	except bb.process.CmdError:
-		return 'UNKNOWN'
-	else:
-		first_line = stdout.splitlines()[0]
-		return first_line.split()[-1]
+     try:
+          stdout, stderr = csl_run(d, 'gdb', '-v')
+     except bb.process.CmdError:
+          return 'UNKNOWN'
+     else:
+          first_line = stdout.splitlines()[0]
+          return first_line.split()[-1]
 
 python mvl_version_handler () {
     if not isinstance(e, bb.event.ConfigParsed):

@@ -106,11 +106,12 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	glibc-gconv-utf-16 \
 	udev-extraconf \
 "
+# FIXME: Disabled upstream due to tcl brokenness
+#	postgresql 
+#	postgresql-client 
+#	postgresql-timezone 
 
 RDEPENDS_packagegroup-oe-database-utilities ="\
-	postgresql \
-	postgresql-client \
-	postgresql-timezone \
 	mariadb-setupdb \
 	mariadb-client \
 	mariadb-server \

@@ -1,2 +1,3 @@
 PR .=".1"
-DEPENDS += "gnome-doc-utils-native"
+#FIXME not sure this is the right fix
+#DEPENDS += "gnome-doc-utils-native"

@@ -16,6 +16,12 @@ SRC_URI = "http://cpuset.googlecode.com/files/cpuset-${PV}.tar.gz"
 
 inherit distutils
 
+B="${S}"
+
+do_configure_prepend () {
+    sed -e "s,in\ doc\ t,in doc," -i ${S}/Makefile
+}
+
 do_compile() {
     BUILD_SYS="${BUILD_SYS}" HOST_SYS="${HOST_SYS}" \
     PREFIX="${prefix}"				\

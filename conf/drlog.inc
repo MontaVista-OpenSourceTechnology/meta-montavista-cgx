@@ -26,7 +26,6 @@ python drlog_eventhandler () {
     if isinstance(e, BuildCompleted):
         drloghandler = e.data.getVar("DRLOG_HANDLER",True)
         drloghandler.close()
-        sys.stderr.write("WOW\n")
 }
 
 addhandler drlog_eventhandler

@@ -220,7 +220,7 @@ do_install() {
 
      install -d ${D}/usr/lib
      touch ${D}/usr/lib/.empty
-     GCCDIR="$(echo ${D}${libdir}/*ml*/5.2.0)"
+     GCCDIR="$(echo ${D}${libdir}/*ml*/6.1.1)"
      if [ "${PACKAGE_ARCH}" == "i586" ] ; then
              if [ -n "${MULTILIB_VARIANTS}" ] ; then
                 install -d ${D}/usr/lib64
@@ -264,7 +264,7 @@ LIBC_PACKAGES_LIST += "${PN}-dbg catchsegv sln nscd ${PN}-utils"
 LIBC_PACKAGES_LIST += "${PN}-pic libcidn libmemusage libsegfault libsotruss ${PN} glibc-extra-nss glibc-thread-db" 
 
 LIBC_PACKAGES="${@base_conditional('EXTERNAL_GLIBC', '1', bb.data.expand('${LIBC_PACKAGES_LIST}',d), 'external-mvl-toolchain' , d)}"
-PACKAGES = "gcc-sanitizers libgo libgo-dev libgo-staticdev libgcc libgcc-dev libssp libssp-dev libssp-staticdev \
+PACKAGES = "libitm libitm-dev libitm-staticdev gcc-sanitizers libgo libgo-dev libgo-staticdev libgcc libgcc-dev libssp libssp-dev libssp-staticdev \
           libgomp libgomp-dev libgomp-staticdev libmudflap libmudflap-dev libmudflap-staticdev  \
           libstdc++ libstdc++-dev libstdc++-staticdev libatomic libatomic-dev libatomic-staticdev libgcov-dev \
           libgfortran libstdc++-precompile-dev libg2c libg2c-dev libgfortran-dev libtsan libtsan-dev \
@@ -443,11 +443,21 @@ FILES_libgo-staticdev = "\
      ${libdir}/libgolibbegin.a \
      ${libdir}/libgobegin.a \
 "
+FILES_libitm = "${libdir}/libitm.so.*"
+SUMMARY_libitm = "GNU transactional memory support library"
+FILES_libitm-dev = "\
+    ${libdir}/libitm.so \
+    ${libdir}/libitm.la \
+    ${libdir}/libitm.spec \
+"
+SUMMARY_libitm-dev = "GNU transactional memory support library - development files"
+FILES_libitm-staticdev = "${libdir}/libitm.a"
+SUMMARY_libitm-staticdev = "GNU transactional memory support library - static development files"
 
 #FIXME this shouldn't be empty
 ALLOW_EMPTY_libgcov-dev = "1"
 CSL_VER_GDB  = "7.9.1" 
-CSL_VER_MAIN = "5.2.0"
+CSL_VER_MAIN = "6.1.1"
 CSL_VER_LIBC = "2.22"
 
 def get_mlprovides(provide,d) :

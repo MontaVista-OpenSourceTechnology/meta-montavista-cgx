@@ -5,7 +5,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI += "file://mcs-sshd \
             file://mcs-sshd_config \
 	    file://Add_1024-bit-group-primes-for-DH-key-exchange.patch \
-            file://Avoid-message-when-DISPLAY-is-null.patch \
 	   "
 
 do_install_append() {

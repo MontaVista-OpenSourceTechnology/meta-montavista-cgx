@@ -28,4 +28,6 @@ KCONFIG_MODE = "--alldefconfig"
 FILESEXTRAPATHS_prepend := "${KERNEL_CFG_LOCATION}:"
 SRC_URI += "${@appendKernelCfgFiles(d)}"
 
+# FIXME Need to deal with scc files
+KERNEL_FEATURES_remove ="features/debug/printk.scc"
 COMPATIBLE_MACHINE = "qemuarm|qemuarm64|qemux86|qemuppc|qemumips|qemumips64|qemux86-64"

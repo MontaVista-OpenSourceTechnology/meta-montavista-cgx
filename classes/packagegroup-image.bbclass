@@ -35,6 +35,8 @@ python packagegroupimage_virtclass_handler () {
     if "packagegroup-image" not in classextend:
         return
     if classextendvar != "base":
+       raw_pn = classextendvar + "-packagegroup-" + pn.replace("-packagegroup-image", "")
+       e.data.setVar("RAW_PN", raw_pn)
        pn=classextendvar + "-" + pn
     e.data.setVar("PN", "packagegroup-" + pn.replace("-packagegroup-image", ""))
     e.data.setVar("OVERRIDES", e.data.getVar("OVERRIDES", False) + ":virtclass-packagegroup")
@@ -58,7 +60,9 @@ python () {
        pkgarch = d.getVar("PACKAGE_ARCH", False)
        d.setVar("PACKAGE_ARCH",variant + "_" + pkgarch)
        pn = d.getVar("PN", True)
-       d.setVar("RPROVIDES_%s" % pn, variant + "-" + pn)
+       rprovides = variant + "-" + pn
+       rprovides += " " + d.getVar("RAW_PN", True)
+       d.setVar("RPROVIDES_%s" % pn, rprovides)
     bpn = d.getVar("BPN", True)
     skips=d.getVar("SKIP_IMAGES", True) or ""
     if bpn.replace("packagegroup-","").replace(variant + "-" , "") in set(skips.split()):

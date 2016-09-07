@@ -1,0 +1,9 @@
+diff -Naurp git_org/src/CMakeLists.txt git/src/CMakeLists.txt
+--- git_org/src/CMakeLists.txt	2016-09-06 06:31:36.870323876 -0700
++++ git/src/CMakeLists.txt	2016-09-06 06:30:44.441121540 -0700
+@@ -84,4 +84,4 @@ INSTALL(TARGETS yajl
+ INSTALL(TARGETS yajl_s ARCHIVE DESTINATION lib${LIB_SUFFIX})
+ INSTALL(FILES ${PUB_HDRS} DESTINATION include/yajl)
+ INSTALL(FILES ${incDir}/yajl_version.h DESTINATION include/yajl)
+-INSTALL(FILES ${shareDir}/yajl.pc DESTINATION share/pkgconfig)
++INSTALL(FILES ${shareDir}/yajl.pc DESTINATION lib${LIB_SUFFIX}/pkgconfig)

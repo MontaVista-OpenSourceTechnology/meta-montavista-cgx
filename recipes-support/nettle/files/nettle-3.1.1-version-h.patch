@@ -1,0 +1,16 @@
+diff -Naurp nettle-3.1.1_org/version.h.in nettle-3.1.1/version.h.in
+--- nettle-3.1.1_org/version.h.in	2015-04-24 10:22:03.000000000 -0700
++++ nettle-3.1.1/version.h.in	2016-09-06 05:14:56.221679258 -0700
+@@ -44,12 +44,6 @@ extern "C" {
+ 
+ #define NETTLE_USE_MINI_GMP @NETTLE_USE_MINI_GMP@
+ 
+-/* We need a preprocessor constant for GMP_NUMB_BITS, simply using
+-   sizeof(mp_limb_t) * CHAR_BIT is not good enough. */
+-#if NETTLE_USE_MINI_GMP
+-# define GMP_NUMB_BITS @GMP_NUMB_BITS@
+-#endif
+-
+ #ifdef __cplusplus
+ }
+ #endif

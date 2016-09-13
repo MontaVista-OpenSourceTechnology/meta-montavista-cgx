@@ -292,3 +292,81 @@ def appendKernelCfgFiles(d):
 PERLLIBDIRS_class-target = "${libdir}/perl"
 PERLLIBDIRS_class-native = "${libdir}/perl-native"
 
+PACKAGE_PREPROCESS_FUNCS_prepend += "get_fileperms"
+PACKAGEBUILDPKGD_append += "fixup_stripped_perms"
+PACKAGEFILEPERMS = "${WORKDIR}/file.perms"
+PACKAGEFILEPERMS_DISABLE ?= "0"
+
+get_fileperms () {
+    find ${PKGD} -type f | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${WORKDIR}/file.perms
+}
+
+python fixup_stripped_perms () {
+    # Provide method for turning off this code from the metadata.
+    disable = d.getVar("PACKAGEFILEPERMS_DISABLE", True)
+    if disable == "1":
+       return
+
+    # If strip can load pseudo there is no reason to execute these fix ups.
+    # This can be either because the host abi and the toolchain are the same or
+    # pseudo was built with both abi libraries.
+    strip = d.getVar("STRIP", True)
+    cmd = strip + " --info 2>&1 > /dev/null"
+    (retval, output) = oe.utils.getstatusoutput(cmd)
+    if not output.startswith("ERROR: ld.so: object"): 
+       return
+
+    import shutil
+
+    # Copy package directory to allocate inodes in the off chance the pseudo database has conflicts.
+    dvar = d.getVar("PKGD", True)
+
+    # If packages.old exists remove it.
+    if os.path.isdir(dvar + ".old"):
+       shutil.rmtree(dvar + ".old")
+
+    # If packages.save exists remove it
+    if os.path.isdir(dvar + ".save"):
+       shutil.rmtree(dvar + ".save")
+
+    # Copy packages to packages.save, move packages to packages.old and
+    # packages.new to packages
+    shutil.copytree(dvar, dvar + ".save", symlinks=True)
+    shutil.move(dvar, dvar + ".old")
+    shutil.move(dvar + ".save", dvar)
+
+    check_uid = d.getVar('HOST_USER_UID', True)
+
+    pkgfileperms = d.getVar("PACKAGEFILEPERMS", True)
+    files = open(pkgfileperms).read()
+    import stat
+    for file in files.split("\n"):
+        fsplit = file.split(" ")
+        if len(fsplit) != 5:
+           continue 
+        fname, mode, user, group, inode = fsplit
+        tfile = dvar + "/" + fname
+        if os.path.exists(tfile):
+           filest = os.stat(tfile)
+
+           # Fix mode if not correct from do_install
+           if (stat.S_IMODE(filest.st_mode) != int(mode,8)):
+              os.chmod(tfile, int(mode,8))
+
+           # Fix owner/group if not correct from do_install
+           if (filest.st_uid != 0) or (filest.st_uid != user) or (filest.st_gid != group):
+              if (filest.st_uid == int(check_uid)) or (user == check_uid):
+                 setuid = 0
+                 setgid = 0
+              else:
+                 setuid = int(user)
+                 setgid = int(group)
+              os.chown(tfile, setuid, setgid)
+           
+           # If the debug file is found, make sure it is owned by root. 
+           dtfile = "%s" % os.path.dirname(tfile) + "/.debug/" + os.path.basename(tfile)
+           if os.path.exists(dtfile):
+              bb.note("found: %s" % dtfile)
+              os.chown(dtfile, 0, 0)
+
+}

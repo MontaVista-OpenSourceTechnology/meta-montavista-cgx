@@ -68,3 +68,4 @@ CFLAGS_pn-efivar-native_append = " -fno-strict-aliasing "
 PREFERRED_VERSION_python-sqlalchemy = "1.0.8"
 PREFERRED_VERSION_python-greenlet = "0.4.7"
 
+PREFERRED_VERSION_gnutls-native = "3.5.1"

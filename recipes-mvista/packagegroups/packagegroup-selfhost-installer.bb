@@ -22,9 +22,8 @@ X86_PACKAGES_OF_SELFHOST_INSTALLER = "\
                 kernel-modules \
                 python-debugger \
                 linux-firmware \
-                sysvinit \
-                initscripts \
-                sysvinit-inittab \
+                ${VIRTUAL-RUNTIME_init_manager} \
+                ${VIRTUAL-RUNTIME_initscripts} \
                 base-files \
                 base-passwd \
                 busybox \

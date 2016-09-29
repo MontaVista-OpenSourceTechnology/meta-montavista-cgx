@@ -1,8 +1,8 @@
 require recipes-kernel/linux/linux-mvista.inc
 
-MV_KERNEL_TREE_BRANCH ?= "mvl-4.1/cgx"
+MV_KERNEL_TREE_BRANCH ?= "mvl-4.1/msd.cgx"
 MV_KERNEL_TREE_SRCREV ?= "${AUTOREV}"
-MV_KERNEL_TREE ?= "git://${TOPDIR}/sources/linux-mvista-4.1"
+MV_KERNEL_TREE ?= "git://${TOPDIR}/sources/linux-mvista-2.0"
 
 SRCREV_machine_mvista-cgx ?= "${MV_KERNEL_TREE_SRCREV}"
 SRCREV_mvista-cgx ?= "${MV_KERNEL_TREE_SRCREV}"

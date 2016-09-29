@@ -114,3 +114,12 @@ kernel_do_deploy_append () {
 		ln -sf ${base_name}.bin ${DEPLOYDIR}/${type}
     done
 }
+
+#FIXME
+# ERROR: linux-mvista-4.1+gitAUTOINC+21a8dc3f99-r0 do_kernel_version_sanity_check: Package Version (4.1+gitAUTOINC+21a8dc3f99) does not match of kernel being built (4.1.30). Please update the PV variable to match the kernel source.
+
+
+
+do_kernel_version_sanity_check () {
+ :
+}

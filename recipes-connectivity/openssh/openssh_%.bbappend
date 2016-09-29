@@ -4,9 +4,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI += "file://mcs-sshd \
             file://mcs-sshd_config \
-	    file://Add_1024-bit-group-primes-for-DH-key-exchange.patch \
 	   "
-
+# FIXME: Merge later
+# file://Add_1024-bit-group-primes-for-DH-key-exchange.patch
 do_install_append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'OpenLDAP', 'true', 'false', d)}; then
         install -D -m 644 ${WORKDIR}/mcs-sshd ${D}/etc/pam.d/sshd

@@ -41,6 +41,10 @@ python __anonymous () {
 
 inherit kernel-arch
 
+MV_KERNEL_TREE_BRANCH ?= "mvl-4.1/msd.cgx"
+MV_KERNEL_TREE_SRCREV ?= "${AUTOREV}"
+MV_KERNEL_TREE ?= "git://${TOPDIR}/sources/linux-mvista-2.0"
+
 SRCREV="${MV_KERNEL_TREE_BRANCH}"
 KORG_ARCHIVE_COMPRESSION ?= "bz2"
 SRC_URI = "${MV_KERNEL_TREE};branch=${MV_KERNEL_TREE_BRANCH}"

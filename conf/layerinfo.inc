@@ -8,7 +8,7 @@ def get_layername(file, d):
     if not os.path.isabs(file):
         file = bb.which(d.getVar("BBPATH", 1), file)
     filedir = os.path.realpath(os.path.dirname(file))
-    named = d.getVar("BBLAYERS_NAMED",1).split()
+    named = (d.getVar("BBLAYERS_NAMED",1) or "").split()
     for layer in named:
         splitname = layer.split(":")
 

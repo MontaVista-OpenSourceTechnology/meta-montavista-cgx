@@ -134,13 +134,14 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	quagga-ospfclient \
 	strongswan \
 	tunctl \
-	iscsitarget \
-	iscsi-initiator-utils \
 	ethtool \
 	portmap \
 	net-tools \
 	dhcp-server \
 "
+# FIXME
+#	iscsitarget 
+#	iscsi-initiator-utils 
 
 RDEPENDS_packagegroups-oe-logmanagement ="\
 	syslog-ng \

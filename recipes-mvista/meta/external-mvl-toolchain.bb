@@ -220,7 +220,7 @@ do_install() {
 
      install -d ${D}/usr/lib
      touch ${D}/usr/lib/.empty
-     GCCDIR="$(echo ${D}${libdir}/*ml*/6.1.1)"
+     GCCDIR="$(echo ${D}${libdir}/*ml*/6.*)"
      if [ "${PACKAGE_ARCH}" == "i586" ] ; then
              if [ -n "${MULTILIB_VARIANTS}" ] ; then
                 install -d ${D}/usr/lib64
@@ -457,7 +457,7 @@ SUMMARY_libitm-staticdev = "GNU transactional memory support library - static de
 #FIXME this shouldn't be empty
 ALLOW_EMPTY_libgcov-dev = "1"
 CSL_VER_GDB  = "7.9.1" 
-CSL_VER_MAIN = "6.1.1"
+CSL_VER_MAIN = "6.2.0"
 CSL_VER_LIBC = "2.22"
 
 def get_mlprovides(provide,d) :

@@ -120,7 +120,7 @@ MSD_REVISION ?= "${MSD_VERSION}"
 fakeroot create_shar_append_mvista-cgx () {
 	# Make sure OECORE_NATIVE_SYSROOT doesn't read user
 	# defined SDK_PATH_NATIVE variable during SDK installation.
-	sed -i "s:^native_sysroot=\(.*\)OECORE_NATIVE_SYSROOT=\(.*\)|cut\(.*\):native_sysroot=\1OECORE_NATIVE_SYSROOT=\2| grep -v SDK_PATH_NATIVE | cut\3:g" ${T}/post_install_command ${SDK_DEPLOY}/${TOOLCHAIN_OUTPUTNAME}.sh
+	sed -i "s:^native_sysroot=\(.*\)OECORE_NATIVE_SYSROOT=\(.*\)|cut\(.*\):native_sysroot=\1OECORE_NATIVE_SYSROOT=\2| grep -v SDK_PATH_NATIVE | cut\3:g" ${T}/post_install_command ${SDKDEPLOYDIR}/${TOOLCHAIN_OUTPUTNAME}.sh
 }
 
 create_shar_append () {
@@ -133,8 +133,8 @@ create_shar_append () {
                    liceman -t ${P2BUILDDIR}/../p2-tmp/p2installer/com.mvista.sdk $licensedirs
                 fi
 		mkdir -p ${P2BUILDDIR}
-                bash -x $SDK2P2 -s ${SDK_DEPLOY}/${TOOLCHAIN_OUTPUTNAME}.sh -d ${P2BUILDDIR} \
-                -i "${PLUGIN_ID}" -j "${FEATURE_ID}" \
+                bash -x $SDK2P2 -s ${SDKDEPLOYDIR}/${TOOLCHAIN_OUTPUTNAME}.sh -d ${P2BUILDDIR} \
+               -i "${PLUGIN_ID}" -j "${FEATURE_ID}" \
                 -f "${FEATURE_NAME}" -p "${PLUGIN_NAME}" \
                 -v "${ADK_VERSION}" -q ${MSD_REVISION} -S ${P2BUILDDIR}/../p2-tmp/ -n "${VENDOR_NAME}"
 		mkdir -p ${P2DIR}

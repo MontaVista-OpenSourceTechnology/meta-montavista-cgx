@@ -16,9 +16,6 @@ mvlfiles = "conf/bblayers.conf conf/devrocket.conf conf/drlog.conf conf/local-co
 do_install[nostamp] = "1"
 do_compile[nostamp] = "1"
 PACKAGES="${PN}"
-do_compile () {
-   echo ${DATETIME} > file
-}
 python do_install () {
     import shutil, logging
 

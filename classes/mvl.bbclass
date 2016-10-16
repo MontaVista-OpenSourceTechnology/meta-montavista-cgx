@@ -294,10 +294,11 @@ PERLLIBDIRS_class-native = "${libdir}/perl-native"
 
 PACKAGE_PREPROCESS_FUNCS_prepend += "get_fileperms"
 PACKAGEBUILDPKGD_append += "fixup_stripped_perms"
-PACKAGEFILEPERMS = "${WORKDIR}/file.perms"
+PACKAGEFILEPERMS = "${WORKDIR}/dir.perms ${WORKDIR}/file.perms"
 PACKAGEFILEPERMS_DISABLE ?= "0"
 
 get_fileperms () {
+    find ${PKGD} -type d | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${WORKDIR}/dir.perms
     find ${PKGD} -type f | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${WORKDIR}/file.perms
 }
 
@@ -338,35 +339,37 @@ python fixup_stripped_perms () {
     check_uid = d.getVar('HOST_USER_UID', True)
 
     pkgfileperms = d.getVar("PACKAGEFILEPERMS", True)
-    files = open(pkgfileperms).read()
-    import stat
-    for file in files.split("\n"):
-        fsplit = file.split(" ")
-        if len(fsplit) != 5:
-           continue 
-        fname, mode, user, group, inode = fsplit
-        tfile = dvar + "/" + fname
-        if os.path.exists(tfile):
-           filest = os.stat(tfile)
 
-           # Fix mode if not correct from do_install
-           if (stat.S_IMODE(filest.st_mode) != int(mode,8)):
-              os.chmod(tfile, int(mode,8))
+    for iter in pkgfileperms.split():
+        files = open(iter).read()
+        import stat
+        for file in files.split("\n"):
+            fsplit = file.split(" ")
+            if len(fsplit) != 5:
+               continue 
+            fname, mode, user, group, inode = fsplit
+            tfile = dvar + "/" + fname
+            if os.path.exists(tfile):
+               filest = os.stat(tfile)
 
-           # Fix owner/group if not correct from do_install
-           if (filest.st_uid != 0) or (filest.st_uid != user) or (filest.st_gid != group):
-              if (filest.st_uid == int(check_uid)) or (user == check_uid):
-                 setuid = 0
-                 setgid = 0
-              else:
-                 setuid = int(user)
-                 setgid = int(group)
-              os.chown(tfile, setuid, setgid)
-           
-           # If the debug file is found, make sure it is owned by root. 
-           dtfile = "%s" % os.path.dirname(tfile) + "/.debug/" + os.path.basename(tfile)
-           if os.path.exists(dtfile):
-              bb.note("found: %s" % dtfile)
-              os.chown(dtfile, 0, 0)
+               # Fix mode if not correct from do_install
+               if (stat.S_IMODE(filest.st_mode) != int(mode,8)):
+                  os.chmod(tfile, int(mode,8))
+
+               # Fix owner/group if not correct from do_install
+               if (filest.st_uid != 0) or (filest.st_uid != user) or (filest.st_gid != group):
+                  if (filest.st_uid == int(check_uid)) or (user == check_uid):
+                     setuid = 0
+                     setgid = 0
+                  else:
+                     setuid = int(user)
+                     setgid = int(group)
+                  os.chown(tfile, setuid, setgid)
+               
+               # If the debug file is found, make sure it is owned by root. 
+               dtfile = "%s" % os.path.dirname(tfile) + "/.debug/" + os.path.basename(tfile)
+               if os.path.exists(dtfile):
+                  bb.note("found: %s" % dtfile)
+                  os.chown(dtfile, 0, 0)
 
 }

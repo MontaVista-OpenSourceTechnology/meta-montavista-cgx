@@ -1,7 +1,7 @@
 PR .= ".1"
 
 DEPENDS += "bzip2"
-PACKAGECONFIG_append = " libusb "
+PACKAGECONFIG_append = " libusb virtfs "
 
 do_configure_prepend () {
         cat > test_main.c << EOF

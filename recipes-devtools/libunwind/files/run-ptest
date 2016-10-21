@@ -1,0 +1,2 @@
+#!/bin/sh
+make -C tests -k LOG_DRIVER="$PWD/tests/test-driver" check-TESTS

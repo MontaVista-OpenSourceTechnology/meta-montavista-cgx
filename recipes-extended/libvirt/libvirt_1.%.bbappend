@@ -6,3 +6,4 @@ do_install_append() {
         fi
 }
 
+PACKAGECONFIG[wireshark] = "--with-wireshark-dissector,--without-wireshark-dissector,wireshark"

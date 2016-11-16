@@ -4,7 +4,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=3fced11d6df719b47505837a51c16ae5 \
                     file://COPYING;md5=2d80c8ed4062b8339b715f90fa68cc9f \
 		    "
-PR = "r15"
+PR = "r16"
 
 SRCREV="396b6c7ab737e2bff244d640601c436a26260ca1"
 SRC_URI = "git://git.sv.gnu.org/libunwind.git;protocal=git \
@@ -15,6 +15,7 @@ SRC_URI = "git://git.sv.gnu.org/libunwind.git;protocal=git \
            file://ignore_invalid_regnum_in_DW_CFA_offset_extended.patch \
            file://libunwind_fix_other_test_cases_for_AARCH64_ILP32.patch \
 	   file://add_attribute_used_to_retain_static_variable.patch \
+	   file://Add-known-failures-into-XFAILS.patch \
 	   file://run-ptest \
           "
 

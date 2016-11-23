@@ -60,7 +60,8 @@ RDEPENDS_packagegroup-oe-virtualization = " \
 	libvirt-libvirtd \
 	libvirt-virsh \
 	libvirt-python \
-	"
+	lua \
+"
 
 RDEPENDS_packagegroup-oe-filesystemutilities = "\
 	squashfs-tools \

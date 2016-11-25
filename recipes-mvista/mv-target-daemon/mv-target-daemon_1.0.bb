@@ -3,18 +3,20 @@ DESCRIPTION = "mv-target-daemon waits for MV-REQ-TARGET message via \
                such as ARCH, Linux Kernel Version, IP"
 
 LICENSE = "GPLv2"
-LIC_FILES_CHSUM = "file://COPYING;md5=401bad8f8e21893d0603e1a67427074b"
+LIC_FILES_CHKSUM = "file://COPYING;md5=401bad8f8e21893d0603e1a67427074b"
 
 SRC_URI = "file://${BPN}-${PV}.tar.bz2 \
            file://mv-target-daemond \
            file://mv-target-daemond.service \
           "
 
-PR = "r1"
+PR = "r2"
 
 inherit autotools systemd update-rc.d
 
 B = "${S}"
+
+TARGET_CC_ARCH += "${LDFLAGS}"
 
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE_${PN} = "mv-target-daemond.service"

@@ -10,13 +10,11 @@ SRC_URI = "file://${BPN}-${PV}.tar.bz2 \
            file://mv-target-daemond.service \
           "
 
-PR = "r2"
+PR = "r1"
 
 inherit autotools systemd update-rc.d
 
 B = "${S}"
-
-TARGET_CC_ARCH += "${LDFLAGS}"
 
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE_${PN} = "mv-target-daemond.service"

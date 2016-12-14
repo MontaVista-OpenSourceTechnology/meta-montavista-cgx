@@ -55,11 +55,18 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
         packagegroup-oe-test-tools \
 	"
 
+LIBVIRT=" \
+        libvirt \
+        libvirt-libvirtd \
+        libvirt-virsh \
+        libvirt-python \
+"
+# FIXME libvirt depends on qemu which does not build on mips64
+LIBVIRT_mips64 = ""
+
+
 RDEPENDS_packagegroup-oe-virtualization = " \
-	libvirt \
-	libvirt-libvirtd \
-	libvirt-virsh \
-	libvirt-python \
+	${LIBVIRT} \
 	lua \
 "
 

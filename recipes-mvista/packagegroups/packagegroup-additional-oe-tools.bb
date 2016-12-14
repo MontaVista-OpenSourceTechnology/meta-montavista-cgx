@@ -62,7 +62,8 @@ LIBVIRT=" \
         libvirt-python \
 "
 # FIXME libvirt depends on qemu which does not build on mips64
-LIBVIRT_mips64 = ""
+LIBVIRT_qemumips64 = ""
+LIBVIRT_qemumips64nfp = ""
 
 
 RDEPENDS_packagegroup-oe-virtualization = " \

@@ -261,7 +261,7 @@ do_install_mips64-nf-n32_append () {
 LIBC_PACKAGES_LIST =  "linux-libc-headers linux-libc-headers-dev linux-libc-headers-dbg"
 LIBC_PACKAGES_LIST += "ldd ${PN}-dev ${PN}-staticdev ${PN}-doc ${PN}-pcprofile ${PN}-gconv" 
 LIBC_PACKAGES_LIST += "${PN}-dbg catchsegv sln nscd ${PN}-utils"
-LIBC_PACKAGES_LIST += "${PN}-pic libcidn libmemusage libsegfault libsotruss ${PN} glibc-extra-nss glibc-thread-db" 
+LIBC_PACKAGES_LIST += "${PN}-pic libcidn libmemusage libsegfault libsotruss glibc-extra-nss glibc-thread-db ${PN}" 
 
 LIBC_PACKAGES="${@base_conditional('EXTERNAL_GLIBC', '1', bb.data.expand('${LIBC_PACKAGES_LIST}',d), 'external-mvl-toolchain' , d)}"
 PACKAGES = "libitm libitm-dev libitm-staticdev gcc-sanitizers libgo libgo-dev libgo-staticdev libgcc libgcc-dev libssp libssp-dev libssp-staticdev \

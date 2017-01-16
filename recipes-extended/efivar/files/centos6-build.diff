@@ -1,0 +1,71 @@
+diff -r -x .git -u a/gcc.specs b/gcc.specs
+--- a/gcc.specs	2017-01-16 11:50:00.217816040 -0800
++++ b/gcc.specs	2017-01-16 11:16:04.180750888 -0800
+@@ -2,7 +2,7 @@
+ + -D_GNU_SOURCE
+ 
+ *efivar_cpp_options:
+- -Werror -Wall -std=gnu99 -Wextra
++  -Wall -std=gnu99 -Wextra
+ 
+ *cpp_options:
+ + %(efivar_cpp_options)
+@@ -14,4 +14,4 @@
+ + %{!shared:%{!static:%{!r:-pie}}} %{static:-Wl,-no-fatal-warnings -Wl,-static -static -Wl,-z,relro,-z,now}
+ 
+ *link:
+-+ %{!static:--fatal-warnings} --no-undefined-version --no-allow-shlib-undefined --add-needed -z now --build-id %{!static:%{!shared:-PIE}} %{shared:-z relro -PIC} %{static:%<pie}
+++ %{!static:--fatal-warnings} --no-undefined-version --add-needed -z now --build-id %{!static:%{!shared:-PIE}} %{shared:-z relro -PIC} %{static:%<pie}
+diff -r -x .git -u a/src/export.c b/src/export.c
+--- a/src/export.c	2017-01-16 11:49:59.555816019 -0800
++++ b/src/export.c	2017-01-16 11:04:46.118729189 -0800
+@@ -21,8 +21,8 @@
+ #include <inttypes.h>
+ #include <stdint.h>
+ #include <stdlib.h>
+-#include <uchar.h>
+-
++//#include <uchar.h>
++typedef unsigned short char16_t; 
+ #include <efivar.h>
+ #include "lib.h"
+ 
+diff -r -x .git -u a/src/include/efivar/efiboot-loadopt.h b/src/include/efivar/efiboot-loadopt.h
+--- a/src/include/efivar/efiboot-loadopt.h	2017-01-16 11:49:59.556816019 -0800
++++ b/src/include/efivar/efiboot-loadopt.h	2017-01-16 11:08:14.546735859 -0800
+@@ -21,7 +21,15 @@
+ #ifndef _EFIBOOT_LOADOPT_H
+ #define _EFIBOOT_LOADOPT_H 1
+ 
+-typedef struct efi_load_option_s efi_load_option;
++typedef struct efi_load_option_s {
++	uint32_t attributes;
++	uint16_t file_path_list_length;
++	uint16_t description[];
++	// uint8_t file_path_list[];
++	// uint8_t optional_data[];
++}
++__attribute__((packed))
++efi_load_option;
+ 
+ extern ssize_t efi_loadopt_create(uint8_t *buf, ssize_t size,
+ 				  uint32_t attributes, efidp dp,
+diff -r -x .git -u a/src/loadopt.c b/src/loadopt.c
+--- a/src/loadopt.c	2017-01-16 11:49:59.556816019 -0800
++++ b/src/loadopt.c	2017-01-16 11:08:07.732735641 -0800
+@@ -25,15 +25,6 @@
+ #include "dp.h"
+ #include "include/efivar/efiboot-loadopt.h"
+ 
+-typedef struct efi_load_option_s {
+-	uint32_t attributes;
+-	uint16_t file_path_list_length;
+-	uint16_t description[];
+-	// uint8_t file_path_list[];
+-	// uint8_t optional_data[];
+-}
+-__attribute__((packed))
+-efi_load_option;
+ 
+ ssize_t
+ __attribute__((__nonnull__ (6)))

@@ -26,8 +26,10 @@ python () {
              errorList.remove('arch')
              errorQA = " ".join(errorList)
              d.setVar("ERROR_QA", errorQA)
-          
+    if bb.data.inherits_class("image",d) :
+          bb.build.addtask("do_populate_sdk", None, 'do_rootfs', d)    
 }
+
 SDKTARGETSYSROOT_mvista-cgx="${SDKPATH}/sysroots/${MACHINE}-montavista-linux"
 
 toolchain_create_sdk_env_script_append () {
@@ -373,3 +375,4 @@ python fixup_stripped_perms () {
                   os.chown(dtfile, 0, 0)
 
 }
+

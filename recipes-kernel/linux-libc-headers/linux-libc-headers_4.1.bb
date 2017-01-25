@@ -1,5 +1,5 @@
 KORG_ARCHIVE_COMPRESSION = "xz"
-
+DEFAULT_PREFERENCE = "-1"
 require linux-libc-headers.inc
 
 SRC_URI[md5sum] = "997c8492ebfdc9bb9e6ed8d4945539dd"

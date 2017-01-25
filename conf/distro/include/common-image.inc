@@ -57,3 +57,11 @@ PREFERRED_VERSION_python-sqlalchemy = "1.0.8"
 PREFERRED_VERSION_python-greenlet = "0.4.7"
 
 PREFERRED_VERSION_gnutls-native = "3.5.1"
+
+BBMASK = "(catchemptybbmask)"
+# Get rid of older bbappend files
+BBMASK .= "|(meta-openstack/recipes-connectivity/openssh/openssh_6.%.bbappend)"
+BBMASK .= "|(meta-openstack/recipes-support/iproute2/iproute2_3.%.bbappend)"
+BBMASK .= "|(meta-openstack/recipes-support/fuse/fuse_2.9.3.bbappend)"
+BBMASK .= "|(meta-openstack/recipes-extended/iscsi-initiator-utils/)"
+BBMASK .= "|(meta-openstack/recipes-support/postgresql/)"

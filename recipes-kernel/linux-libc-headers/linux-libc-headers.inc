@@ -37,7 +37,7 @@ python __anonymous () {
         d.setVar("HEADER_FETCH_VER", "3.0")
     else:
         d.setVar("HEADER_FETCH_VER", "2.6")
-    sourcedir = d.getVar("MVL_KERNEL_TREE", True)
+    sourcedir = d.getVar("MV_KERNEL_TREE", True)
     if sourcedir:
        if sourcedir.startswith("file://") and not os.path.isdir(sourcedir.replace("file://","")):
           raise bb.parse.SkipPackage("")

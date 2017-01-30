@@ -58,7 +58,6 @@ PREFERRED_VERSION_python-greenlet = "0.4.7"
 
 PREFERRED_VERSION_gnutls-native = "3.5.1"
 
-BBMASK = "(catchemptybbmask)"
 # Get rid of older bbappend files
 BBMASK .= "|(meta-openstack/recipes-connectivity/openssh/openssh_6.%.bbappend)"
 BBMASK .= "|(meta-openstack/recipes-support/iproute2/iproute2_3.%.bbappend)"

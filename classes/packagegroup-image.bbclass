@@ -43,6 +43,7 @@ addtask do_package before do_build
 python () {
     d.delVarFlag("do_package_write_rpm", "noexec")
     d.delVarFlag("do_package", "noexec")
+    d.delVarFlag("do_packagedata", "noexec")
     d.delVarFlag("do_build", "noexec")
     variant = d.getVar("BBEXTENDVARIANT", True)
     extend =  d.getVar("BBEXTENDCURR",True)

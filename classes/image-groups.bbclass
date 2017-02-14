@@ -29,8 +29,13 @@ python do_deploy_packagedata_setscene () {
 }
 
 python () {
-    if not ( bb.data.inherits_class('image', d) or bb.data.inherits_class('native', d) or bb.data.inherits_class('nativesdk', d)):
-        if d.getVarFlag('do_packagedata', 'noexec', True) != '1':
+    if not ( bb.data.inherits_class('image', d) or bb.data.inherits_class('native', d) or \
+    bb.data.inherits_class('nativesdk', d) or bb.data.inherits_class('cross', d) or \
+    bb.data.inherits_class('cross-canadian', d) or bb.data.inherits_class('crosssdk', d)):
+        bbtasks = d.getVar('__BBTASKS', False) or []
+        if not "do_packagedata" in bbtasks:
+            pass
+        elif d.getVarFlag('do_packagedata', 'noexec', True) != '1':
             bb.build.addtask('do_deploy_packagedata', 'do_build', 'do_packagedata', d)
             bb.build.addtask('do_deploy_packagedata_setscene', None, None, d)
             sstatetasks = d.getVar('SSTATETASKS', True) or ""

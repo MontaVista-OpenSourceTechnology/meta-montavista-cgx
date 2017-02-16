@@ -146,6 +146,7 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	ethtool \
 	portmap \
 	net-tools \
+	dhcp-client \
 	dhcp-server \
 "
 # FIXME

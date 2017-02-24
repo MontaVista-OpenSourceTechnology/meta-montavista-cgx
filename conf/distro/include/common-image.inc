@@ -58,6 +58,8 @@ PREFERRED_VERSION_python-greenlet = "0.4.9"
 
 PREFERRED_VERSION_gnutls-native = "3.5.1"
 
+OS_DEFAULT_INITSCRIPT_PARAMS ??= "defaults 30 10"
+
 # Get rid of older bbappend files
 BBMASK .= "|(meta-openstack/recipes-connectivity/openssh/openssh_6.%.bbappend)"
 BBMASK .= "|(meta-openstack/recipes-support/iproute2/iproute2_3.%.bbappend)"

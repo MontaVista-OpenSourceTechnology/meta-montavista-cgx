@@ -31,3 +31,6 @@ SRC_URI += "${@appendKernelCfgFiles(d)}"
 # FIXME Need to deal with scc files
 KERNEL_FEATURES_remove ="features/debug/printk.scc"
 COMPATIBLE_MACHINE = "qemuarm|qemuarm64|qemux86|qemuppc|qemumips|qemumips64|qemux86-64"
+
+# Don't remove debug and comment sections of AArch64 kernel modules
+INHIBIT_PACKAGE_STRIP_aarch64 = "1"

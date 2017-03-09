@@ -148,10 +148,10 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	net-tools \
 	dhcp-client \
 	dhcp-server \
+	tcpdump \
+	iscsitarget \
+	iscsi-initiator-utils \
 "
-# FIXME
-#	iscsitarget 
-#	iscsi-initiator-utils 
 
 RDEPENDS_packagegroups-oe-logmanagement ="\
 	syslog-ng \

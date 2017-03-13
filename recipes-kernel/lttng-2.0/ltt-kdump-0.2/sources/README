@@ -22,17 +22,17 @@ into a kdump kernel.  Let's pretend that has happened and we are
 booted into the kernel.
 
 # Save the coredump memory
-kdump-tool topelf -o pcore
+kdump-elftool topelf -o pcore
 
 # Now on the development host, transfer the core.  There are other
 # ways to transfer, too, you an send the pcore to standard out of
-# kdump-tool and use socat, for instance.  There is FTP.  It depends
+# kdump-elftool and use socat, for instance.  There is FTP.  It depends
 # on your situation.
 scp -P 5555 root@localhost:pcore pcore5
 
 # Now on the development host, convert the physical core to a virtual
 # core that gdb can use.
-kdump-tool tovelf -i pcore5 -o vcore5
+kdump-elftool tovelf -i pcore5 -o vcore5
 
 # Load the core into the cross gdb.  We are running this in the Linux
 # build directory,

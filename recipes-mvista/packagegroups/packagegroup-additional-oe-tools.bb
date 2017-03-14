@@ -243,7 +243,7 @@ RDEPENDS_packagegroup-oe-security = "\
 RDEPENDS_packagegroup-oe-debug = "\
 	gdb-kdump-helpers \
 	libunwind \
-	kdump-tool \
+	kdump-elftool \
 	"
 
 RDEPENDS_packagegroup-oe-netprotocol-utilities = " \

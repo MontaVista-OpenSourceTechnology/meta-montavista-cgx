@@ -1,3 +1,7 @@
+PR .= ".1"
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+
 do_install_append() {
         if [ "${LIBVIRT_PYTHON_ENABLE}" = "1" ]; then
                 cd ${WORKDIR}/${BPN}-python-${PV} && \

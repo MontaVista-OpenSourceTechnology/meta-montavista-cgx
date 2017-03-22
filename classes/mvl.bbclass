@@ -376,3 +376,10 @@ python fixup_stripped_perms () {
 
 }
 
+# Code not to remove debug symbols from kernel module for AArch64
+python () {
+    if bb.data.inherits_class("module",d) or bb.data.inherits_class("module-base",d):
+        if bb.utils.contains('TUNE_FEATURES', 'aarch64', True, False, d):
+            bb.data.setVar('INHIBIT_PACKAGE_STRIP', '1', d)
+}
+

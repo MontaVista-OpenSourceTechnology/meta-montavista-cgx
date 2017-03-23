@@ -9,7 +9,7 @@ PACKAGES = "${PN}"
 # By default, packagegroup packages do not depend on a certain architecture.
 # Only if dependencies are modified by MACHINE_FEATURES, packages
 # need to be set to MACHINE_ARCH after inheriting packagegroup.bbclass
-PACKAGE_ARCH ?= "all"
+PACKAGE_ARCH ?= "${@oe.utils.ifelse((bb.data.inherits_class('packagegroup', d) and not bb.data.inherits_class('nativesdk',d)), '${MACHINE_ARCH}', 'all')}"
 
 # Fully expanded - so it applies the overrides as well
 PACKAGE_ARCH_EXPANDED := "${PACKAGE_ARCH}"

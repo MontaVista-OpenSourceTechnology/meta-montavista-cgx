@@ -116,7 +116,7 @@ FEATURE_ID ?= "com.mvista.sdk-${MACHINE}-${SDK_ARCH}-mvlsdk"
 PLUGIN_NAME ?="MontaVista SDK ${MACHINE}-${SDK_ARCH}"
 FEATURE_NAME ?="MontaVista SDK ${MACHINE}-${SDK_ARCH}"
 VENDOR_NAME ?= "MontaVista Software, LLC."
-ADK_VERSION ?= "2.0.0"
+ADK_VERSION ?= "2.2.0"
 MSD_REVISION ?= "${MSD_VERSION}"
 
 fakeroot create_shar_append_mvista-cgx () {

@@ -229,25 +229,9 @@ do_install() {
                 ln -s $(basename $(dirname $GCCDIR)) ${D}${libdir}/${TARGET_SYS_MULTILIB_ORIGINAL}
              fi
      fi
-     if [ "${PACKAGE_ARCH}" == "aarch64" ] ; then 
-            mkdir -p ${D}${prefix}/libilp32/
-            cp -a ${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}/sys-root/usr/libilp32/aarch64* ${D}${prefix}/libilp32/
-     fi
-                
+
 
 }
-
-do_install_append_linux-gnuilp32 () {
-     if [ "${PACKAGE_ARCH}" == "aarch64_ilp32" ] ; then 
-        for gccdir in ${D}${includedir}/c++/${BINV}/${TARGET_ARCH}*; do
-          if [ ! -e $gccdir/ilp32 ] ; then
-             ln -sf . $gccdir/ilp32
-          fi 
-        done
-     fi
-}
-
-
 glibc_package_preprocess_append () {
     mkdir -p ${PKGD}${exec_prefix}/lib
     touch ${PKGD}${exec_prefix}/lib/.empty
@@ -255,10 +239,6 @@ glibc_package_preprocess_append () {
              if [ -n "${MULTILIB_VARIANTS}" ] ; then
                 touch ${D}/usr/lib64/.empty
              fi
-    fi
-    if [ "${PACKAGE_ARCH}" == "aarch64" ] ; then 
-            mkdir -p ${D}${prefix}/libilp32/
-            cp -a ${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}/sys-root/usr/libilp32/aarch64* ${D}${prefix}/libilp32/
     fi
 }
 
@@ -271,10 +251,6 @@ sysroot_stage_all_append () {
        if [ "${PACKAGE_ARCH}" == "i586" ] ; then
                 install -d ${SYSROOT_DESTDIR}/usr/lib64/
                 touch ${SYSROOT_DESTDIR}/usr/lib64/.empty
-       fi
-       if [ "${PACKAGE_ARCH}" == "aarch64" ] ; then 
-            mkdir -p ${SYSROOT_DESTDIR}${prefix}/libilp32/
-            cp -a ${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}/sys-root/usr/libilp32/aarch64* ${SYSROOT_DESTDIR}${prefix}/libilp32/
        fi
 }
 
@@ -353,7 +329,7 @@ ALLOW_EMPTY_linux-libc-headers = "1"
 FILES_${PN}-utils += "${base_bindir}"
 
 FILES_libgcc = "${base_libdir}/libgcc_s.so.1 ${libdir}/libgcc_s.so.1"
-FILES_libgcc-dev = "${base_libdir}/libgcc_s.so ${libdir}/libgcc_s.so ${libdir}/gcc/* ${libdir}/${TARGET_SYS} ${prefix}/libilp32/aarch64*"
+FILES_libgcc-dev = "${base_libdir}/libgcc_s.so ${libdir}/libgcc_s.so ${libdir}/gcc/* ${libdir}/${TARGET_SYS}"
 FILES_libstdc++ = "${base_libdir}/libstdc++.so.* ${base_libdir}/libstdc++.so.* ${libdir}/libstdc++.so.* ${libdir}/libstdc++.so.*"
 FILES_libstdc++-dev = "${includedir}/c++ \
     ${base_libdir}/libstdc++.so \
@@ -482,7 +458,7 @@ SUMMARY_libitm-staticdev = "GNU transactional memory support library - static de
 ALLOW_EMPTY_libgcov-dev = "1"
 CSL_VER_GDB  = "7.9.1" 
 CSL_VER_MAIN = "6.2.0"
-CSL_VER_LIBC = "2.24"
+CSL_VER_LIBC = "2.22"
 
 def get_mlprovides(provide,d) :
     mlvariants = d.getVar("MULTILIB_VARIANTS",True)

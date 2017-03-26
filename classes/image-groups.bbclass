@@ -31,7 +31,8 @@ python do_deploy_packagedata_setscene () {
 python () {
     if not ( bb.data.inherits_class('image', d) or bb.data.inherits_class('native', d) or \
     bb.data.inherits_class('nativesdk', d) or bb.data.inherits_class('cross', d) or \
-    bb.data.inherits_class('cross-canadian', d) or bb.data.inherits_class('crosssdk', d)):
+    bb.data.inherits_class('cross-canadian', d) or bb.data.inherits_class('crosssdk', d) or \
+    bb.data.inherits_class('kernel', d)):
         bbtasks = d.getVar('__BBTASKS', False) or []
         if not "do_packagedata" in bbtasks:
             pass

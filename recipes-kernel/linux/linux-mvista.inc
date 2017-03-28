@@ -63,7 +63,7 @@ do_install_prepend () {
         echo 'export KERNEL_AR="${KERNEL_AR}"' >> $kvnsh
         echo 'export OBJCOPY="${@os.path.basename(d.getVar('OBJCOPY',1))} "' >> $kvnsh
         echo 'export KERNEL_IMAGETYPE="${KERNEL_IMAGETYPE}"' >> $kvnsh
-        echo 'export KERNEL_OUTPUT="${KERNEL_OUTPUT}"' >> $kvnsh
+        echo 'export KERNEL_OUTPUT="arch/${ARCH}/boot/${KERNEL_IMAGETYPE}"' >> $kvnsh
         echo 'export KMACHINE="${MACHINE}"' >> $kvnsh
         echo 'export UBOOT_ENTRYPOINT="${UBOOT_ENTRYPOINT}"' >> $kvnsh
         echo 'export PN="${PN}"' >> $kvnsh

@@ -239,6 +239,10 @@ do_install() {
 
 do_install_append_linux-gnuilp32 () {
      if [ "${PACKAGE_ARCH}" == "aarch64_ilp32" ] ; then 
+        mkdir -p ${D}/usr/lib64/
+        touch ${D}/usr/lib64/.empty
+        mkdir -p ${D}/lib64
+        ln -s ../libilp32/ld-linux-aarch64_ilp32.so.1 ${D}/lib64/ld-linux-aarch64_ilp32.so.1
         for gccdir in ${D}${includedir}/c++/${BINV}/${TARGET_ARCH}*; do
           if [ ! -e $gccdir/ilp32 ] ; then
              ln -sf . $gccdir/ilp32
@@ -256,7 +260,9 @@ glibc_package_preprocess_append () {
                 touch ${D}/usr/lib64/.empty
              fi
     fi
-    if [ "${PACKAGE_ARCH}" == "aarch64" ] ; then 
+    if [ "${PACKAGE_ARCH}" == "aarch64" ] ; then
+            mkdir -p ${D}/usr/lib64/ 
+            touch ${D}/usr/lib64/.empty
             mkdir -p ${D}${prefix}/libilp32/
             cp -a ${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}/sys-root/usr/libilp32/aarch64* ${D}${prefix}/libilp32/
     fi
@@ -273,6 +279,8 @@ sysroot_stage_all_append () {
                 touch ${SYSROOT_DESTDIR}/usr/lib64/.empty
        fi
        if [ "${PACKAGE_ARCH}" == "aarch64" ] ; then 
+            mkdir -p ${SYSROOT_DESTDIR}${prefix}/lib64
+            touch    ${SYSROOT_DESTDIR}${prefix}/lib64/.empty
             mkdir -p ${SYSROOT_DESTDIR}${prefix}/libilp32/
             cp -a ${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}/sys-root/usr/libilp32/aarch64* ${SYSROOT_DESTDIR}${prefix}/libilp32/
        fi
@@ -335,6 +343,7 @@ PKGV_gdbserver-dbg = "${CSL_VER_GDB}"
 EXTRALIBDIR = "${@base_conditional('PACKAGE_ARCH', 'mips64', '/lib64', '', d)}"
 GLIBC_FILE_LIST="/lib/ld-* ${libc_baselibs} ${EXTRALIBDIR} ${libexecdir}/* ${@base_conditional('USE_LDCONFIG', '1', '${base_sbindir}/ldconfig ${sysconfdir}/ld.so.conf', '', d)}"
 FILES_${PN} = "${@base_conditional('EXTERNAL_GLIBC', '1', bb.data.expand('${GLIBC_FILE_LIST}',d) , '' , d)}' /usr/lib*/.empty"
+FILES_${PN}_append_linux-gnuilp32 += " /lib*/ld-linux-aarch64_ilp32.*"
 RDEPENDS_${PN}-dev += "linux-libc-headers libgcc-dev"
 RPROVIDES_${PN} += "glibc-pcprofile glibc-pcprofile glibc-pic glibc-pic glibc libc-mtrace glibc-mtrace glibc"
 RPROVIDES_${PN}-dbg += "glibc-dbg glibc-dbg"
@@ -480,7 +489,7 @@ SUMMARY_libitm-staticdev = "GNU transactional memory support library - static de
 
 #FIXME this shouldn't be empty
 ALLOW_EMPTY_libgcov-dev = "1"
-CSL_VER_GDB  = "7.9.1" 
+CSL_VER_GDB  = "7.11.1" 
 CSL_VER_MAIN = "6.2.0"
 CSL_VER_LIBC = "2.24"
 

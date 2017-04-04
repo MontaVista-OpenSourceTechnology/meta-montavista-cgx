@@ -1,0 +1,1 @@
+inherit ship-recipe-sources

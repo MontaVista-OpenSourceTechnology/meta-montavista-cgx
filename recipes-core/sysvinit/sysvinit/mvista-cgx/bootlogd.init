@@ -25,9 +25,11 @@ test -f $DAEMON || exit 0
 [ -r /etc/default/bootlogd ] && . /etc/default/bootlogd
 [ -r /etc/default/rcS ] && . /etc/default/rcS
 
-# Assume link to pts is a container
+# Assume /dev/console mount on devpts is a container
 # Set CONTAINER_OK in /etc/default/rcS to use in container
-[ -z "$CONTAINER_OK" -a "$(/usr/bin/dirname $(/usr/bin/readlink -f /dev/console))" = "/dev/pts" ] && exit 0
+# IN_CONTAINER_ENV is set in /etc/default/rcS by lxc-mvlinux for container rootfs
+([ -n "$IN_CONTAINER_ENV" ] || \
+ [ -z "$CONTAINER_OK" -a "$(mount | grep 'devpts.*/dev/console')" ]) && exit 0
 
 ## set -e # not needed
 

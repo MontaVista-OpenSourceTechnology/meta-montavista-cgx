@@ -56,7 +56,8 @@ startup() {
 		"$@"
 		;;
   esac
-  [ -z "$CONTAINER_OK" -a "$(/usr/bin/dirname $(/usr/bin/readlink -f /dev/console))" = "/dev/pts" ] || startup_progress 
+  ([ -n "$IN_CONTAINER_ENV" ] || \
+   [ -z "$CONTAINER_OK" -a "$(mount | grep 'devpts.*/dev/console')" ]) || startup_progress
 }
 
   # Ignore CTRL-C only in this shell, so we can interrupt subprocesses.
@@ -173,7 +174,8 @@ startup() {
 	done
   fi
 
-[ -z "$CONTAINER_OK" -a "$(/usr/bin/dirname $(/usr/bin/readlink -f /dev/console))" = "/dev/pts" ] && exit 0
+([ -n "$IN_CONTAINER_ENV" ] || \
+ [ -z "$CONTAINER_OK" -a "$(mount | grep 'devpts.*/dev/console')" ]) && exit 0
 #Uncomment to cause psplash to exit manually, otherwise it exits when it sees a VC switch
 if [ "x$runlevel" != "xS" ] && [ ! -x /etc/rc${runlevel}.d/S??xserver-nodm ]; then
     if type psplash-write >/dev/null 2>&1; then

@@ -61,6 +61,10 @@ write_mvlinux_rcS() {
 # Misc tasks, services
 syslogd
 EOF
+
+    # set variable to distinguish rootfs of container
+    [ -e "${ROOTFS}"/etc/default/rcS ] && \
+    echo "IN_CONTAINER_ENV=yes" >> "${ROOTFS}"/etc/default/rcS
 }
 
 # Write out a custom fstab

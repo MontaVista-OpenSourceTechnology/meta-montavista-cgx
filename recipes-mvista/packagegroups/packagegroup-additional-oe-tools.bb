@@ -151,6 +151,10 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	tcpdump \
 	iscsitarget \
 	iscsi-initiator-utils \
+        lksctp-tools \
+        tipcutils \
+        tipcutils-demos \
+        vlan \
 "
 
 RDEPENDS_packagegroups-oe-logmanagement ="\

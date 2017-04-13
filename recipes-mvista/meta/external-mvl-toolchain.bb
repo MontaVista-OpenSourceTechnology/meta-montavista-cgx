@@ -483,3 +483,26 @@ RPROVIDES_libstdc++-dev += "${@['',get_mlprovides('base-libstdc++-dev', d)][d.ge
 
 RDEPENDS_glibc-thread-db += "${@['','base-glibc-thread-db'][d.getVar('MLPREFIX', True) != '']} ${@['',get_mlprovides('glibc-thread-db', d)][d.getVar('MLPREFIX', True) == '']}"
 RPROVIDES_glibc-thread-db += "${@['',get_mlprovides('base-glibc-thread-db', d)][d.getVar('MLPREFIX', True) == '']}"
+
+PACKAGESPLITFUNCS_append = " copy_unstripped_libpthread "
+
+python copy_unstripped_libpthread () {
+    if d.getVar('INHIBIT_PACKAGE_STRIP', True) != '1':
+        image_path = ((d.getVar('D', True) or "") + \
+                      (d.getVar("base_libdir", True) or ""))
+        packages_split_path = ((d.getVar('PKGDEST', True) or "") + "/external-mvl-toolchain" + \
+                               (d.getVar("base_libdir", True) or ""))
+        image_cmd_path = "find " + image_path + \
+                         " | grep 'libpthread-.*\.so' | grep -v debug"
+        packages_split_cmd_path = "find " + packages_split_path + \
+                                  " | grep 'libpthread-.*\.so' | grep -v debug"
+
+        libpthread_image_path = os.popen(image_cmd_path).read().strip('\n')
+        libpthread_packages_split_path = os.popen(packages_split_cmd_path).read().strip('\n')
+
+        print("libpthread_image_path %s" % libpthread_image_path)
+        print("libpthread_packages_split_path %s" % libpthread_packages_split_path)
+        if libpthread_image_path and libpthread_packages_split_path:
+            install_command = "install -m 0755 " + libpthread_image_path + " " + libpthread_packages_split_path
+            os.system(install_command)
+}

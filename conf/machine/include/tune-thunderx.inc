@@ -1,4 +1,4 @@
-require conf/machine/include/arm/arch-armv8.inc
+require conf/machine/include/arm64/arch-armv8.inc
 
 DEFAULTTUNE ?= "thunderx"
 AVAILTUNES += "thunderx thunderx_be"

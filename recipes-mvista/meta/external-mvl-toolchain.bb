@@ -242,6 +242,8 @@ do_install_append_linux-gnuilp32 () {
         mkdir -p ${D}/usr/lib64/
         touch ${D}/usr/lib64/.empty
         mkdir -p ${D}/lib64
+        GCCDIR="$(echo ${D}${libdir}/*ml*/6.*)"
+        ln -s . $GCCDIR/ilp32
         ln -s ../libilp32/ld-linux-aarch64_ilp32.so.1 ${D}/lib64/ld-linux-aarch64_ilp32.so.1
         for gccdir in ${D}${includedir}/c++/${BINV}/${TARGET_ARCH}*; do
           if [ ! -e $gccdir/ilp32 ] ; then
@@ -260,7 +262,7 @@ glibc_package_preprocess_append () {
                 touch ${D}/usr/lib64/.empty
              fi
     fi
-    if [ "${PACKAGE_ARCH}" == "aarch64" ] ; then
+    if [ "${PACKAGE_ARCH}" == "aarch64_ilp32" ] ; then
             mkdir -p ${D}/usr/lib64/ 
             touch ${D}/usr/lib64/.empty
             mkdir -p ${D}${prefix}/libilp32/
@@ -278,7 +280,7 @@ sysroot_stage_all_append () {
                 install -d ${SYSROOT_DESTDIR}/usr/lib64/
                 touch ${SYSROOT_DESTDIR}/usr/lib64/.empty
        fi
-       if [ "${PACKAGE_ARCH}" == "aarch64" ] ; then 
+       if [ "${PACKAGE_ARCH}" == "aarch64_ilp322" ] ; then 
             mkdir -p ${SYSROOT_DESTDIR}${prefix}/lib64
             touch    ${SYSROOT_DESTDIR}${prefix}/lib64/.empty
             mkdir -p ${SYSROOT_DESTDIR}${prefix}/libilp32/

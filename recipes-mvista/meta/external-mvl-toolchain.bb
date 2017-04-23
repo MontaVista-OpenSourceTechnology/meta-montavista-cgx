@@ -280,7 +280,7 @@ sysroot_stage_all_append () {
                 install -d ${SYSROOT_DESTDIR}/usr/lib64/
                 touch ${SYSROOT_DESTDIR}/usr/lib64/.empty
        fi
-       if [ "${PACKAGE_ARCH}" == "aarch64_ilp322" ] ; then 
+       if [ "${PACKAGE_ARCH}" == "aarch64_ilp32" ] ; then 
             mkdir -p ${SYSROOT_DESTDIR}${prefix}/lib64
             touch    ${SYSROOT_DESTDIR}${prefix}/lib64/.empty
             mkdir -p ${SYSROOT_DESTDIR}${prefix}/libilp32/

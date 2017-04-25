@@ -7,6 +7,7 @@ SRC_URI += " \
             file://0002-powerpc-change-the-memory-size-limit.patch \
             file://0001-purgatory-Pass-r-directly-to-linker.patch \
             file://0001-vmcore-dmesg-Define-_GNU_SOURCE.patch \
+            file://kexec-tools-arm.patch \
          "
 
 S= "${WORKDIR}/git"

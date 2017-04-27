@@ -1,4 +1,4 @@
-PR .= ".1"
+PR .= ".2"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
@@ -11,3 +11,4 @@ do_install_append() {
 }
 
 PACKAGECONFIG[wireshark] = "--with-wireshark-dissector,--without-wireshark-dissector,wireshark"
+PACKAGECONFIG_remove_mips64 = "qemu"

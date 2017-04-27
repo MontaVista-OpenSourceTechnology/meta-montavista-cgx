@@ -1,0 +1,29 @@
+--- ntp-4.2.8p9-orig/ntpd/ntp_config.c	2016-11-21 04:28:41.000000000 -0800
++++ ntp-4.2.8p9/ntpd/ntp_config.c	2017-03-24 10:34:28.544337375 -0700
+@@ -2655,7 +2655,7 @@
+ 				cur_memlock = 0;
+ # endif /* HAVE_MLOCKALL */
+ 			} else if (rlimit_av->value.i >= 0) {
+-#if defined(RLIMIT_MEMLOCK)
++#if defined(RLIMIT_MEMLOCK) && defined(HAVE_SETRLIMIT)
+ # if defined(HAVE_MLOCKALL)
+ 				if (cur_memlock != 1) {
+ 					if (-1 == mlockall(MCL_CURRENT|MCL_FUTURE)) {
+@@ -2678,7 +2678,7 @@
+ 			break;
+ 
+ 		case T_Stacksize:
+-#if defined(RLIMIT_STACK)
++#if defined(RLIMIT_STACK) && defined(HAVE_SETRLIMIT)
+ 			ntp_rlimit(RLIMIT_STACK,
+ 				   (rlim_t)(rlimit_av->value.i * 4096),
+ 				   4096,
+@@ -2690,7 +2690,7 @@
+ 			break;
+ 
+ 		case T_Filenum:
+-#if defined(RLIMIT_NOFILE)
++#if defined(RLIMIT_NOFILE) && defined(HAVE_SETRLIMIT)
+ 			ntp_rlimit(RLIMIT_NOFILE,
+ 				  (rlim_t)(rlimit_av->value.i),
+ 				  1,

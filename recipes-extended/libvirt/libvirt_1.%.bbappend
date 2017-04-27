@@ -12,3 +12,4 @@ do_install_append() {
 
 PACKAGECONFIG[wireshark] = "--with-wireshark-dissector,--without-wireshark-dissector,wireshark"
 PACKAGECONFIG_remove_mips64 = "qemu"
+PACKAGECONFIG_remove_linux-gnuilp32 = "qemu"

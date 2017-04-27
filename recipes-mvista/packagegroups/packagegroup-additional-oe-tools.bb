@@ -86,6 +86,8 @@ RDEPENDS_packagegroup-oe-hotplugutilities = "\
 RDEPENDS_packagegroup-oe-wirelessutilities = "\
 	irda-utils \
 	"
+OPROFILE="oprofile"
+OPROFILE_linux-gnuilp32 = "" 
 RDEPENDS_packagegroup-oe-console-utilities = "\
 	autofs \
 	console-tools \
@@ -98,7 +100,7 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	stat \
 	linux-firmware \
 	mtd-utils \
-	oprofile \
+	${OPROFILE} \
 	pax-utils \
 	tiff \
 	libunwind \

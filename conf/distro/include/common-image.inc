@@ -9,7 +9,6 @@ BBCLASSEXTEND_pn-attr-nativesdk = "native nativesdk"
 
 
 #From meta-measured, make sure BB_NO_NETWORK continues to work.
-SRCREV_pn-tpm2.0-tss = "557c87357882683d4842d7a7d5009fd077136817"
 SRCREV_pn-pcr-calc = "250141b0cc42e87e83f510fd6a36f68b7b58fe1c"
 SRCREV_pn-pcr-calc-native = "250141b0cc42e87e83f510fd6a36f68b7b58fe1c"
 SRCREV_pn-pyelftools = "546e692243895888cb2a6201b3bc263fd2cbc1ad"

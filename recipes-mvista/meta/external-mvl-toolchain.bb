@@ -535,9 +535,7 @@ python copy_unstripped_libpthread () {
         libpthread_image_path = os.popen(image_cmd_path).read().strip('\n')
         libpthread_packages_split_path = os.popen(packages_split_cmd_path).read().strip('\n')
 
-        print("libpthread_image_path %s" % libpthread_image_path)
-        print("libpthread_packages_split_path %s" % libpthread_packages_split_path)
         if libpthread_image_path and libpthread_packages_split_path:
-            install_command = "install -m 0755 " + libpthread_image_path + " " + libpthread_packages_split_path
+            install_command = "cp -v -f " + libpthread_image_path + " " + libpthread_packages_split_path
             os.system(install_command)
 }

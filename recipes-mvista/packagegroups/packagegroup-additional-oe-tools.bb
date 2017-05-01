@@ -257,4 +257,5 @@ RDEPENDS_packagegroup-oe-netprotocol-utilities = " \
 
 RDEPENDS_packagegroup-oe-test-tools = " \
         rt-tests \
+        python-pip \
 "

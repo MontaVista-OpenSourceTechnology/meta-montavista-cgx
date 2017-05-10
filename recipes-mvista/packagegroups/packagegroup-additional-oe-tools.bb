@@ -140,7 +140,7 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	openl2tp \
 	openldap \
 	quagga \
-	quagga-watchquagga \
+        ${@base_contains('DISTRO_FEATURES', 'sysvinit', 'quagga-watchquagga', '', d)}
 	quagga-ospfclient \
 	strongswan \
 	tunctl \

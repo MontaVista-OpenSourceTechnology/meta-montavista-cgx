@@ -1,4 +1,4 @@
-PR .= ".3"
+PR .= ".4"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
@@ -17,3 +17,6 @@ do_install_ptest_append () {
         ${D}${PTEST_PATH}/src/tests/Makefile
     fi
 }
+
+# lxc needs cgroups mounted
+RDEPENDS_${PN} += "${@bb.utils.contains('DISTRO_FEATURES','systemd','','cgroup-lite',d)}"

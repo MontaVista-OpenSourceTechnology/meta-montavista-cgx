@@ -252,6 +252,19 @@ do_install_append_linux-gnuilp32 () {
         done
      fi
 }
+do_install_append_linux-gnun32 () {
+     if [ "${PACKAGE_ARCH}" == "mips64_n32" ] ; then 
+        mkdir -p ${D}/usr/lib64/
+        touch ${D}/usr/lib64/.empty
+        ln -s ${TARGET_ARCH}${TARGET_VENDOR}-${TARGET_OS} ${D}${libdir}/${TARGET_SYS_MULTILIB_ORIGINAL}
+        GCCDIR="$(echo ${D}${libdir}/*ml*/6.*)"
+        for gccdir in ${D}${includedir}/c++/${BINV}/${TARGET_ARCH}*; do
+          if [ ! -e $gccdir/32 ] ; then
+             ln -sf . $gccdir/32
+          fi 
+        done
+     fi
+}
 
 
 glibc_package_preprocess_append () {
@@ -268,6 +281,7 @@ glibc_package_preprocess_append () {
             mkdir -p ${D}${prefix}/libilp32/
             cp -a ${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}/sys-root/usr/libilp32/aarch64* ${D}${prefix}/libilp32/
     fi
+       
 }
 
 oe_multilib_header () {
@@ -285,6 +299,11 @@ sysroot_stage_all_append () {
             touch    ${SYSROOT_DESTDIR}${prefix}/lib64/.empty
             mkdir -p ${SYSROOT_DESTDIR}${prefix}/libilp32/
             cp -a ${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}/sys-root/usr/libilp32/aarch64* ${SYSROOT_DESTDIR}${prefix}/libilp32/
+       fi
+       if [ "${PACKAGE_ARCH}" == "mips64_n32" ] ; then 
+            mkdir -p ${SYSROOT_DESTDIR}${prefix}/lib64
+            touch    ${SYSROOT_DESTDIR}${prefix}/lib64/.empty
+            ln -s ${TARGET_ARCH}${TARGET_VENDOR}-${TARGET_OS} ${SYSROOT_DESTDIR}${libdir}/${TARGET_SYS_MULTILIB_ORIGINAL}
        fi
 }
 
@@ -364,7 +383,7 @@ ALLOW_EMPTY_linux-libc-headers = "1"
 FILES_${PN}-utils += "${base_bindir}"
 
 FILES_libgcc = "${base_libdir}/libgcc_s.so.1 ${libdir}/libgcc_s.so.1"
-FILES_libgcc-dev = "${base_libdir}/libgcc_s.so ${libdir}/libgcc_s.so ${libdir}/gcc/* ${libdir}/${TARGET_SYS} ${prefix}/libilp32/aarch64*"
+FILES_libgcc-dev = "${base_libdir}/libgcc_s.so ${libdir}/libgcc_s.so ${libdir}/gcc/* ${libdir}/${TARGET_SYS} ${prefix}/libilp32/aarch64* ${libdir}/mips64*"
 FILES_libstdc++ = "${base_libdir}/libstdc++.so.* ${base_libdir}/libstdc++.so.* ${libdir}/libstdc++.so.* ${libdir}/libstdc++.so.*"
 FILES_libstdc++-dev = "${includedir}/c++ \
     ${base_libdir}/libstdc++.so \

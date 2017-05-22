@@ -9,6 +9,7 @@ RDEPENDS_kernel-modules += "kernel-map kmod"
 RDEPENDS_kernel-image += "kernel-map"
 RDEPENDS_kernel += "kernel-image"
 FILES_kernel-image += "/boot/vmlinuz-*"
+RDEPENDS_kernel-base += "${@bb.utils.contains("MACHINE", "qemu" , "", "kernel-image", d)}"
 BB_GENERATE_MIRROR_TARBALLS = "0"
 
 python __anonymous() {

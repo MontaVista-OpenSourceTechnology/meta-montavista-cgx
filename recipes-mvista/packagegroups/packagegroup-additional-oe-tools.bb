@@ -88,6 +88,8 @@ RDEPENDS_packagegroup-oe-wirelessutilities = "\
 	"
 OPROFILE="oprofile"
 OPROFILE_linux-gnuilp32 = "" 
+#Fix Me: This should work
+OPROFILE_linux-gnun32 = "" 
 RDEPENDS_packagegroup-oe-console-utilities = "\
 	autofs \
 	console-tools \

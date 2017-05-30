@@ -253,7 +253,7 @@ do_install_append_linux-gnuilp32 () {
      fi
 }
 do_install_append_linux-gnun32 () {
-     if [ "${PACKAGE_ARCH}" == "mips64_n32" ] ; then 
+     if [ "${BASELIB}" == "lib32" ] ; then 
         mkdir -p ${D}/usr/lib64/
         touch ${D}/usr/lib64/.empty
         ln -s ${TARGET_ARCH}${TARGET_VENDOR}-${TARGET_OS} ${D}${libdir}/${TARGET_SYS_MULTILIB_ORIGINAL}
@@ -300,13 +300,15 @@ sysroot_stage_all_append () {
             mkdir -p ${SYSROOT_DESTDIR}${prefix}/libilp32/
             cp -a ${EXTERNAL_TOOLCHAIN}/${CSL_TARGET_SYS}/sys-root/usr/libilp32/aarch64* ${SYSROOT_DESTDIR}${prefix}/libilp32/
        fi
-       if [ "${PACKAGE_ARCH}" == "mips64_n32" ] ; then 
+}
+
+sysroot_stage_all_append_linux-gnun32 () {
+       if [ "${BASELIB}" == "lib32" ] ; then 
             mkdir -p ${SYSROOT_DESTDIR}${prefix}/lib64
             touch    ${SYSROOT_DESTDIR}${prefix}/lib64/.empty
             ln -s ${TARGET_ARCH}${TARGET_VENDOR}-${TARGET_OS} ${SYSROOT_DESTDIR}${libdir}/${TARGET_SYS_MULTILIB_ORIGINAL}
        fi
 }
-
 #tmp hack
 do_install_mips64-nf-n32_append () {
 }

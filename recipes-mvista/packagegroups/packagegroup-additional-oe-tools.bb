@@ -121,6 +121,7 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	postgresql \
 	postgresql-client \
 	postgresql-timezone \
+	multipath-tools \
 "
 
 RDEPENDS_packagegroup-oe-database-utilities ="\
@@ -158,6 +159,8 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
         tipcutils \
         tipcutils-demos \
         vlan \
+	sg3-utils \
+	sg3-utils-udev \
 "
 
 RDEPENDS_packagegroups-oe-logmanagement ="\

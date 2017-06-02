@@ -196,7 +196,13 @@ do_install() {
      if [ "${TARGET_VENDOR_MULTILIB_ORIGINAL}" != "" -a "${TARGET_VENDOR}" != "${TARGET_VENDOR_MULTILIB_ORIGINAL}" ]; then
        for each in ${D}/${includedir}/glibc-locale-internal-*; do 
          if [ "x$each" != "x${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}" ] ; then
-               rm -rf $each
+               if [ -z "$(basename $each | grep mllib)" ] ; then
+                  rm -rf $each
+               else
+                  if [ ! -d ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS} ] ; then
+                     mv $each ${D}/${includedir}/glibc-locale-internal-${MULTIMACH_TARGET_SYS}
+                  fi
+               fi
          fi
        done
      else

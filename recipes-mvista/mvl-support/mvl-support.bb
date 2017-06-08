@@ -47,4 +47,7 @@ do_install_script () {
     cat ${WORKDIR}/mvl-supportinfo | \
         sed -e's,@sysconfdir@,${sysconfdir},g' > ${D}${bindir}/mvl-supportinfo
     chmod +x ${D}${bindir}/mvl-supportinfo
+    if [ -e ${TOPDIR}/.mvl-content/project-descriptor.xml ] ; then
+         cp ${TOPDIR}/.mvl-content/project-descriptor.xml ${D}${mvldir}/conf/
+    fi
 }

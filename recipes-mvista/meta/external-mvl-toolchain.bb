@@ -57,7 +57,7 @@ INSANE_SKIP="1"
 INSANE_SKIP_${PN}-dbg="1"
 INSANE_SKIP_${PN}="1 installed_vs_shipped"
 BINV="${PV}"
-PR .= ".3"
+PR .= ".4"
 
 #SRC_URI = "http://www.codesourcery.com/public/gnu_toolchain/${CSL_TARGET_SYS}/arm-${PV}-${TARGET_PREFIX}i686-pc-linux-gnu.tar.bz2"
 QAPATHTEST[arch]=""

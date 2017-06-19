@@ -57,7 +57,7 @@ INSANE_SKIP="1"
 INSANE_SKIP_${PN}-dbg="1"
 INSANE_SKIP_${PN}="1 installed_vs_shipped"
 BINV="${PV}"
-PR .= ".4"
+PR .= ".5"
 
 #SRC_URI = "http://www.codesourcery.com/public/gnu_toolchain/${CSL_TARGET_SYS}/arm-${PV}-${TARGET_PREFIX}i686-pc-linux-gnu.tar.bz2"
 QAPATHTEST[arch]=""
@@ -249,7 +249,6 @@ do_install_append_linux-gnuilp32 () {
         touch ${D}/usr/lib64/.empty
         mkdir -p ${D}/lib64
         GCCDIR="$(echo ${D}${libdir}/*ml*/6.*)"
-        ln -s . $GCCDIR/ilp32
         ln -s ../libilp32/ld-linux-aarch64_ilp32.so.1 ${D}/lib64/ld-linux-aarch64_ilp32.so.1
         for gccdir in ${D}${includedir}/c++/${BINV}/${TARGET_ARCH}*; do
           if [ ! -e $gccdir/ilp32 ] ; then

@@ -1,0 +1,51 @@
+From 0238e0f44c46a30f57009f813f971369e1ee4e44 Mon Sep 17 00:00:00 2001
+From: Andrew Pinski <apinski@cavium.com>
+Date: Thu, 12 May 2016 13:53:40 -0700
+Subject: [PATCH 1/9] Fix compiling with newer libiberty.
+
+Signed-off-by: Andrew Pinski <apinski@cavium.com>
+---
+ gdb/ChangeLog.CAVIUM      |  4 ++++
+ gdb/common/common-utils.c | 15 +++++++++++++++
+ 2 files changed, 19 insertions(+)
+ create mode 100644 gdb/ChangeLog.CAVIUM
+
+diff --git a/gdb/ChangeLog.CAVIUM b/gdb/ChangeLog.CAVIUM
+new file mode 100644
+index 0000000..31be982
+--- /dev/null
++++ b/gdb/ChangeLog.CAVIUM
+@@ -0,0 +1,4 @@
++2016-05-12  Andrew Pinski  <apinski@cavium.com>
++
++	* common/common-utils.c (xmalloc_failed): New function.
++	(xmalloc_failed): New function.
+diff --git a/gdb/common/common-utils.c b/gdb/common/common-utils.c
+index 33668f3..da60822 100644
+--- a/gdb/common/common-utils.c
++++ b/gdb/common/common-utils.c
+@@ -27,6 +27,21 @@
+    consistent semantics and guard against typical memory management
+    problems.  */
+ 
++/* xmalloc_failed and xmalloc_set_program_name are here so we can still link against
++   libiberty and not get duplicated symbols due to them being missing before. */
++void
++xmalloc_failed (size_t size)
++{
++  malloc_failure (size);
++}
++
++void
++xmalloc_set_program_name (const char *s ATTRIBUTE_UNUSED)
++{
++  /* Do nothing. */
++}
++
++
+ /* NOTE: These are declared using PTR to ensure consistency with
+    "libiberty.h".  xfree() is GDB local.  */
+ 
+-- 
+2.6.4
+

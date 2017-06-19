@@ -1,0 +1,106 @@
+From 170be5764e5dc3db010f98cd8a7a8b4840e81e01 Mon Sep 17 00:00:00 2001
+From: Andrew Pinski <apinski@cavium.com>
+Date: Mon, 7 Sep 2015 17:12:36 +0800
+Subject: [PATCH 4/9] Add ILP32 support to gdb.
+
+This patch adds AARCH64:ilp32 support to gdb and sets
+up the correct sizes for some types like pointers and long.
+Also sets up the correct linker map offsets for Linux.
+
+2016-08-30  Andrew Pinski  <apinski@cavium.com>
+
+	* aarch64-tdep.h (gdbarch_tdep): Add ilp32 field.
+	* aarch64-tdep.c (aarch64_gdbarch_init): Setup ILP32 support.
+	Make sure the gdbarches have compatible ilp32 flags.
+	Set long and ptr sizes correctly for ilp32.
+	* aarch64-linux-tdep.c (aarch64_linux_init_abi):
+	Add support for ILP32.
+---
+ gdb/aarch64-linux-tdep.c |  8 ++++++--
+ gdb/aarch64-tdep.c       | 14 ++++++++++++--
+ gdb/aarch64-tdep.h       |  3 +++
+ 3 files changed, 30 insertions(+), 4 deletions(-)
+
+diff --git a/gdb/aarch64-linux-tdep.c b/gdb/aarch64-linux-tdep.c
+index 9d082e8..3eae137 100644
+--- a/gdb/aarch64-linux-tdep.c
++++ b/gdb/aarch64-linux-tdep.c
+@@ -954,8 +954,12 @@ aarch64_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+ 
+   linux_init_abi (info, gdbarch);
+ 
+-  set_solib_svr4_fetch_link_map_offsets (gdbarch,
+-					 svr4_lp64_fetch_link_map_offsets);
++  if (tdep->ilp32)
++    set_solib_svr4_fetch_link_map_offsets (gdbarch,
++					   svr4_ilp32_fetch_link_map_offsets);
++  else
++    set_solib_svr4_fetch_link_map_offsets (gdbarch,
++					   svr4_lp64_fetch_link_map_offsets);
+ 
+   /* Enable TLS support.  */
+   set_gdbarch_fetch_tls_load_module_address (gdbarch,
+diff --git a/gdb/aarch64-tdep.c b/gdb/aarch64-tdep.c
+index 798a1b7..109cf10 100644
+--- a/gdb/aarch64-tdep.c
++++ b/gdb/aarch64-tdep.c
+@@ -2667,6 +2667,12 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
+   const struct tdesc_feature *feature;
+   int num_regs = 0;
+   int num_pseudo_regs = 0;
++  char ilp32 = FALSE;
++
++  if (info.abfd
++      && bfd_get_flavour (info.abfd) == bfd_target_elf_flavour
++      && bfd_arch_bits_per_address (info.abfd) == 32)
++    ilp32 = TRUE;
+ 
+   /* Ensure we always have a target descriptor.  */
+   if (!tdesc_has_registers (tdesc))
+@@ -2724,6 +2730,9 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
+        best_arch != NULL;
+        best_arch = gdbarch_list_lookup_by_info (best_arch->next, &info))
+     {
++      /* ILP32 and LP64 are incompatible. */
++      if (gdbarch_tdep (arches->gdbarch)->ilp32 != ilp32)
++	continue;
+       /* Found a match.  */
+       break;
+     }
+@@ -2742,6 +2751,7 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
+   tdep->lowest_pc = 0x20;
+   tdep->jb_pc = -1;		/* Longjump support not enabled by default.  */
+   tdep->jb_elt_size = 8;
++  tdep->ilp32 = ilp32;
+ 
+   set_gdbarch_push_dummy_call (gdbarch, aarch64_push_dummy_call);
+   set_gdbarch_frame_align (gdbarch, aarch64_frame_align);
+@@ -2781,9 +2791,9 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
+   set_gdbarch_float_bit (gdbarch, 32);
+   set_gdbarch_double_bit (gdbarch, 64);
+   set_gdbarch_long_double_bit (gdbarch, 128);
+-  set_gdbarch_long_bit (gdbarch, 64);
++  set_gdbarch_long_bit (gdbarch, ilp32 ? 32 : 64);
+   set_gdbarch_long_long_bit (gdbarch, 64);
+-  set_gdbarch_ptr_bit (gdbarch, 64);
++  set_gdbarch_ptr_bit (gdbarch, ilp32 ? 32 : 64);
+   set_gdbarch_char_signed (gdbarch, 0);
+   set_gdbarch_float_format (gdbarch, floatformats_ieee_single);
+   set_gdbarch_double_format (gdbarch, floatformats_ieee_double);
+diff --git a/gdb/aarch64-tdep.h b/gdb/aarch64-tdep.h
+index a95b613..7b1ce3e 100644
+--- a/gdb/aarch64-tdep.h
++++ b/gdb/aarch64-tdep.h
+@@ -95,6 +95,9 @@ struct gdbarch_tdep
+ 
+   /* syscall record.  */
+   int (*aarch64_syscall_record) (struct regcache *regcache, unsigned long svc_number);
++  /* If this is ILP32 or LP64.  */
++  bool ilp32;
++
+ };
+ 
+ extern struct target_desc *tdesc_aarch64;
+-- 
+2.6.4
+

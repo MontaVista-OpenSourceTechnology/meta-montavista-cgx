@@ -1,0 +1,589 @@
+From 71f6f9351d55745941b17c87f458cebb5baadda0 Mon Sep 17 00:00:00 2001
+From: "Jeremy A. Puhlman" <jpuhlman@mvista.com>
+Date: Thu, 15 Jun 2017 14:13:19 -0700
+Subject: [PATCH] Handle ILP32 AARCH64 correctly for gdbserver
+
+In gdbserver, we need to send over 64bit registers
+for pc/sp and have gdb think they are 64bit registers.
+So we need another XML file for ILP32.
+
+Tested using gdbserver with an ILP32 program and even
+tested using gdbserver as an ILP32 program.
+
+OK?
+
+Thanks,
+Andrew Pinski
+
+ChangeLog:
+        * aarch64-tdep.c: Include "features/aarch64_ilp32.c".
+        (aarch64_gdbarch_init): Handle ilp32 correctly.
+        (_initialize_aarch64_tdep): Call initialize_tdesc_aarch64_ilp32.
+        * features/Makefile (WHICH): Add aarch64_ilp32.
+        (aarch64_ilp32-expedite): Set.
+        (XMLTOC): Add aarch64_ilp32.xml.
+        (features/aarch64_ilp32-core.xml): New file.
+        (features/aarch64_ilp32.xml): New file.
+        (features/aarch64_ilp32.c): Generate.
+        (regformats/aarch64_ilp32.dat): Generate.
+
+gdbserver/ChangeLog:
+        * Makefile.in (clean): Remove aarch64_ilp32.c also.
+        (aarch64_ilp32-ipa.o): New target.
+        (aarch64_ilp32.c): New target.
+        * configure.srv (aarch64*-*-linux*): Add ilp32 files
+        to srv_regobj, srv_xmlfiles and ipa_obj.
+        * linux-aarch64-ipa.c (init_registers_aarch64_ilp32):
+        Declare.
+        (tdesc_aarch64_ilp32): Likewise.
+        (get_ipa_tdesc): Return tdesc_aarch64_ilp32 for ILP32.
+        (initialize_low_tracepoint): Call init_registers_aarch64_ilp32
+        for ILP32.
+        * linux-aarch64-low.c (init_registers_aarch64_ilp32): Declare.
+        (tdesc_aarch64_ilp32): Likewise.
+        (aarch64_linux_read_description): Return tdesc_aarch64_ilp32
+        for ILP32 executables.
+        (initialize_low_arch): Call init_registers_aarch64_ilp32.
+
+Signed-off-by: Andrew Pinski <apinski@cavium.com>
+---
+ gdb/aarch64-tdep.c                  |   4 +-
+ gdb/features/Makefile               |   4 +-
+ gdb/features/aarch64_ilp32-core.xml |  46 ++++++++++
+ gdb/features/aarch64_ilp32.c        | 174 ++++++++++++++++++++++++++++++++++++
+ gdb/features/aarch64_ilp32.xml      |  14 +++
+ gdb/gdbserver/Makefile.in           |   6 ++
+ gdb/gdbserver/configure.srv         |   7 +-
+ gdb/gdbserver/linux-aarch64-ipa.c   |  13 ++-
+ gdb/gdbserver/linux-aarch64-low.c   |  10 ++-
+ gdb/regformats/aarch64_ilp32.dat    |  73 +++++++++++++++
+ 10 files changed, 343 insertions(+), 8 deletions(-)
+ create mode 100644 gdb/features/aarch64_ilp32-core.xml
+ create mode 100644 gdb/features/aarch64_ilp32.c
+ create mode 100644 gdb/features/aarch64_ilp32.xml
+ create mode 100644 gdb/regformats/aarch64_ilp32.dat
+
+diff --git a/gdb/aarch64-tdep.c b/gdb/aarch64-tdep.c
+index 109cf10..27bf4e0 100644
+--- a/gdb/aarch64-tdep.c
++++ b/gdb/aarch64-tdep.c
+@@ -56,6 +56,7 @@
+ #include "record-full.h"
+ 
+ #include "features/aarch64.c"
++#include "features/aarch64_ilp32.c"
+ 
+ #include "arch/aarch64-insn.h"
+ 
+@@ -2676,7 +2677,7 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
+ 
+   /* Ensure we always have a target descriptor.  */
+   if (!tdesc_has_registers (tdesc))
+-    tdesc = tdesc_aarch64;
++    tdesc = ilp32 ? tdesc_aarch64_ilp32 : tdesc_aarch64;
+ 
+   gdb_assert (tdesc);
+ 
+@@ -2866,6 +2867,7 @@ _initialize_aarch64_tdep (void)
+ 		    aarch64_dump_tdep);
+ 
+   initialize_tdesc_aarch64 ();
++  initialize_tdesc_aarch64_ilp32 ();
+ 
+   /* Debug this file's internals.  */
+   add_setshow_boolean_cmd ("aarch64", class_maintenance, &aarch64_debug, _("\
+diff --git a/gdb/features/Makefile b/gdb/features/Makefile
+index e5c5154..6d29376 100644
+--- a/gdb/features/Makefile
++++ b/gdb/features/Makefile
+@@ -43,7 +43,7 @@
+ #
+ #   make GDB=/path/to/gdb XMLTOC="xml files" cfiles
+ 
+-WHICH = aarch64 \
++WHICH = aarch64 aarch64_ilp32 \
+ 	arm-with-iwmmxt arm-with-vfpv2 arm-with-vfpv3 arm-with-neon \
+ 	i386/i386 i386/i386-linux \
+ 	i386/i386-mmx i386/i386-mmx-linux \
+@@ -77,6 +77,7 @@ WHICH = aarch64 \
+ 
+ # Record which registers should be sent to GDB by default after stop.
+ aarch64-expedite = x29,sp,pc
++aarch64_ilp32-expedite = x29,sp,pc
+ arm-expedite = r11,sp,pc
+ i386/i386-expedite = ebp,esp,eip
+ i386/i386-linux-expedite = ebp,esp,eip
+@@ -148,6 +149,7 @@ OUTPUTS = $(patsubst %,$(outdir)/%.dat,$(WHICH))
+ # to make on the command line.
+ XMLTOC = \
+ 	aarch64.xml \
++	aarch64_ilp32.xml \
+ 	arm-with-iwmmxt.xml \
+ 	arm-with-m-fpa-layout.xml \
+ 	arm-with-m-vfp-d16.xml \
+diff --git a/gdb/features/aarch64_ilp32-core.xml b/gdb/features/aarch64_ilp32-core.xml
+new file mode 100644
+index 0000000..821eb41
+--- /dev/null
++++ b/gdb/features/aarch64_ilp32-core.xml
+@@ -0,0 +1,46 @@
++<?xml version="1.0"?>
++<!-- Copyright (C) 2009-2016 Free Software Foundation, Inc.
++     Contributed by ARM Ltd.
++
++     Copying and distribution of this file, with or without modification,
++     are permitted in any medium without royalty provided the copyright
++     notice and this notice are preserved.  -->
++
++<!DOCTYPE feature SYSTEM "gdb-target.dtd">
++<feature name="org.gnu.gdb.aarch64.core">
++  <reg name="x0" bitsize="64"/>
++  <reg name="x1" bitsize="64"/>
++  <reg name="x2" bitsize="64"/>
++  <reg name="x3" bitsize="64"/>
++  <reg name="x4" bitsize="64"/>
++  <reg name="x5" bitsize="64"/>
++  <reg name="x6" bitsize="64"/>
++  <reg name="x7" bitsize="64"/>
++  <reg name="x8" bitsize="64"/>
++  <reg name="x9" bitsize="64"/>
++  <reg name="x10" bitsize="64"/>
++  <reg name="x11" bitsize="64"/>
++  <reg name="x12" bitsize="64"/>
++  <reg name="x13" bitsize="64"/>
++  <reg name="x14" bitsize="64"/>
++  <reg name="x15" bitsize="64"/>
++  <reg name="x16" bitsize="64"/>
++  <reg name="x17" bitsize="64"/>
++  <reg name="x18" bitsize="64"/>
++  <reg name="x19" bitsize="64"/>
++  <reg name="x20" bitsize="64"/>
++  <reg name="x21" bitsize="64"/>
++  <reg name="x22" bitsize="64"/>
++  <reg name="x23" bitsize="64"/>
++  <reg name="x24" bitsize="64"/>
++  <reg name="x25" bitsize="64"/>
++  <reg name="x26" bitsize="64"/>
++  <reg name="x27" bitsize="64"/>
++  <reg name="x28" bitsize="64"/>
++  <reg name="x29" bitsize="64"/>
++  <reg name="x30" bitsize="64"/>
++  <reg name="sp" bitsize="64" type="int64"/>
++
++  <reg name="pc" bitsize="64" type="uint64"/>
++  <reg name="cpsr" bitsize="32"/>
++</feature>
+diff --git a/gdb/features/aarch64_ilp32.c b/gdb/features/aarch64_ilp32.c
+new file mode 100644
+index 0000000..fe18fa2
+--- /dev/null
++++ b/gdb/features/aarch64_ilp32.c
+@@ -0,0 +1,174 @@
++/* THIS FILE IS GENERATED.  -*- buffer-read-only: t -*- vi:set ro:
++  Original: aarch64_ilp32.xml */
++
++#include "defs.h"
++#include "osabi.h"
++#include "target-descriptions.h"
++
++struct target_desc *tdesc_aarch64_ilp32;
++static void
++initialize_tdesc_aarch64_ilp32 (void)
++{
++  struct target_desc *result = allocate_target_description ();
++  struct tdesc_feature *feature;
++  struct tdesc_type *field_type;
++  struct tdesc_type *type;
++
++  set_tdesc_architecture (result, bfd_scan_arch ("aarch64:ilp32"));
++
++  feature = tdesc_create_feature (result, "org.gnu.gdb.aarch64.core");
++  tdesc_create_reg (feature, "x0", 0, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x1", 1, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x2", 2, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x3", 3, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x4", 4, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x5", 5, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x6", 6, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x7", 7, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x8", 8, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x9", 9, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x10", 10, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x11", 11, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x12", 12, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x13", 13, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x14", 14, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x15", 15, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x16", 16, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x17", 17, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x18", 18, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x19", 19, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x20", 20, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x21", 21, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x22", 22, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x23", 23, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x24", 24, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x25", 25, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x26", 26, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x27", 27, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x28", 28, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x29", 29, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "x30", 30, 1, NULL, 64, "int");
++  tdesc_create_reg (feature, "sp", 31, 1, NULL, 64, "int64");
++  tdesc_create_reg (feature, "pc", 32, 1, NULL, 64, "uint64");
++  tdesc_create_reg (feature, "cpsr", 33, 1, NULL, 32, "int");
++
++  feature = tdesc_create_feature (result, "org.gnu.gdb.aarch64.fpu");
++  field_type = tdesc_named_type (feature, "ieee_double");
++  tdesc_create_vector (feature, "v2d", field_type, 2);
++
++  field_type = tdesc_named_type (feature, "uint64");
++  tdesc_create_vector (feature, "v2u", field_type, 2);
++
++  field_type = tdesc_named_type (feature, "int64");
++  tdesc_create_vector (feature, "v2i", field_type, 2);
++
++  field_type = tdesc_named_type (feature, "ieee_single");
++  tdesc_create_vector (feature, "v4f", field_type, 4);
++
++  field_type = tdesc_named_type (feature, "uint32");
++  tdesc_create_vector (feature, "v4u", field_type, 4);
++
++  field_type = tdesc_named_type (feature, "int32");
++  tdesc_create_vector (feature, "v4i", field_type, 4);
++
++  field_type = tdesc_named_type (feature, "uint16");
++  tdesc_create_vector (feature, "v8u", field_type, 8);
++
++  field_type = tdesc_named_type (feature, "int16");
++  tdesc_create_vector (feature, "v8i", field_type, 8);
++
++  field_type = tdesc_named_type (feature, "uint8");
++  tdesc_create_vector (feature, "v16u", field_type, 16);
++
++  field_type = tdesc_named_type (feature, "int8");
++  tdesc_create_vector (feature, "v16i", field_type, 16);
++
++  field_type = tdesc_named_type (feature, "uint128");
++  tdesc_create_vector (feature, "v1u", field_type, 1);
++
++  field_type = tdesc_named_type (feature, "int128");
++  tdesc_create_vector (feature, "v1i", field_type, 1);
++
++  type = tdesc_create_union (feature, "vnd");
++  field_type = tdesc_named_type (feature, "v2d");
++  tdesc_add_field (type, "f", field_type);
++  field_type = tdesc_named_type (feature, "v2u");
++  tdesc_add_field (type, "u", field_type);
++  field_type = tdesc_named_type (feature, "v2i");
++  tdesc_add_field (type, "s", field_type);
++
++  type = tdesc_create_union (feature, "vns");
++  field_type = tdesc_named_type (feature, "v4f");
++  tdesc_add_field (type, "f", field_type);
++  field_type = tdesc_named_type (feature, "v4u");
++  tdesc_add_field (type, "u", field_type);
++  field_type = tdesc_named_type (feature, "v4i");
++  tdesc_add_field (type, "s", field_type);
++
++  type = tdesc_create_union (feature, "vnh");
++  field_type = tdesc_named_type (feature, "v8u");
++  tdesc_add_field (type, "u", field_type);
++  field_type = tdesc_named_type (feature, "v8i");
++  tdesc_add_field (type, "s", field_type);
++
++  type = tdesc_create_union (feature, "vnb");
++  field_type = tdesc_named_type (feature, "v16u");
++  tdesc_add_field (type, "u", field_type);
++  field_type = tdesc_named_type (feature, "v16i");
++  tdesc_add_field (type, "s", field_type);
++
++  type = tdesc_create_union (feature, "vnq");
++  field_type = tdesc_named_type (feature, "v1u");
++  tdesc_add_field (type, "u", field_type);
++  field_type = tdesc_named_type (feature, "v1i");
++  tdesc_add_field (type, "s", field_type);
++
++  type = tdesc_create_union (feature, "aarch64v");
++  field_type = tdesc_named_type (feature, "vnd");
++  tdesc_add_field (type, "d", field_type);
++  field_type = tdesc_named_type (feature, "vns");
++  tdesc_add_field (type, "s", field_type);
++  field_type = tdesc_named_type (feature, "vnh");
++  tdesc_add_field (type, "h", field_type);
++  field_type = tdesc_named_type (feature, "vnb");
++  tdesc_add_field (type, "b", field_type);
++  field_type = tdesc_named_type (feature, "vnq");
++  tdesc_add_field (type, "q", field_type);
++
++  tdesc_create_reg (feature, "v0", 34, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v1", 35, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v2", 36, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v3", 37, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v4", 38, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v5", 39, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v6", 40, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v7", 41, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v8", 42, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v9", 43, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v10", 44, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v11", 45, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v12", 46, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v13", 47, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v14", 48, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v15", 49, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v16", 50, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v17", 51, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v18", 52, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v19", 53, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v20", 54, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v21", 55, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v22", 56, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v23", 57, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v24", 58, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v25", 59, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v26", 60, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v27", 61, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v28", 62, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v29", 63, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v30", 64, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "v31", 65, 1, NULL, 128, "aarch64v");
++  tdesc_create_reg (feature, "fpsr", 66, 1, NULL, 32, "int");
++  tdesc_create_reg (feature, "fpcr", 67, 1, NULL, 32, "int");
++
++  tdesc_aarch64_ilp32 = result;
++}
+diff --git a/gdb/features/aarch64_ilp32.xml b/gdb/features/aarch64_ilp32.xml
+new file mode 100644
+index 0000000..9c9b23a
+--- /dev/null
++++ b/gdb/features/aarch64_ilp32.xml
+@@ -0,0 +1,14 @@
++<?xml version="1.0"?>
++<!-- Copyright (C) 2009-2016 Free Software Foundation, Inc.
++     Contributed by ARM Ltd.
++
++     Copying and distribution of this file, with or without modification,
++     are permitted in any medium without royalty provided the copyright
++     notice and this notice are preserved.  -->
++
++<!DOCTYPE target SYSTEM "gdb-target.dtd">
++<target>
++  <architecture>aarch64:ilp32</architecture>
++  <xi:include href="aarch64_ilp32-core.xml"/>
++  <xi:include href="aarch64-fpu.xml"/>
++</target>
+diff --git a/gdb/gdbserver/Makefile.in b/gdb/gdbserver/Makefile.in
+index f561dd6..fc17de7 100644
+--- a/gdb/gdbserver/Makefile.in
++++ b/gdb/gdbserver/Makefile.in
+@@ -351,6 +351,7 @@ clean:
+ 	rm -f gdbserver$(EXEEXT) gdbreplay$(EXEEXT) core make.log
+ 	rm -f $(IPA_LIB)
+ 	rm -f aarch64.c
++	rm -f aarch64_ilp32.c
+ 	rm -f reg-arm.c reg-bfin.c i386.c reg-ia64.c reg-m32r.c reg-m68k.c
+ 	rm -f reg-sh.c reg-sparc.c reg-spu.c amd64.c i386-linux.c
+ 	rm -f reg-cris.c reg-crisv32.c amd64-linux.c reg-xtensa.c
+@@ -539,6 +540,9 @@ linux-aarch64-ipa.o: linux-aarch64-ipa.c
+ aarch64-ipa.o: aarch64.c
+ 	$(IPAGENT_COMPILE) $<
+ 	$(POSTCOMPILE)
++aarch64_ilp32-ipa.o: aarch64_ilp32.c
++	$(IPAGENT_COMPILE) $<
++	$(POSTCOMPILE)
+ tdesc-ipa.o: tdesc.c
+ 	$(IPAGENT_COMPILE) $<
+ 	$(POSTCOMPILE)
+@@ -691,6 +695,8 @@ aarch64-insn.o: ../arch/aarch64-insn.c
+ 
+ aarch64.c : $(srcdir)/../regformats/aarch64.dat $(regdat_sh)
+ 	$(SHELL) $(regdat_sh) $(srcdir)/../regformats/aarch64.dat aarch64.c
++aarch64_ilp32.c : $(srcdir)/../regformats/aarch64_ilp32.dat $(regdat_sh)
++	$(SHELL) $(regdat_sh) $(srcdir)/../regformats/aarch64_ilp32.dat aarch64_ilp32.c
+ reg-arm.c : $(srcdir)/../regformats/reg-arm.dat $(regdat_sh)
+ 	$(SHELL) $(regdat_sh) $(srcdir)/../regformats/reg-arm.dat reg-arm.c
+ arm-with-iwmmxt.c : $(srcdir)/../regformats/arm-with-iwmmxt.dat $(regdat_sh)
+diff --git a/gdb/gdbserver/configure.srv b/gdb/gdbserver/configure.srv
+index 4935a36..5f80079 100644
+--- a/gdb/gdbserver/configure.srv
++++ b/gdb/gdbserver/configure.srv
+@@ -51,7 +51,7 @@ srv_linux_obj="linux-low.o linux-osdata.o linux-procfs.o linux-ptrace.o linux-wa
+ 
+ case "${target}" in
+   aarch64*-*-linux*)
+-			srv_regobj="aarch64.o"
++			srv_regobj="aarch64.o aarch64_ilp32.o"
+ 			srv_regobj="${srv_regobj} arm-with-neon.o"
+ 			srv_tgtobj="linux-aarch64-low.o aarch64-linux-hw-point.o"
+ 			srv_tgtobj="$srv_tgtobj linux-aarch32-low.o"
+@@ -59,14 +59,15 @@ case "${target}" in
+ 			srv_tgtobj="$srv_tgtobj aarch64-linux.o"
+ 			srv_tgtobj="$srv_tgtobj aarch64-insn.o"
+ 			srv_tgtobj="${srv_tgtobj} $srv_linux_obj"
+-			srv_xmlfiles="aarch64.xml"
++			srv_xmlfiles="aarch64.xml aarch64_ilp32.xml"
+ 			srv_xmlfiles="${srv_xmlfiles} aarch64-core.xml"
++			srv_xmlfiles="${srv_xmlfiles} aarch64_ilp32-core.xml"
+ 			srv_xmlfiles="${srv_xmlfiles} aarch64-fpu.xml"
+ 			srv_xmlfiles="${srv_xmlfiles} arm-core.xml arm-vfpv3.xml"
+ 			srv_xmlfiles="${srv_xmlfiles} arm-with-neon.xml"
+ 			srv_linux_regsets=yes
+ 			srv_linux_thread_db=yes
+-			ipa_obj="linux-aarch64-ipa.o aarch64-ipa.o"
++			ipa_obj="linux-aarch64-ipa.o aarch64-ipa.o aarch64_ilp32-ipa.o"
+ 			;;
+   arm*-*-linux*)	srv_regobj="reg-arm.o arm-with-iwmmxt.o"
+ 			srv_regobj="${srv_regobj} arm-with-vfpv2.o"
+diff --git a/gdb/gdbserver/linux-aarch64-ipa.c b/gdb/gdbserver/linux-aarch64-ipa.c
+index f1eaa70..54c98e1 100644
+--- a/gdb/gdbserver/linux-aarch64-ipa.c
++++ b/gdb/gdbserver/linux-aarch64-ipa.c
+@@ -24,6 +24,9 @@
+ /* Defined in auto-generated file aarch64.c.  */
+ void init_registers_aarch64 (void);
+ extern const struct target_desc *tdesc_aarch64;
++/* Defined in auto-geenrated file aarch64_ilp32.c.  */
++void init_registers_aarch64_ilp32 (void);
++extern const struct target_desc *tdesc_aarch64_ilp32;
+ 
+ /* Each register saved by the jump pad is in a 16 byte cell.  */
+ #define FT_CR_SIZE 16
+@@ -150,11 +153,17 @@ gdb_agent_get_raw_reg (const unsigned char *raw_regs, int regnum)
+ const struct target_desc *
+ get_ipa_tdesc (int idx)
+ {
+-  return tdesc_aarch64;
++  if (sizeof (void*) == 4)
++    return tdesc_aarch64_ilp32;
++  else
++    return tdesc_aarch64;
+ }
+ 
+ void
+ initialize_low_tracepoint (void)
+ {
+-  init_registers_aarch64 ();
++  if (sizeof(void*) == 4)
++    init_registers_aarch64_ilp32 ();
++  else
++    init_registers_aarch64 ();
+ }
+diff --git a/gdb/gdbserver/linux-aarch64-low.c b/gdb/gdbserver/linux-aarch64-low.c
+index 806a762..862b807 100644
+--- a/gdb/gdbserver/linux-aarch64-low.c
++++ b/gdb/gdbserver/linux-aarch64-low.c
+@@ -42,6 +42,8 @@
+ /* Defined in auto-generated files.  */
+ void init_registers_aarch64 (void);
+ extern const struct target_desc *tdesc_aarch64;
++void init_registers_aarch64_ilp32 (void);
++extern const struct target_desc *tdesc_aarch64_ilp32;
+ 
+ #ifdef HAVE_SYS_REG_H
+ #include <sys/reg.h>
+@@ -504,8 +506,13 @@ aarch64_linux_read_description (void)
+ 
+   is_elf64 = linux_pid_exe_is_elf_64_file (tid, &machine);
+ 
+-  if (is_elf64)
++  if (sizeof (void *) == 4 && is_elf64)
++    error (_("Can't debug 64-bit process with 32-bit GDBserver"));
++
++  if (machine == EM_AARCH64 && is_elf64)
+     return tdesc_aarch64;
++  else if (machine == EM_AARCH64 && !is_elf64)
++    return tdesc_aarch64_ilp32;
+   else
+     return tdesc_arm_with_neon;
+ }
+@@ -3010,6 +3017,7 @@ void
+ initialize_low_arch (void)
+ {
+   init_registers_aarch64 ();
++  init_registers_aarch64_ilp32 ();
+ 
+   initialize_low_arch_aarch32 ();
+ 
+diff --git a/gdb/regformats/aarch64_ilp32.dat b/gdb/regformats/aarch64_ilp32.dat
+new file mode 100644
+index 0000000..bcef3e1
+--- /dev/null
++++ b/gdb/regformats/aarch64_ilp32.dat
+@@ -0,0 +1,73 @@
++# THIS FILE IS GENERATED.  -*- buffer-read-only: t -*- vi :set ro:
++# Generated from: aarch64_ilp32.xml
++name:aarch64_ilp32
++xmltarget:aarch64_ilp32.xml
++expedite:x29,sp,pc
++64:x0
++64:x1
++64:x2
++64:x3
++64:x4
++64:x5
++64:x6
++64:x7
++64:x8
++64:x9
++64:x10
++64:x11
++64:x12
++64:x13
++64:x14
++64:x15
++64:x16
++64:x17
++64:x18
++64:x19
++64:x20
++64:x21
++64:x22
++64:x23
++64:x24
++64:x25
++64:x26
++64:x27
++64:x28
++64:x29
++64:x30
++64:sp
++64:pc
++32:cpsr
++128:v0
++128:v1
++128:v2
++128:v3
++128:v4
++128:v5
++128:v6
++128:v7
++128:v8
++128:v9
++128:v10
++128:v11
++128:v12
++128:v13
++128:v14
++128:v15
++128:v16
++128:v17
++128:v18
++128:v19
++128:v20
++128:v21
++128:v22
++128:v23
++128:v24
++128:v25
++128:v26
++128:v27
++128:v28
++128:v29
++128:v30
++128:v31
++32:fpsr
++32:fpcr
+-- 
+2.6.4
+

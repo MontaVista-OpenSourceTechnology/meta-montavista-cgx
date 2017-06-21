@@ -3,8 +3,9 @@ SECTION = "kernel/userland"
 HOMEPAGE = "https://github.com/MontaVista-OpenSourceTechnology/kdump-elftool"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bae3019b4c6dc4138c217864bd04331f"
-PR = "r1"
-SRC_URI = "https://github.com/MontaVista-OpenSourceTechnology/kdump-elftool/releases/download/v1.2.0/kdump-elftool-1.2.0.tar.gz"
+PR = "r2"
+SRC_URI = "https://github.com/MontaVista-OpenSourceTechnology/kdump-elftool/releases/download/v1.2.0/kdump-elftool-1.2.0.tar.gz \
+	file://0001-Fix-handling-of-x86_64-process-thread-extraction-in-.patch"
 
 inherit autotools
 

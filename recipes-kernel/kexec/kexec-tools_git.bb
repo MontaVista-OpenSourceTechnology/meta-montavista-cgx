@@ -6,12 +6,10 @@ SRC_URI += " \
             file://kexec-x32.patch \
             file://0002-powerpc-change-the-memory-size-limit.patch \
             file://0001-purgatory-Pass-r-directly-to-linker.patch \
-            file://0001-vmcore-dmesg-Define-_GNU_SOURCE.patch \
-            file://kexec-tools-arm.patch \
          "
 
 S= "${WORKDIR}/git"
-PV = "2.0.13+git${SRCPV}"
+PV = "2.0.15+git${SRCPV}"
 
 PACKAGES =+ "kexec kdump vmcore-dmesg"
 

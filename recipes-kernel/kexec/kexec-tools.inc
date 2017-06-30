@@ -8,8 +8,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=ea5bed2f60d357618ca161ad539f7c0a \
                     file://kexec/kexec.c;beginline=1;endline=20;md5=af10f6ae4a8715965e648aa687ad3e09"
 DEPENDS = "zlib xz"
 
-SRCREV = "ee8579e638c0239bec9b2bfb2e47f29e043735db"
-SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/geoff/kexec-tools.git;protocol=http \
+SRCREV = "653318b38e5654cdcbb4d3fa87daa72bcb90537a"
+SRC_URI = "git://git.kernel.org/pub/scm/utils/kernel/kexec/kexec-tools.git \
            file://kdump \
            file://kdump.conf \
 "

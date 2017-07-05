@@ -30,3 +30,5 @@ RDEPENDS_${PN}-busyboxless = "\
 
 RRECOMMENDS_${PN}-busyboxless = "\
     ${MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS}"
+
+RDEPENDS_${PN} += "${@bb.utils.contains('DISTRO_FEATURES','systemd','','cgroup-lite',d)}"

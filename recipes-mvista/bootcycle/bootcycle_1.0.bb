@@ -1,17 +1,13 @@
 DESCRIPTION = "Boot cycle detection"
 LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://COPYING;md5=401bad8f8e21893d0603e1a67427074b"
+LIC_FILES_CHKSUM = "file://COPYING;md5=a23a74b3f4caf9616230789d94217acb"
 
+SRCREV="1.0"
 PR = "r8"
 
-SRC_URI = "${MVL_MIRROR}/bootcycle-${PV}.tar.gz \
-           file://bootcycle-init.diff;apply=yes \
-           file://bootcycle-bld347.diff;apply=yes \
-           file://bootcycle-man.diff;apply=yes \
-           file://bootcycle_udev.patch;apply=yes \
-           file://fix-bootcycle-flag.patch;apply=yes \
+SRC_URI = "git://github.com/MontaVista-OpenSourceTechnology/bootcycle.git;protocol=https \
           "
-
+S="${WORKDIR}/git"
 inherit update-rc.d
 INITSCRIPT_NAME = "bootcycle.sh"
 INITSCRIPT_PARAMS = "start 31 S ."

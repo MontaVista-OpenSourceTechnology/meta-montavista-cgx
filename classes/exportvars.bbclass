@@ -11,19 +11,19 @@ CFGSIGBLACKLIST += "EXPORTVARS EXPORTVARSDIR EXPORTVARSFILE EXPORTCOLLSFILE EXPO
 EXPORTVARSRUN ?= "0"
 
 python () {
-    if bb.data.getVar("EXPORTVARSRUN",d,1) == "1":
+    if d.getVar("EXPORTVARSRUN",d,1) == "1":
         exportvarsrun (d)
 }
 
 def exportvarsrun (d):
 
-    evrecpietype = set(bb.data.getVar("__inherit_cache",d,1))
+    evrecpietype = set(d.getVar("__inherit_cache",d,1))
     evcollectioninfo = d.getVar('LAYER_NAME', 1)
     bb.utils.mkdirhier(bb.data.expand("${EXPORTVARSDIR}",d))
 
     collfile = open(bb.data.expand("${EXPORTCOLLSFILE}",d), "a")
-    for collvar in bb.data.getVar("EXPORTCOLLECTIONVARS",d,1).split(" "):
-      collfile.write('%s="%s",' % (collvar, bb.data.getVar(collvar,d,1)))
+    for collvar in d.getVar("EXPORTCOLLECTIONVARS",d,1).split(" "):
+      collfile.write('%s="%s",' % (collvar, d.getVar(collvar,d,1)))
     if evcollectioninfo:
         collfile.write('COLLECTION="%s"\n' % evcollectioninfo)
     else:
@@ -35,7 +35,7 @@ def exportvarsrun (d):
         evfile.write('COLLECTION="%s"\n' % evcollectioninfo)
     else:
         evfile.write('COLLECTION="%s"\n' % "")
-    for expvar in bb.data.getVar("EXPORTVARS",d,1).split(" "):
-        evfile.write('%s="%s"\n' % (expvar, bb.data.getVar(expvar,d,1)))
+    for expvar in d.getVar("EXPORTVARS",d,1).split(" "):
+        evfile.write('%s="%s"\n' % (expvar, d.getVar(expvar,d,1)))
     evfile.close()
 

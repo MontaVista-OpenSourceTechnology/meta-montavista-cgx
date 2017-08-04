@@ -1,5 +1,5 @@
 
-LAYER_NAME="${@ get_layername(bb.data.getVar("FILE",d,1),d)}"
+LAYER_NAME="${@ get_layername(d.getVar("FILE",d,1),d)}"
 SOURCE_MIRROR_URL="${@get_layermirror(d)}/"
 inherit own-mirrors
 

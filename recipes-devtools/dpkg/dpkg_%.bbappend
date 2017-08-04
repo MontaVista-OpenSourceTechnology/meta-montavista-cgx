@@ -11,8 +11,6 @@ PR .= ".8"
 DEPENDS += " perl-native "
 export PERL="${STAGING_BINDIR_NATIVE}/perl-native/perl"
 
-PACKAGES =+ "start-stop-daemon"
-FILES_start-stop-daemon = "${base_sbindir}/start-stop-daemon.${PN}"
 do_compile_append () {
      oe_runmake -C scripts clean
      oe_runmake -C scripts PERL=/usr/bin/perl 
@@ -22,16 +20,15 @@ do_install_append () {
      install -d ${D}${base_sbindir}
      mv ${D}${sbindir}//start-stop-daemon ${D}${base_sbindir}
      rm -rf  ${D}${sbindir}
-     chown root.root ${D}${libdir}/*.a 
+     install -d ${D}${sbindir}
+     ln -s ../../${base_sbindir}/start-stop-daemon.${PN} ${D}${sbindir}/start-stop-daemon.${PN}
 }
 
-
-RDEPENDS_${PN} += "start-stop-daemon"
 
 inherit update-alternatives
 
 ALTERNATIVE_PRIORITY = "200"
-
-ALTERNATIVE_start-stop-daemon = "start-stop-daemon"
+FILES_${PN}-start-stop += "${base_sbindir}/start-stop-daemon.${PN} ${sbindir}/start-stop-daemon.${PN}"
+ALTERNATIVE_${PN}-start-stop = "start-stop-daemon"
 ALTERNATIVE_LINK_NAME[start-stop-daemon] = "${base_sbindir}/start-stop-daemon"
 

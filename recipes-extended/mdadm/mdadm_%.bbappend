@@ -1,1 +1,0 @@
-CFLAGS += "-DNO_COROSYNC"

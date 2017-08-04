@@ -73,7 +73,7 @@ RDEPENDS_packagegroup-oe-virtualization = " \
 
 RDEPENDS_packagegroup-oe-filesystemutilities = "\
 	squashfs-tools \
-	python-cpuset \
+	cpuset \
 	cramfs \
 	stat \
         util-linux-fsck \
@@ -148,11 +148,13 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	strongswan \
 	tunctl \
 	ethtool \
+	portmap \
 	net-tools \
 	dhcp-client \
 	dhcp-server \
 	tcpdump \
 	iscsitarget \
+	iscsi-initiator-utils \
         lksctp-tools \
         tipcutils \
         tipcutils-demos \
@@ -160,9 +162,6 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	sg3-utils \
 	sg3-utils-udev \
 "
-
-#	iscsi-initiator-utils 
-#	portmap 
 
 RDEPENDS_packagegroups-oe-logmanagement ="\
 	syslog-ng \

@@ -1,3 +1,3 @@
-RDEPENDS_${PN}-runtime += "pam-plugin-loginuid pam-plugin-keyinit"
+RDEPENDS_${PN}-runtime += "${MLPREFIX}pam-plugin-loginuid-${libpam_suffix} ${MLPREFIX}pam-plugin-keyinit-${libpam_suffix}"
 
-PR .= ".3"
+PR .= ".1"

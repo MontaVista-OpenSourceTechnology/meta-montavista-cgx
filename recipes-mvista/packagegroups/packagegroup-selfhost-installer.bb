@@ -28,7 +28,7 @@ X86_PACKAGES_OF_SELFHOST_INSTALLER = "\
                 base-passwd \
                 busybox \
                 mvinstaller \
-                mvpartition \
+                uipartition \
                 nfs-utils-client \
                 strace \
 "

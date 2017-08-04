@@ -1,7 +1,5 @@
 PR .= ".1"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
-#SRC_URI += "file://nettle-3.1.1-version-h.patch"
 inherit multilib_header
 
 do_install_append () {

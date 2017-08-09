@@ -106,7 +106,6 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	pax-utils \
 	tiff \
 	libunwind \
-	guile \
 	lvm2 \
 	libc-client \
 	libol \

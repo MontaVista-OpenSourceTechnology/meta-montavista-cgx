@@ -1,13 +1,13 @@
---- initscripts-9.45_org/rc.d/init.d/functions	2013-06-26 15:20:16.660274573 +0530
-+++ initscripts-9.45/rc.d/init.d/functions	2013-06-26 15:21:08.692275417 +0530
-@@ -135,8 +135,8 @@ __pids_var_run() {
+--- initscripts-9.72-orig/rc.d/init.d/functions	2017-08-11 10:41:44.008015202 -0700
++++ initscripts-9.72/rc.d/init.d/functions	2017-08-11 10:46:46.948663712 -0700
+@@ -216,8 +216,8 @@
  
  # Output PIDs of matching processes, found using pidof
  __pids_pidof() {
--	pidof -c -m -o $$ -o $PPID -o %PPID -x "$1" || \
--		pidof -c -m -o $$ -o $PPID -o %PPID -x "${1##*/}"
-+	pidof -c -m -o $$ -o $PPID -o %PPID -x "$1" 2>/dev/null || \
-+		pidof -c -m -o $$ -o $PPID -o %PPID -x "${1##*/}" 2>/dev/null
+-    pidof -c -m -o $$ -o $PPID -o %PPID -x "$1" || \
+-        pidof -c -m -o $$ -o $PPID -o %PPID -x "${1##*/}"
++    pidof -c -m -o $$ -o $PPID -o %PPID -x "$1" 2>/dev/null || \
++        pidof -c -m -o $$ -o $PPID -o %PPID -x "${1##*/}" 2>/dev/null
  }
  
  

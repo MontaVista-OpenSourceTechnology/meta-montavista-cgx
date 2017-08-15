@@ -17,7 +17,7 @@ RDEPENDS_${PN}-busyboxless = "\
     util-linux-mount \
     util-linux-agetty \
     util-linux-umount \
-    start-stop-daemon\
+    dpkg-start-stop \
     sed \
     gawk \
     sysklogd \

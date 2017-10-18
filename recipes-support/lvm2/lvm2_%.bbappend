@@ -4,7 +4,7 @@ do_install_append_class-target () {
 
 inherit update-alternatives
 ALTERNATIVE_PRIORITY='${@oe.utils.conditional("PN", d.getVar("BPN", True), "100", "10", d)}'
-ALTERNATIVE_${PN} = "${sysconfdir}/lvm/lvm.conf"
+ALTERNATIVE_${PN} += "lvm.conf"
 ALTERNATIVE_TARGET[lvm.conf] = "${sysconfdir}/lvm/lvm.conf.${PN}"
 ALTERNATIVE_LINK_NAME[lvm.conf] = "${sysconfdir}/lvm/lvm.conf"
 

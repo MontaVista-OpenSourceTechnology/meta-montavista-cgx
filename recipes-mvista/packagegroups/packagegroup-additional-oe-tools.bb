@@ -61,6 +61,9 @@ LIBVIRT=" \
         libvirt-virsh \
         libvirt-python \
 "
+#libvirt depends on a package that depends on mozjs which is not working right now.
+#FIXME
+LIBVIRT=""
 # FIXME libvirt depends on qemu which does not build on mips64
 LIBVIRT_qemumips64 = ""
 LIBVIRT_qemumips64nfp = ""

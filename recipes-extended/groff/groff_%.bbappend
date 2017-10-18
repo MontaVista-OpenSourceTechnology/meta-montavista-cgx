@@ -6,15 +6,15 @@ do_install_append_class-target () {
 
 inherit update-alternatives
 ALTERNATIVE_PRIORITY='${@oe.utils.conditional("PN", d.getVar("BPN", True), "100", "10", d)}'
-ALTERNATIVE_${PN} = "${bindir}/grog"
+ALTERNATIVE_${PN} += "grog"
 ALTERNATIVE_TARGET[grog] = "${bindir}/grog.${PN}"
 ALTERNATIVE_LINK_NAME[grog] = "${bindir}/grog"
 
-ALTERNATIVE_${PN} = "${bindir}/groffer"
+ALTERNATIVE_${PN} += "groffer"
 ALTERNATIVE_TARGET[groffer] = "${bindir}/groffer.${PN}"
 ALTERNATIVE_LINK_NAME[groffer] = "${bindir}/groffer"
 
-ALTERNATIVE_${PN} = "${bindir}/gpinyin"
+ALTERNATIVE_${PN} += "gpinyin"
 ALTERNATIVE_TARGET[gpinyin] = "${bindir}/gpinyin.${PN}"
 ALTERNATIVE_LINK_NAME[gpinyin] = "${bindir}/gpinyin"
 

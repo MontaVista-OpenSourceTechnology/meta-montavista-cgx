@@ -7,16 +7,22 @@ DESCRIPTION = "Information for MontaVista support"
 DEPENDS = ""
 INHIBIT_DEFAULT_DEPS = "1"
 PSTAGING_DISABLED = "1"
-PR = "2.2.0"
+PR = "${DISTRO_VERSION}"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 SRC_URI = "file://mvl-supportinfo"
 SSTATE_DISABLE = "1"
-mvldir = "${sysconfdir}/mvl7"
+mvldir = "${sysconfdir}/mvlcgx${PR}"
 mvlfiles = "conf/bblayers.conf conf/devrocket.conf conf/drlog.conf conf/local-content.conf conf/local.conf"
+do_install_bits[nostamp] = "1"
 do_install[nostamp] = "1"
 do_compile[nostamp] = "1"
 PACKAGES="${PN}"
-python do_install () {
+do_install() {
+    :
+}
+addtask do_install_bits before do_install
+
+python do_install_bits () {
     import shutil, logging
 
     destdir = d.getVar("D", True)

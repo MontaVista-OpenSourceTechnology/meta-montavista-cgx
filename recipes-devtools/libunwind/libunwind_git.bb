@@ -29,7 +29,7 @@ S = "${WORKDIR}/git"
 
 LEAD_SONAME = "libunwind"
 
-inherit autotools ptest
+inherit autotools ptest multilib_header
 
 EXTRA_OECONF_arm = "--enable-debug-frame"
 
@@ -55,6 +55,7 @@ do_install_ptest() {
     sed -i -e "s|^LIBUNWIND=.*|LIBUNWIND=${libdir}/libunwind.so|g" \
     -e "s|^LIBUNWIND_GENERIC=.*|LIBUNWIND_GENERIC=${libdir}/libunwind-\${plat}.so|g" \
     ${D}${PTEST_PATH}/tests/check-namespace.sh
+    oe_multilib_header libunwind/libunwind.h
 }
 
 INHIBIT_PACKAGE_STRIP = "1"

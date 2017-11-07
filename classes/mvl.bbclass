@@ -28,6 +28,14 @@ python () {
              d.setVar("ERROR_QA", errorQA)
     if bb.data.inherits_class("image",d) :
           bb.build.addtask("do_populate_sdk", None, 'do_rootfs', d)    
+# Add 10 to base abi priority to remove warnings in image creation when two abis have the same prioity
+    if bb.data.inherits_class("update-alternatives",d):
+          pnMult = d.getVar("PN", True)
+          bpnMult = d.getVar("BPN", True)
+          if (pnMult == bpnMult):
+             prioMult = int(d.getVar("ALTERNATIVE_PRIORITY", True)) 
+             prioMult += 10
+             d.setVar("ALTERNATIVE_PRIORITY", prioMult)
 }
 
 SDKTARGETSYSROOT_mvista-cgx="${SDKPATH}/sysroots/${MACHINE}-montavista-linux"

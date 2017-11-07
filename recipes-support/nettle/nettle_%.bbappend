@@ -1,8 +1,6 @@
 PR .= ".1"
+inherit multilib-alternatives
 
-inherit multilib_header
+MULTILIB_HEADERS = "nettle/nettle-stdint.h nettle/version.h"
 
-do_install_append () {
-	oe_multilib_header nettle/version.h
-}
 EXTRA_OECONF += "--enable-mini-gmp=no"

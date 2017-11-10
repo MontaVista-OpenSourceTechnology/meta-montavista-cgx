@@ -23,6 +23,7 @@ RDEPENDS_${PN} += "bash"
 do_install_virtclass-native() {
 	oe_runmake install prefix=${D}${prefix} mandir=${D}/${datadir}/man/ DESTDIR=${D}
 }
-
+inherit multilib-alternatives
+MULTILIB_ALTERNATIVES_${PN} = "${sysconfdir}/lsb-release"
 BBCLASSEXTEND = "native"
 

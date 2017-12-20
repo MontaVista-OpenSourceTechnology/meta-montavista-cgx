@@ -154,7 +154,6 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	dhcp-client \
 	dhcp-server \
 	tcpdump \
-	iscsitarget \
         lksctp-tools \
         tipcutils \
         tipcutils-demos \
@@ -162,9 +161,10 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	sg3-utils \
 	sg3-utils-udev \
 "
-
+#FIXME
 #	iscsi-initiator-utils 
 #	portmap 
+#	iscsitarget 
 
 RDEPENDS_packagegroups-oe-logmanagement ="\
 	syslog-ng \

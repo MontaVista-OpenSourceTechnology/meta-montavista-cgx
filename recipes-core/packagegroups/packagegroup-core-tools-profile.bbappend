@@ -18,7 +18,9 @@ PROFILETOOLS = "\
     powertop \
     latencytop \
     lttng-tools \
-    lttng-modules \
     babeltrace \
     "
+LTTNGMODULES=""
+#FIXME Does not build against 4.14
+# lttng-modules 
 PROFILE_TOOLS_X_aarch64 = ""

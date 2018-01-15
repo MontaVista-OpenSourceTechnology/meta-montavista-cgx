@@ -78,9 +78,10 @@ RDEPENDS_packagegroup-oe-filesystemutilities = "\
 	squashfs-tools \
 	python-cpuset \
 	cramfs \
-	stat \
         util-linux-fsck \
 	"
+# FIXME stat is missing
+# stat
 
 RDEPENDS_packagegroup-oe-hotplugutilities = "\
 	pcmciautils \
@@ -102,7 +103,6 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	libcgroup \
 	libgcc \
 	run-postinsts \
-	stat \
 	linux-firmware \
 	mtd-utils \
 	${OPROFILE} \
@@ -125,6 +125,8 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	postgresql-timezone \
 	multipath-tools \
 "
+# FIXME stat is missing
+# stat
 
 RDEPENDS_packagegroup-oe-database-utilities ="\
 	mariadb-setupdb \

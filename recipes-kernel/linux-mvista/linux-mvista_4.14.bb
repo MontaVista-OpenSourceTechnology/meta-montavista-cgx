@@ -21,6 +21,8 @@ KERNEL_DEVICETREE_qemuarm = "versatile-pb.dtb"
 
 COMPATIBLE_MACHINE = "qemuarm|qemuarm64|qemux86|qemuppc|qemumips|qemumips64|qemux86-64"
 
+DEPENDS += "elfutils-native"
+
 # Functionality flags
 KERNEL_EXTRA_FEATURES ?= "features/netfilter/netfilter.scc"
 KERNEL_FEATURES_append = " ${KERNEL_EXTRA_FEATURES}"

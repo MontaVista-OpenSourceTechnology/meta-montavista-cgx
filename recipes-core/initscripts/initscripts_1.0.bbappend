@@ -19,5 +19,10 @@ if [ "\${ROOT_DIR}" == "/" ] ; then \
 	test ! -x /sbin/restorecon || /sbin/restorecon -R /var/volatile/ \
 fi:' ${D}${sysconfdir}/init.d/populate-volatile.sh
 }
+pkg_postinst_${PN} () {
+#!/bin/sh
+    update-alternatives --install ${sysconfdir}/init.d/functions functions functions.${PN}  10
+}
+
 
 addtask install_extra after do_install before do_package

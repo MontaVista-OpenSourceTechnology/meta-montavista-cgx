@@ -1,4 +1,4 @@
-PR .= ".1"
+PR .= ".2"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
@@ -16,7 +16,9 @@ SRC_URI += " \
 
 LEAD_SONAME = "libunwind"
 
-inherit ptest
+inherit ptest multilib-alternatives
+
+MULTILIB_HEADERS = "libunwind.h"
 
 do_compile_ptest() {
     oe_runmake -C ${B}/tests check -i

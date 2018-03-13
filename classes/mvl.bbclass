@@ -159,7 +159,9 @@ do_make_scripts_mvista-cgx() {
         unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
         make CC="${KERNEL_CC}" LD="${KERNEL_LD}" AR="${KERNEL_AR}" \
                    -C ${STAGING_KERNEL_DIR} O=${STAGING_KERNEL_BUILDDIR} \
-                   HOSTCC='gcc -I${STAGING_INCDIR_NATIVE} -L${STAGING_DIR_NATIVE}/lib -Wl,-rpath,${STAGING_DIR_NATIVE}/lib' \
+                   HOSTCC='gcc -I${STAGING_INCDIR_NATIVE} -L${STAGING_DIR_NATIVE}/usr/lib \
+		   -Wl,-rpath,${STAGING_DIR_NATIVE}/usr/lib -L${STAGING_DIR_NATIVE}/lib \
+		   -Wl,-rpath,${STAGING_DIR_NATIVE}/lib' \
                    scripts
 }
 

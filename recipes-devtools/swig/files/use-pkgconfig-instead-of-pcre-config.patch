@@ -1,0 +1,49 @@
+Use pkg-config instead of pcre-config, to get cflags, libs, and version
+of libpcre.
+
+Upstream-Status: Inappropriate [openembedded specific]
+
+Signed-off-by: Jagadeesh Krishnanjanappa <jkrishnanjanappa@mvista.com>
+diff -Naurp swig-3.0.12_org/configure swig-3.0.12/configure
+--- swig-3.0.12_org/configure	2017-01-28 05:24:31.000000000 +0530
++++ swig-3.0.12/configure	2018-01-17 21:50:42.779401492 +0530
+@@ -5595,21 +5595,21 @@ else
+ 
+             if test x"" = x; then :
+ 
+-	PCRE_CFLAGS="`$PCRE_CONFIG $pcre_config_args --cflags`"
++	PCRE_CFLAGS="`pkg-config libpcre --cflags`"
+ 
+ else
+ 
+-	PCRE_CFLAGS="`$PCRE_CONFIG $pcre_config_args `"
++	PCRE_CFLAGS="`pkg-config libpcre `"
+ 
+ fi
+ 
+             if test x"" = x; then :
+ 
+-	PCRE_LIBS="`$PCRE_CONFIG $pcre_config_args --libs`"
++	PCRE_LIBS="`pkg-config libpcre --libs`"
+ 
+ else
+ 
+-	PCRE_LIBS="`$PCRE_CONFIG $pcre_config_args `"
++	PCRE_LIBS="`pkg-config libpcre`"
+ 
+ fi
+ 
+@@ -5617,11 +5617,11 @@ fi
+ 
+ 		if test x"    " != x; then :
+ 
+-	  	  pcre_version="`$PCRE_CONFIG $pcre_config_args --version | $SED -e     `"
++	  	  pcre_version="`pkg-config libpcre --version | $SED -e     `"
+ 
+ else
+ 
+-	  pcre_version="`$PCRE_CONFIG $pcre_config_args --version | $SED -e 's/^\ *\(.*\)\ *$/\1/'`"
++	  pcre_version="`pkg-config libpcre --version | $SED -e 's/^\ *\(.*\)\ *$/\1/'`"
+ 
+ fi
+ 

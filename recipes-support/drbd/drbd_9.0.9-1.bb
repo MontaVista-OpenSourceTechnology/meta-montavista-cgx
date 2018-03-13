@@ -15,8 +15,13 @@ SRC_URI[md5sum] = "2742a97b68dcc12c843e0b1aa52da0f6"
 SRC_URI[sha256sum] = "f3577d701ef8d2ea15a149e408a2b83d410596196f53eca50368799d5069b975"
 inherit module
 
-EXTRA_OEMAKE += "KDIR='${STAGING_KERNEL_DIR}'"
+EXTRA_OEMAKE += "KDIR='${STAGING_KERNEL_DIR}' HOSTCC='gcc -I${STAGING_INCDIR_NATIVE} \
+                 -L${STAGING_DIR_NATIVE}/usr/lib -Wl,-rpath,${STAGING_DIR_NATIVE}/usr/lib \
+		 -L${STAGING_DIR_NATIVE}/lib -Wl,-rpath,${STAGING_DIR_NATIVE}/lib'"
 
+do_compile_prepend () {
+	export SKIP_STACK_VALIDATION=1
+}
 do_install () {
     oe_runmake install DESTDIR="${D}"
 }

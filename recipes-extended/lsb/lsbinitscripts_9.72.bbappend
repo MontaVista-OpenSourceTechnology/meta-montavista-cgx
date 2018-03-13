@@ -15,6 +15,12 @@ do_install_append () {
         [ -e "${D}${sysconfdir}/init.d/functions" ] && sed -i \
         "s|_use_systemctl=1|_use_systemctl=0|g" ${D}${sysconfdir}/init.d/functions
     fi
+    mv ${D}${sysconfdir}/init.d/functions ${D}${sysconfdir}/init.d/functions.${PN}
+}
+
+pkg_postinst_${PN} () {
+#!/bin/sh
+    update-alternatives --install ${sysconfdir}/init.d/functions functions functions.${PN}  100
 }
 
 BBCLASSEXTEND = "native"

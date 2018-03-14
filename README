@@ -8,28 +8,31 @@ Dependencies
 This layer depends on:
 
   URI: git://git.yoctoproject.org/poky
-  branch: jethro
+  branch: rocko
  
   or
 
   URI: git://git.openembedded.org/openembedded-core
-  branch: jethro
+  branch: rocko
 
   URI: git://git.openembedded.org/bitbake
-  branch: 1.28
+  branch: 1.36
 
   URI: git://git.openembedded.org/meta-openembedded
-  layers: meta-oe, meta-pytho, meta-networking, meta-filesystems, meta-webserver
-  branch: jethro
+  layers: meta-oe, meta-python, meta-networking, meta-filesystems, meta-webserver
+  branch: rocko
 
   URI: git://git.yoctoproject.org/meta-virtualization
-  branch: jethro
+  branch: rocko
+
+  URI: https://github.com/kraj/meta-clang.git 
+  branch: rocko
 
 
 Source code
 ===========
 
-https://support.mvista.com/cgx2.0/collections/com.mvista/meta-montavista-cgx-2.0/releases/meta-montavista-cgx
+https://github.com/MontaVista-OpenSourceTechnology/meta-montavista-cgx
 
 
 Maintenance

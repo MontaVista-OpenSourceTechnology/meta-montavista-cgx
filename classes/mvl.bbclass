@@ -291,3 +291,23 @@ python () {
             d.setVar('INHIBIT_PACKAGE_STRIP', '1')
 }
 
+kernel_do_deploy_append () {
+    if [ "${KERNEL_IMAGETYPE}" != "vmlinux" ]; then
+        if [ -e vmlinux ] ; then
+            BASE_NAME=$(echo "${KERNEL_IMAGE_BASE_NAME}" | cut -d - -f 2-)
+            BASE_SYMLINK_NAME=$(echo "${KERNEL_IMAGE_SYMLINK_NAME}" | cut -d - -f 2-)
+
+            install -m 0644 vmlinux ${DEPLOYDIR}/vmlinux-$BASE_NAME.bin
+
+            # Make sure image symbolic links always point to latest image built.
+            rm -f ${DEPLOYDIR}/vmlinux-$BASE_SYMLINK_NAME.bin
+            rm -f ${DEPLOYDIR}/vmlinux
+            ln -sf vmlinux-$BASE_NAME.bin ${DEPLOYDIR}/vmlinux-$BASE_SYMLINK_NAME.bin
+            ln -sf vmlinux-$BASE_NAME.bin ${DEPLOYDIR}/vmlinux
+       fi
+    fi
+
+    # Make sure image symbolic links always point to latest image built.
+    rm -f ${DEPLOYDIR}/${KERNEL_IMAGE_SYMLINK_NAME}.bin
+    rm -f ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
+}

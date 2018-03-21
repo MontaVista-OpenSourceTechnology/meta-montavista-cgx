@@ -291,6 +291,13 @@ python () {
             d.setVar('INHIBIT_PACKAGE_STRIP', '1')
 }
 
+kernel_do_install_append () {
+     mkdir -p ${D}/usr/src/
+     cp ${B}/.config ${STAGING_KERNEL_DIR}/
+     tar -C ${STAGING_KERNEL_DIR}  --exclude='.git' -czvf ${D}/usr/src/linux.tar.gz .
+     rm ${STAGING_KERNEL_DIR}/.config
+}
+
 kernel_do_deploy_append () {
     if [ "${KERNEL_IMAGETYPE}" != "vmlinux" ]; then
         if [ -e vmlinux ] ; then
@@ -311,3 +318,6 @@ kernel_do_deploy_append () {
     rm -f ${DEPLOYDIR}/${KERNEL_IMAGE_SYMLINK_NAME}.bin
     rm -f ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
 }
+
+PACKAGES_append_pn-linux-mvista += "kernel-src"
+FILES_kernel-src_pn-linux-mvista = "/usr/src/linux.tar.gz"

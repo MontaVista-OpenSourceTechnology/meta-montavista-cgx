@@ -160,9 +160,9 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
         vlan \
 	sg3-utils \
 	sg3-utils-udev \
+	iscsi-initiator-utils \
 "
 #FIXME
-#	iscsi-initiator-utils 
 #	portmap 
 #	iscsitarget 
 

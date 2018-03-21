@@ -1,5 +1,5 @@
 FEATURE_PACKAGES_tools-devrocket = "${FEATURE_PACKAGES_tools-debug} ${FEATURE_PACKAGES_eclipse-debug} ${FEATURE_PACKAGES_tools-profile} packagegroup-devrocket"
-FEATURE_PACKAGES_mvl = ""
+FEATURE_PACKAGES_mvl = "distro-version mvl-support"
 BBCLASSEXTEND_pn-xz = "native nativesdk"
 BBCLASSEXTEND_pn-xz-nativesdk = "native nativesdk"
 BBCLASSEXTEND_pn-acl = "native nativesdk"

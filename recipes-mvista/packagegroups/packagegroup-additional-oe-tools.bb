@@ -160,7 +160,7 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
         vlan \
 	sg3-utils \
 	sg3-utils-udev \
-	iscsi-initiator-utils \
+	${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'iscsi-initiator-utils', '', d)} \
 "
 #FIXME
 #	portmap 

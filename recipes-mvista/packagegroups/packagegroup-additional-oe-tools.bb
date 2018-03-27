@@ -161,6 +161,7 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	sg3-utils \
 	sg3-utils-udev \
 	${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'iscsi-initiator-utils', '', d)} \
+	traceroute \	
 "
 #FIXME
 #	portmap 

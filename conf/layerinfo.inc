@@ -1,6 +1,6 @@
 
 LAYER_NAME="${@ get_layername(d.getVar("FILE",d,1),d)}"
-SOURCE_MIRROR_URL="${@get_layermirror(d)}/"
+SOURCE_MIRROR_URL?="${@get_layermirror(d)}/"
 inherit own-mirrors
 
 def get_layername(file, d):

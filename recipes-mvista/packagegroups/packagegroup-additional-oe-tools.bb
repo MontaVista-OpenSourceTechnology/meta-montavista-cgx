@@ -30,6 +30,7 @@ PACKAGES = "\
         packagegroup-oe-database-utilities  \
         packagegroup-oe-netprotocol-utilities \
         packagegroup-oe-test-tools \
+        packagegroup-oe-extra-dev-libraries \
 	"
 
 RDEPENDS_packagegroup-additional-oe-tools = "\
@@ -53,6 +54,7 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-database-utilities \
         packagegroup-oe-netprotocol-utilities \
         packagegroup-oe-test-tools \
+        packagegroup-oe-extra-dev-libraries \
 	"
 
 LIBVIRT=" \
@@ -124,6 +126,11 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	postgresql-client \
 	postgresql-timezone \
 	multipath-tools \
+	poco \
+"
+
+RDEPENDS_packagegroup-oe-extra-dev-libraries = "\
+        poco \
 "
 
 RDEPENDS_packagegroup-oe-database-utilities ="\

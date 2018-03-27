@@ -222,7 +222,7 @@ RDEPENDS_packagegroup-oe-webserver =" \
         apache2 \
 	"
 
-
+DEPENDS += "rsyslog nginx"
 
 RDEPENDS_packagegroup-oe-console-utils += "${X86_PACKAGES_OE_CONSOLE_UTILS}"
 

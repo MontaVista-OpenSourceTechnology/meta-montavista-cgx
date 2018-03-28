@@ -167,11 +167,10 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
         vlan \
 	sg3-utils \
 	sg3-utils-udev \
-	${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'iscsi-initiator-utils', '', d)} \
+	iscsi-initiator-utils \
 	traceroute \	
 "
 #FIXME
-#	portmap 
 #	iscsitarget 
 
 RDEPENDS_packagegroups-oe-logmanagement ="\

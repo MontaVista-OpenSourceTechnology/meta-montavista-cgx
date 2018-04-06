@@ -1,4 +1,4 @@
-PR .= ".1"
+PR .= ".2"
 
 REQUIRED_DISTRO_FEATURES = ""
 
@@ -13,3 +13,4 @@ do_install_append () {
 }
 
 INITSCRIPT_NAME = "openisns"
+INITSCRIPT_PARAMS = "defaults 31 69"

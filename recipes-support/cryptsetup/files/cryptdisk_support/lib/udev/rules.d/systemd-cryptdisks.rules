@@ -1,0 +1,4 @@
+# cryptdisk auto detection and mount
+
+SUBSYSTEM=="block", ACTION=="add", ENV{ID_FS_TYPE}=="crypto_LUKS", RUN+="/bin/systemctl start cryptsetup@%k.service"
+SUBSYSTEM=="block", ACTION=="remove", ENV{ID_FS_TYPE}=="crypto_LUKS", RUN+="/bin/systemctl start cryptsetup-umount@%k.service"

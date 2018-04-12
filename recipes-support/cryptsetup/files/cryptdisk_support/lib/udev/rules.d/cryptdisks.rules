@@ -1,0 +1,4 @@
+# cryptdisk auto detection and mount
+
+SUBSYSTEM=="block", ACTION=="add", ENV{ID_FS_TYPE}=="crypto_LUKS", RUN+="/sbin/cryptdisks_start /dev/%k"
+SUBSYSTEM=="block", ACTION=="remove", ENV{ID_FS_TYPE}=="crypto_LUKS", RUN+="/sbin/cryptdisks_stop /dev/%k"

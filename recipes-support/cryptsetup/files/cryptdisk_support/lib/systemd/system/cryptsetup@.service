@@ -1,0 +1,14 @@
+
+[Unit]
+Description=Cryptography disk detection  
+SourcePath=/etc/crypttab
+Conflicts=umount.target
+DefaultDependencies=no
+Before=umount.target
+Before=cryptsetup-mount@.service
+
+[Service]
+Type=notify
+Restart=always
+RestartSec=0
+ExecStart=/sbin/cryptdisks_start /dev/%I

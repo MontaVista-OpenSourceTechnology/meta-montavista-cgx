@@ -12,5 +12,4 @@ VALGRIND_powerpc = "valgrind"
 VALGRIND_powerpc64 = "valgrind"
 VALGRIND_armv7a = "valgrind"
 VALGRIND_aarch64 = "valgrind"
-VALGRIND_remove_linux-gnuilp32 = "valgrind"
 

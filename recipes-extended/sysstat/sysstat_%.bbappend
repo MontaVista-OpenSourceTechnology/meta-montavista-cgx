@@ -1,5 +1,6 @@
-PR .= ".1"
+PR .= ".2"
 
+EXTRA_OECONF_append += "--mandir='${datadir}/${PN}/man'"
 do_install_append () {
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         if [ -e "${D}${libdir}/sa/sa1" ] ; then
@@ -16,3 +17,5 @@ do_install_append () {
 
 inherit multilib-alternatives
 MULTILIB_ALTERNATIVES_${PN} += "${@bb.utils.contains('DISTRO_FEATURES','systemd','${libexecdir}/sa/sa1','',d)}"
+
+FILES_${PN}-doc += "${datadir}/${PN}/man"

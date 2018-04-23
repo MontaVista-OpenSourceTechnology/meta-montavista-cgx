@@ -2,7 +2,7 @@
 #
 # Released under the MIT license (see LICENSE.MIT for the terms)
 #
-PR .= ".4"
+PR .= ".5"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/lsb:"
 
@@ -23,7 +23,14 @@ RDEPENDS_${PN} += "bash"
 do_install_virtclass-native() {
 	oe_runmake install prefix=${D}${prefix} mandir=${D}/${datadir}/man/ DESTDIR=${D}
 }
+
+do_install_append_class-target () {
+    install -d ${D}/${datadir}/${PN}
+    mv ${D}/${datadir}/man ${D}/${datadir}/${PN}/
+}
 inherit multilib-alternatives
 MULTILIB_ALTERNATIVES_${PN} = "${sysconfdir}/lsb-release"
+
+FILES_${PN}-doc += "${datadir}/${PN}/man"
 BBCLASSEXTEND = "native"
 

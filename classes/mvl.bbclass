@@ -321,3 +321,22 @@ kernel_do_deploy_append () {
 
 PACKAGES_append_pn-linux-mvista += "kernel-src"
 FILES_kernel-src_pn-linux-mvista = "/usr/src/linux.tar.gz"
+
+prep_copy_buildsystem () {
+    mkdir -p ${SDK_OUTPUT}/${SDKPATH}/conf
+    mkdir -p ${SDK_OUTPUT}/${SDKPATH}/sources
+    set -x 
+    if [ -e "${TOPDIR}/conf/local-content.conf" ] ; then
+       cp ${TOPDIR}/conf/local-content.conf ${SDK_OUTPUT}/${SDKPATH}/conf
+       cat ${TOPDIR}/conf/local-content.conf | grep '^MV.*_TREE =' | sed -e 's,",,g' | sed -e "s,',,g"| while read META EQ TREE; do
+           if [ -d $(echo $TREE | sed s,git://,,) ] ; then
+              cp -a $(echo $TREE | sed s,git://,,) ${SDK_OUTPUT}/${SDKPATH}/sources
+              sed -i ${SDK_OUTPUT}/${SDKPATH}/conf/local-content.conf -e "s,$TREE,git://\$\{TOPDIR\}/sources/$(basename $TREE),"
+           fi
+       done
+    fi
+}
+
+python copy_buildsystem_prepend_mvista-cgx () {
+    bb.build.exec_func("prep_copy_buildsystem", d)
+}

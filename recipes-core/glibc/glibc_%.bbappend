@@ -15,3 +15,13 @@ pkg_prerm_ldd () {
     update-alternatives --remove ldd ldd.${PN} ${ALTERNATIVE_PRIORITY}
 }
 
+def get_mlprovides(provide,d) :
+    mlvariants = d.getVar("MULTILIB_VARIANTS",True)
+    rprovides = ""
+    for each in mlvariants.split():
+       rprovides = "%s %s-%s" % (rprovides, each, provide)
+    return rprovides
+
+RDEPENDS_${PN}-dev_append_class-target += "${@['','base-glibc-dev'][d.getVar('MLPREFIX', True) != '']} ${@['',get_mlprovides('glibc-dev', d)][d.getVar('MLPREFIX', True) == '']}"
+
+RPROVIDES_${PN}-dev_append_class-target += "${@['',get_mlprovides('base-glibc-dev',d)][d.getVar('MLPREFIX', True) == '']}"

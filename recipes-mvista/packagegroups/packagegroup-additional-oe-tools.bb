@@ -127,6 +127,7 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	postgresql-timezone \
 	multipath-tools \
 	poco \
+	util-linux-hwclock \
 "
 
 RDEPENDS_packagegroup-oe-extra-dev-libraries = "\
@@ -142,6 +143,9 @@ RDEPENDS_packagegroup-oe-database-utilities ="\
 
 RDEPENDS_packagegroups-oe-networkmanagement ="\
 	ntp \
+	ntpdate \
+	ntp-utils \
+	sntp \
 	radvd \
 	tunctl \
 	gnupg \

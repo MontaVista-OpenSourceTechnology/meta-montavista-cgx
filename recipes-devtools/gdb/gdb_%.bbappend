@@ -1,3 +1,6 @@
+inherit multilib-alternatives
+
+MULTILIB_ALTERNATIVES_gdbserver = "${bindir}/gdbserver"
 
 PR .= ".1"
 

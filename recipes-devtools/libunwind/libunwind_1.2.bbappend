@@ -1,4 +1,4 @@
-PR .= ".2"
+PR .= ".3"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
@@ -18,8 +18,13 @@ LEAD_SONAME = "libunwind"
 
 inherit ptest multilib-alternatives
 
+B = "${S}"
 MULTILIB_HEADERS = "libunwind.h"
 
+do_configure () {
+    autoreconf -i
+    oe_runconf
+}
 do_compile_ptest() {
     oe_runmake -C ${B}/tests check -i
 }

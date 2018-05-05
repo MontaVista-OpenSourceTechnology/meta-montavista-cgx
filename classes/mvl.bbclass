@@ -8,6 +8,9 @@ do_package_write_deb[rdeptask] = "${DEBIANRDEP}"
 do_package_write_tar[rdeptask] = "${DEBIANRDEP}"
 do_package_write_rpm[rdeptask] = "${DEBIANRDEP}"
 
+IMAGE_FEATURES[validitems] += "src-pkgs"
+COMPLEMENTARY_GLOB[src-pkgs] = '*-src'
+
 python () {
     if not d.getVar("PACKAGES", True):
         d.setVar("DEBIANRDEP", "")

@@ -2,7 +2,8 @@
 LAYER_NAME="${@ get_layername(d.getVar("FILE",d,1),d)}"
 SOURCE_MIRROR_URL?="${@get_layermirror(d)}/"
 inherit own-mirrors
-
+PROTECTED_SOURCE_URL=""
+PERSONAL_SOURCE_MIRROR=""
 def get_layername(file, d):
     import re
     if not os.path.isabs(file):
@@ -25,3 +26,19 @@ def get_layermirror(d):
     layer = d.getVar("LAYER_NAME",1)
     layer_mirror = d.getVar("LAYER_SOURCES_%s" % layer , 1) or "file://${TOPDIR}/sources"
     return layer_mirror
+
+python() {
+    layer = d.getVar("LAYER_NAME")
+    protected_mirror = d.getVar("PROTECTED_SOURCES_%s" % layer)
+    protected_url = d.getVar("PROTECTED_SOURCE_URL_%s" % layer)
+    if not protected_url: 
+       protected_url = d.getVar("PROTECTED_SOURCE_URL")
+    if protected_mirror == "1" and protected_url:
+       bb.warn(protected_url)
+       d.setVar("SOURCE_MIRROR_URL", protected_url)
+    personal_mirror = d.getVar("PERSONAL_SOURCE_MIRROR_%s" % layer)
+    if not personal_mirror:
+       personal_mirror = d.getVar("PERSONAL_SOURCE_MIRROR")
+    if personal_mirror:
+       d.setVar("PERSONAL_SOURCE_MIRROR", personal_mirror)
+}

@@ -2,8 +2,10 @@
 LAYER_NAME="${@ get_layername(d.getVar("FILE",d,1),d)}"
 SOURCE_MIRROR_URL?="${@get_layermirror(d)}/"
 inherit own-mirrors
-PROTECTED_SOURCE_URL=""
-PERSONAL_SOURCE_MIRROR=""
+PROTECTED_SOURCE_URL ?= ""
+PERSONAL_SOURCE_MIRROR ?= ""
+MVLFETCH_OPTIONS ?= ""
+MVLFETCH ?= "/usr/bin/env mvl-fetch ${MVLFETCH_OPTIONS}"
 def get_layername(file, d):
     import re
     if not os.path.isabs(file):
@@ -34,11 +36,20 @@ python() {
     if not protected_url: 
        protected_url = d.getVar("PROTECTED_SOURCE_URL")
     if protected_mirror == "1" and protected_url:
-       bb.warn(protected_url)
        d.setVar("SOURCE_MIRROR_URL", protected_url)
+       mvlbase=d.getVar("MVLBASE")
+       pathadd=None
+       if mvlbase:
+         pathadd = os.path.dirname(os.path.dirname(mvlbase)) + "/bin"
+         newpath = d.getVar("PATH")
+         newpath = pathadd + ":" + newpath
+         d.setVar("PATH", newpath)
+       mvlfetch = d.getVar("MVLFETCH")
+       if mvlfetch:
+          d.setVar("FETCHCMD_wget", mvlfetch)
     personal_mirror = d.getVar("PERSONAL_SOURCE_MIRROR_%s" % layer)
     if not personal_mirror:
        personal_mirror = d.getVar("PERSONAL_SOURCE_MIRROR")
     if personal_mirror:
-       d.setVar("PERSONAL_SOURCE_MIRROR", personal_mirror)
+       d.setVar("SOURCE_MIRROR_URL", personal_mirror)
 }

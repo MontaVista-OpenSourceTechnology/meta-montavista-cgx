@@ -1,11 +1,13 @@
+BB_HASHBASE_WHITELIST_append = " PROTECTED_SOURCE_URL PERSONAL_SOURCE_MIRROR MVLFETCH_OPTS MVLFETCH "
+BB_HASHBASE_WHITELIST_append = " FETCHCMD_wget "
 
 LAYER_NAME="${@ get_layername(d.getVar("FILE",d,1),d)}"
 SOURCE_MIRROR_URL?="${@get_layermirror(d)}/"
 inherit own-mirrors
 PROTECTED_SOURCE_URL ?= ""
 PERSONAL_SOURCE_MIRROR ?= ""
-MVLFETCH_OPTIONS ?= ""
-MVLFETCH ?= "/usr/bin/env mvl-fetch ${MVLFETCH_OPTIONS}"
+MVLFETCH_OPTS ?= ""
+MVLFETCH ?= "/usr/bin/env mvl-fetch ${MVLFETCH_OPTS}"
 def get_layername(file, d):
     import re
     if not os.path.isabs(file):

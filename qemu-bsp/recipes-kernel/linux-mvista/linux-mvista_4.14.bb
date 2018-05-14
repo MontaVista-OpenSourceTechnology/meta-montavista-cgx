@@ -3,7 +3,8 @@ MV_KERNEL_TREE ?= "git://${TOPDIR}/linux-mvista-2.4.git"
 KBRANCH ?= "${MV_KERNEL_BRANCH}"
 
 require recipes-kernel/linux/linux-yocto.inc
-
+NO_SOURCE_MIRROR="1"
+BB_GENERATE_MIRROR_TARBALLS = "0"
 SRCREV_machine ?= "${MV_KERNEL_BRANCH}"
 SRCREV_meta ?= "eda4d18ce4b259c84ccd5c249c3dc5958c16928c"
 

@@ -1,9 +1,9 @@
-PR .= ".1"
+PR .= ".2"
 
 DEPENDS += "bzip2"
 PACKAGECONFIG_append = " libusb virtfs "
 EXTRA_OECONF_remove = " --python=${USRBINPATH}/python2.7 "
-EXTRA_OECONF_append = " --python=${USRBINPATH}/python "
+EXTRA_OECONF_append = " --python=${USRBINPATH}/python --mandir=${datadir}/${PN}/man "
 LDFLAGS_remove = "-fuse-ld=bfd"
 do_configure_preped () {
         cat > test_main.c << EOF

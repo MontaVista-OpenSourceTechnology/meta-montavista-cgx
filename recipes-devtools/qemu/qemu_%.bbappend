@@ -13,3 +13,5 @@ EOF
                 export LDFLAGS=$(echo $LDFLAGS | sed s,-fuse-ld=bfd,,)
         fi
 }
+
+FILES_${PN}-doc += "${datadir}/${PN}/man"

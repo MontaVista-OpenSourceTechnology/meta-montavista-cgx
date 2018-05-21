@@ -12,3 +12,10 @@ do_install_append_class-target () {
 }
 inherit multilib-alternatives
 MULTILIB_ALTERNATIVES_${PN}-core  = "${bindir}/python3.5m-config ${bindir}/python3"
+py_package_preprocess_prepend_mvista-cgx () {
+     ln -s python3.5m-config.${PN} ${PKGD}/${bindir}/python${PYTHON_BINABI}-config
+}
+
+py_package_preprocess_append_mvista-cgx () {
+     rm ${PKGD}/${bindir}/python${PYTHON_BINABI}-config
+}

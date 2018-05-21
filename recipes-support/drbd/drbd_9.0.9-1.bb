@@ -6,7 +6,7 @@ DESCRIPTION = "DRBD is a block device which is designed to build high \
 HOMEPAGE = "http://oss.linbit.com/drbd/"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5574c6965ae5f583e55880e397fbb018"
-DEPENDS = "virtual/kernel"
+DEPENDS = "virtual/kernel elfutils-native"
 
 SRC_URI = "http://www.linbit.com/downloads/drbd/9.0/drbd-${PV}.tar.gz \
            file://check_existence_of_modules_before_installing.patch"

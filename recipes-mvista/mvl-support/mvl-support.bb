@@ -22,12 +22,14 @@ PACKAGES="${PN}"
 addtask do_install_bits before do_install after do_compile
 
 fakeroot python do_install_bits () {
-    import shutil, logging
+    import shutil, logging, os
 
     destdir = d.getVar("D")
-    mvldir = base_path_join(destdir, d.getVar("mvldir"))
-    bb.utils.mkdirhier(base_path_join(mvldir, "conf"))
-
+    mvldir = "/".join([destdir, d.getVar("mvldir")])
+    bb.warn(destdir)
+    bb.warn(mvldir)
+    bb.utils.mkdirhier(os.path.join(mvldir, "conf"))
+     
     # Store specified configuration files
     for fn in d.getVar("mvlfiles").split():
         fromfn = bb.utils.which(d.getVar("BBPATH"), fn)
@@ -35,13 +37,13 @@ fakeroot python do_install_bits () {
             bb.warn("Unable to install %s from BBPATH, skipping." % fn)
             continue
 
-        destfn = base_path_join(mvldir, fn)
+        destfn = os.path.join(mvldir, fn)
         bb.utils.mkdirhier(os.path.dirname(destfn))
         shutil.copyfile(fromfn, destfn)
 
     # Emit current configuration metadata
     bb.data.update_data(d)
-    emitted = open(base_path_join(mvldir, "conf", "emitted.inc"), "w")
+    emitted = open("/".join([mvldir, "conf", "emitted.inc"]), "w")
 
     bb.data.emit_env(emitted, d, True)
     bb.build.exec_func("do_install_script", d)

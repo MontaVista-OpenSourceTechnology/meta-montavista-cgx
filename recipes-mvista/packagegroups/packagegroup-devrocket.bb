@@ -25,7 +25,7 @@ RDEPENDS_${PN} = " \
            coreutils \
            file \
            glibc-utils \
-           ${@base_conditional("LTTNG_VERSION", None, "", "lttng-control lttng-viewer", d)} \
+           ${@oe.utils.conditional("LTTNG_VERSION", None, "", "lttng-control lttng-viewer", d)} \
            mv-target-daemon \
 "
 #           libmtraq \

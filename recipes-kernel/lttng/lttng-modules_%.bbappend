@@ -1,5 +1,6 @@
 PR .= ".1"
 
+DEPENDS += "elfutils-native"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 SRC_URI += "file://0001-Fix-update-timer-instrumentation-on-4.16-and-4.14-rt.patch"
 

@@ -30,6 +30,7 @@ PACKAGES = "\
         packagegroup-oe-database-utilities  \
         packagegroup-oe-netprotocol-utilities \
         packagegroup-oe-test-tools \
+        packagegroup-oe-extra-dev-libraries \
 	"
 
 RDEPENDS_packagegroup-additional-oe-tools = "\
@@ -53,6 +54,7 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-database-utilities \
         packagegroup-oe-netprotocol-utilities \
         packagegroup-oe-test-tools \
+        packagegroup-oe-extra-dev-libraries \
 	"
 
 LIBVIRT=" \
@@ -61,9 +63,6 @@ LIBVIRT=" \
         libvirt-virsh \
         libvirt-python \
 "
-#libvirt depends on a package that depends on mozjs which is not working right now.
-#FIXME
-LIBVIRT=""
 # FIXME libvirt depends on qemu which does not build on mips64
 LIBVIRT_qemumips64 = ""
 LIBVIRT_qemumips64nfp = ""
@@ -124,6 +123,12 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	postgresql-client \
 	postgresql-timezone \
 	multipath-tools \
+	poco \
+	util-linux-hwclock \
+"
+
+RDEPENDS_packagegroup-oe-extra-dev-libraries = "\
+        poco \
 "
 # FIXME stat is missing
 # stat
@@ -137,6 +142,9 @@ RDEPENDS_packagegroup-oe-database-utilities ="\
 
 RDEPENDS_packagegroups-oe-networkmanagement ="\
 	ntp \
+	ntpdate \
+	ntp-utils \
+	sntp \
 	radvd \
 	tunctl \
 	gnupg \
@@ -162,10 +170,10 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
         vlan \
 	sg3-utils \
 	sg3-utils-udev \
+	iscsi-initiator-utils \
+	traceroute \	
 "
 #FIXME
-#	iscsi-initiator-utils 
-#	portmap 
 #	iscsitarget 
 
 RDEPENDS_packagegroups-oe-logmanagement ="\
@@ -224,7 +232,7 @@ RDEPENDS_packagegroup-oe-webserver =" \
         apache2 \
 	"
 
-
+DEPENDS += "rsyslog nginx"
 
 RDEPENDS_packagegroup-oe-console-utils += "${X86_PACKAGES_OE_CONSOLE_UTILS}"
 

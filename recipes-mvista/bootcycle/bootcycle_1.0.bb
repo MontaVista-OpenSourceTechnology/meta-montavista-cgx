@@ -12,6 +12,8 @@ inherit update-rc.d
 INITSCRIPT_NAME = "bootcycle.sh"
 INITSCRIPT_PARAMS = "start 31 S ."
 
+export mandir="${datadir}/${PN}/man"
+
 do_install() {
         install -d ${D}${base_sbindir}
         install -d ${D}${localstatedir}/misc
@@ -34,6 +36,7 @@ do_install() {
 }
 
 FILES_${PN} += "/var/misc"
+FILES_${PN}-doc += "${datadir}/${PN}/man"
 
 RDEPENDS_${PN} += "bash"
 

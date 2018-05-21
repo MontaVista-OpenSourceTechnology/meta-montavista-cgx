@@ -8,6 +8,9 @@ do_package_write_deb[rdeptask] = "${DEBIANRDEP}"
 do_package_write_tar[rdeptask] = "${DEBIANRDEP}"
 do_package_write_rpm[rdeptask] = "${DEBIANRDEP}"
 
+IMAGE_FEATURES[validitems] += "src-pkgs"
+COMPLEMENTARY_GLOB[src-pkgs] = '*-src'
+
 python () {
     if not d.getVar("PACKAGES", True):
         d.setVar("DEBIANRDEP", "")
@@ -291,3 +294,52 @@ python () {
             d.setVar('INHIBIT_PACKAGE_STRIP', '1')
 }
 
+kernel_do_install_append () {
+     mkdir -p ${D}/usr/src/
+     cp ${B}/.config ${STAGING_KERNEL_DIR}/
+     tar -C ${STAGING_KERNEL_DIR}  --exclude='.git' -czvf ${D}/usr/src/linux.tar.gz .
+     rm ${STAGING_KERNEL_DIR}/.config
+}
+
+kernel_do_deploy_append () {
+    if [ "${KERNEL_IMAGETYPE}" != "vmlinux" ]; then
+        if [ -e vmlinux ] ; then
+            BASE_NAME=$(echo "${KERNEL_IMAGE_BASE_NAME}" | cut -d - -f 2-)
+            BASE_SYMLINK_NAME=$(echo "${KERNEL_IMAGE_SYMLINK_NAME}" | cut -d - -f 2-)
+
+            install -m 0644 vmlinux ${DEPLOYDIR}/vmlinux-$BASE_NAME.bin
+
+            # Make sure image symbolic links always point to latest image built.
+            rm -f ${DEPLOYDIR}/vmlinux-$BASE_SYMLINK_NAME.bin
+            rm -f ${DEPLOYDIR}/vmlinux
+            ln -sf vmlinux-$BASE_NAME.bin ${DEPLOYDIR}/vmlinux-$BASE_SYMLINK_NAME.bin
+            ln -sf vmlinux-$BASE_NAME.bin ${DEPLOYDIR}/vmlinux
+       fi
+    fi
+
+    # Make sure image symbolic links always point to latest image built.
+    rm -f ${DEPLOYDIR}/${KERNEL_IMAGE_SYMLINK_NAME}.bin
+    rm -f ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
+}
+
+PACKAGES_append_pn-linux-mvista += "kernel-src"
+FILES_kernel-src_pn-linux-mvista = "/usr/src/linux.tar.gz"
+
+prep_copy_buildsystem () {
+    mkdir -p ${SDK_OUTPUT}/${SDKPATH}/conf
+    mkdir -p ${SDK_OUTPUT}/${SDKPATH}/sources
+    set -x 
+    if [ -e "${TOPDIR}/conf/local-content.conf" ] ; then
+       cp ${TOPDIR}/conf/local-content.conf ${SDK_OUTPUT}/${SDKPATH}/conf
+       cat ${TOPDIR}/conf/local-content.conf | grep '^MV.*_TREE =' | sed -e 's,",,g' | sed -e "s,',,g"| while read META EQ TREE; do
+           if [ -d $(echo $TREE | sed s,git://,,) ] ; then
+              cp -a $(echo $TREE | sed s,git://,,) ${SDK_OUTPUT}/${SDKPATH}/sources
+              sed -i ${SDK_OUTPUT}/${SDKPATH}/conf/local-content.conf -e "s,$TREE,git://\$\{TOPDIR\}/sources/$(basename $TREE),"
+           fi
+       done
+    fi
+}
+
+python copy_buildsystem_prepend_mvista-cgx () {
+    bb.build.exec_func("prep_copy_buildsystem", d)
+}

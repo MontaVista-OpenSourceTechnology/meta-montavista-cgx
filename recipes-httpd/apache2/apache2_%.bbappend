@@ -1,3 +1,5 @@
+PR .= ".1"
+
 inherit multilib-alternatives
 MULTILIB_ALTERNATIVES_${PN} = "${sbindir}/envvars \
                                ${sbindir}/envvars-std \
@@ -22,6 +24,7 @@ apache_sysroot_preprocess () {
     install -m 755 ${D}${sbindir}/apachectl ${SYSROOT_DESTDIR}${sbindir}/
     sed -i 's!my $installbuilddir = .*!my $installbuilddir = "${STAGING_DIR_HOST}/${datadir}/${BPN}/build";!' ${SYSROOT_DESTDIR}${bindir_crossscripts}/apxs
     sed -i 's!my $libtool = .*!my $libtool = "${STAGING_BINDIR_CROSS}/${HOST_SYS}-libtool";!' ${SYSROOT_DESTDIR}${bindir_crossscripts}/apxs
+    sed -i 's!config_vars\.mk!config_vars\.mk\.${PN}!g' ${SYSROOT_DESTDIR}${bindir_crossscripts}/apxs
 
     sed -i 's!^APR_CONFIG = .*!APR_CONFIG = ${STAGING_BINDIR_CROSS}/apr-1-config!' ${SYSROOT_DESTDIR}${datadir}/${BPN}/build/config_vars.mk.${PN}
     sed -i 's!^APU_CONFIG = .*!APU_CONFIG = ${STAGING_BINDIR_CROSS}/apu-1-config!' ${SYSROOT_DESTDIR}${datadir}/${BPN}/build/config_vars.mk.${PN}

@@ -12,4 +12,5 @@ python () {
          depends=d.getVar("DEPENDS",True)
          d.setVar("DEPENDS", depends + imagegroupdepends)
        
+      d.appendVarFlag('do_populate_sdk', 'depends', " " + pn + ":do_image_complete")
 }

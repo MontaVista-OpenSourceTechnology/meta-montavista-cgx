@@ -85,12 +85,12 @@ other layers needed. Adapt the below list to proper format.
     meta-openembedded/meta-python
     meta-openembedded/meta-webserver
     meta-virtualization
-
+    meta-clang
 
 II. Misc
 ========
 
-The layer contains a core package group (packagegroup-meta-montavista-cgx.bb) that
+The layer contains a core package group (packagegroup-cgx-complete-image) that
 should aggregate all the other available package groups.
 
-The core image name is: default-image
+The core image name is: cgx-complete-image 

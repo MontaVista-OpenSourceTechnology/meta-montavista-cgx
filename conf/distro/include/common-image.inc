@@ -1,5 +1,5 @@
 FEATURE_PACKAGES_tools-devrocket = "${FEATURE_PACKAGES_tools-debug} ${FEATURE_PACKAGES_eclipse-debug} ${FEATURE_PACKAGES_tools-profile} packagegroup-devrocket"
-FEATURE_PACKAGES_mvl = ""
+FEATURE_PACKAGES_mvl = "distro-version mvl-support"
 BBCLASSEXTEND_pn-xz = "native nativesdk"
 BBCLASSEXTEND_pn-xz-nativesdk = "native nativesdk"
 BBCLASSEXTEND_pn-acl = "native nativesdk"
@@ -56,7 +56,8 @@ PREFERRED_VERSION_python-sqlalchemy = "1.0.8"
 PREFERRED_VERSION_python-greenlet = "0.4.9"
 
 PREFERRED_VERSION_gnutls-native = "3.5.1"
-
+PREFERRED_RPROVIDER_lib32-initd-functions = "lib32-initscripts"
+PREFERRED_RPROVIDER_lib64-initd-functions = "lib64-initscripts"
 OS_DEFAULT_INITSCRIPT_PARAMS ??= "defaults 30 10"
 
 # Get rid of older bbappend files

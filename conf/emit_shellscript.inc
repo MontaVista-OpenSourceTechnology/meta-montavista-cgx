@@ -22,7 +22,7 @@ inherit kernel-maparch
 EMIT_SHELLSCRIPT_FN ?= "${TOPDIR}/bin/${MLPREFIX}env.sh"
 EMIT_SHELLSCRIPT_KFN ?= "${TOPDIR}/bin/kenv.sh"
 EMIT_SHELLSCRIPT_VARS_WEAK += "TOPDIR"
-EMIT_SHELLSCRIPT_VARS += "CC CXX F77 CPP LD CCLD AR AS RANLIB STRIP OBJCOPY OBJDUMP NM"
+EMIT_SHELLSCRIPT_VARS += "STAMP CC CXX F77 CPP LD CCLD AR AS RANLIB STRIP OBJCOPY OBJDUMP NM"
 EMIT_SHELLSCRIPT_VARS += "CFLAGS CPPFLAGS CXXFLAGS LDFLAGS"
 EMIT_SHELLSCRIPT_VARS += "TARGET_PREFIX MVL_SDK_PREFIX TARGET_ARCH TARGET_CC_ARCH"
 EMIT_SHELLSCRIPT_VARS += "STAGING_DIR_HOST PATH EXTERNAL_TOOLCHAIN CONFIGUREOPTS"
@@ -61,7 +61,10 @@ def emit_shellscript(fn, d):
 
     f = open(fn, "w")
     f.write("#!/bin/sh\n")
-
+    standalone = d.getVar("STANDALONE_SYSROOT")
+    standalone_native = d.getVar("STANDALONE_SYSROOT_NATIVE")
+    staging_dir_host = d.getVar("STAGING_DIR_HOST")
+    staging_dir_native = d.getVar("STAGING_DIR_NATIVE")
     def emit(var, val, weak = False):
         # If the value isn't a string, or the variable name is one that shell
         # will choke on, skip this variable.
@@ -70,7 +73,6 @@ def emit_shellscript(fn, d):
            var.find("-") != -1:
            note("emit_shellscript: skipping emission of %s (%s)" % (var, val))
            return
-
         setvar = "export %s=\"%s\"\n" % (var, val)
         if weak:
             f.write("if test -z \"${%s}\"; then\n" % var)
@@ -94,14 +96,25 @@ def emit_shellscript(fn, d):
 
     for var in unique(d.getVar("EMIT_SHELLSCRIPT_VARS", 1).split()):
         val = d.getVar(var, 1) or ""
+        val = val.replace(staging_dir_native, standalone_native)
+        val = val.replace(staging_dir_host, standalone)
+        if var == "PATH":
+           val = val + ":$PATH"
         # Assign CONFIGURE_FLAGS with CONFIGUREOPTS values
         if var == "CONFIGURE_FLAGS":
            val = d.getVar("CONFIGUREOPTS", 1) or ""
+        if var == "STAMP":
+           val = os.path.dirname(val)
         if val:
            for wvar in weakvars:
               wval = d.getVar(wvar, 1) or ""
               val = val.replace(wval, "${%s}" % wvar)
            emit(var, val)
+        if var == "STAMP":
+           f.write("if [ ! -d $STAMP ] ; then\n")
+           f.write("   echo -n 'In order to use this file, you need to do an image build and '\n")
+           f.write("   echo 'run \"bitbake " + d.getVar("PN") + "\"'\n")
+           f.write("   return 1\nfi\n")
     f.close()
 def emit_kernel_shellscript(fn, d):
     """ Write a shell script to fn containing variable definitions
@@ -111,12 +124,27 @@ def emit_kernel_shellscript(fn, d):
     from os.path import dirname 
 
     mkdirhier(dirname(fn))
-
+    standalone = d.expand("${STAGING_DIR}/${MACHINE}")
+    standalone_native = d.expand("${STAGING_DIR}/${BUILD_ARCH}")
+    staging_dir_host = d.getVar("STAGING_DIR_HOST")
+    staging_dir_native = d.getVar("STAGING_DIR_NATIVE")
+    stamp = d.getVar("STAMP")
+    buildsysroot = os.path.dirname(os.path.dirname(stamp)) + "/build-sysroots"
+    topdir = d.getVar("TOPDIR")
+    buildsysroot = buildsysroot.replace(topdir, "${TOPDIR}")
     target_arch = d.getVar("TARGET_ARCH", 1) or ""
-
+   
     f = open(fn, "w")
     f.write("#!/bin/sh\n\n")
-
+    f.write("if [ -z ${TOPDIR} ] ; then\n")
+    f.write("   TOPDIR=" + topdir + "\n")
+    f.write("fi\n")
+    
+    f.write("BUILD_SYSROOT_STAMP=\"" + buildsysroot + "\"\n") 
+    f.write("if [ ! -d $BUILD_SYSROOT_STAMP ] ; then\n")
+    f.write("   echo -n 'In order to use this file, you need to do a kenrel(linux-mvista) build and '\n")
+    f.write("   echo 'run \"bitbake build-sysroots\"'\n")
+    f.write("   return 1\nfi\n")
     msd = d.getVar("MSD", 1) or ""
     f.write("# Export kernel Makefile variables for %s.\n\n" % msd)
 
@@ -127,7 +155,9 @@ def emit_kernel_shellscript(fn, d):
     if not kcflags:
         kcflags = d.getVar("TARGET_CC_ARCH", 1) or ""
     kernelcc = d.getVar("KERNEL_CC", 1) or ""
+    kernelcc = kernelcc.replace(staging_dir_host,standalone).replace(topdir, "${TOPDIR}")
     kernelld = d.getVar("KERNEL_LD", 1) or ""
+    kernelld = kernelld.replace(staging_dir_host,standalone).replace(topdir, "${TOPDIR}")
     kernelar = d.getVar("KERNEL_AR", 1) or ""
     kobjdump = d.getVar("OBJCOPY", 1) or ""
     kcrosscompile= d.getVar("CROSS_COMPILE", 1) or ""
@@ -145,21 +175,10 @@ def emit_kernel_shellscript(fn, d):
 
     target_prefix = d.getVar("TARGET_PREFIX", 1) or ""
     f.write('export CROSS_COMPILE="%s"\n' % target_prefix)
-
-    sdk_prefix = d.getVar("MVL_SDK_PREFIX", 1) or ""
-    native_bindir = d.getVar("STAGING_BINDIR_NATIVE", 1) or ""
-
-    f.write('\nSTAGING_BINDIR_NATIVE="%s"\n' % native_bindir)
-    f.write('case ":$PATH:" in\n')
-    f.write('*:"$STAGING_BINDIR_NATIVE":*)\n\t;;\n')
-    f.write('*)\n\tPATH="$STAGING_BINDIR_NATIVE:$PATH"\n\t;;\n')
-    f.write('esac\n')
-
-    f.write('\nCROSS_COMPILE_PATH="%s"\n' % (sdk_prefix + 'bin'))
-    f.write('case ":$PATH:" in\n')
-    f.write('*:"$CROSS_COMPILE_PATH":*)\n\t;;\n')
-    f.write('*)\n\tPATH="$CROSS_COMPILE_PATH:$PATH"\n\t;;\n')
-    f.write('esac\n')
+    path = d.getVar("PATH")
+    path = path.replace(staging_dir_native, standalone_native).replace(topdir, "${TOPDIR}")
+    path = path.replace(staging_dir_host,standalone).replace(topdir, "${TOPDIR}")
+    f.write('export PATH=' + path + ':$PATH')
     f.close()
 
 python emit_shellscript_eh () {
@@ -170,9 +189,10 @@ python emit_shellscript_eh () {
        var="EMIT_SHELLSCRIPT_KFN"
        script=emit_kernel_shellscript
 
-    if isinstance(e, RecipeParsed) and not bb.data.inherits_class('native', e.data) and bb.data.inherits_class('autotools', e.data):
-       var="EMIT_SHELLSCRIPT_FN"
-       script=emit_shellscript
+    if isinstance(e, RecipeParsed) and not bb.data.inherits_class('native', e.data):
+       if e.data.getVar("BPN") == "build-sysroots":
+          var="EMIT_SHELLSCRIPT_FN"
+          script=emit_shellscript
 
     if var:
        fn = e.data.getVar(var, 1) or ""

@@ -1,7 +1,7 @@
-PR .= ".2"
+PR .= ".3"
 
 DEPENDS += "bzip2"
-PACKAGECONFIG_append = " libusb virtfs "
+PACKAGECONFIG_append = " libusb virtfs kvm"
 EXTRA_OECONF_remove = " --python=${USRBINPATH}/python2.7 "
 EXTRA_OECONF_append = " --python=${USRBINPATH}/python --mandir=${datadir}/${PN}/man "
 LDFLAGS_remove = "-fuse-ld=bfd"

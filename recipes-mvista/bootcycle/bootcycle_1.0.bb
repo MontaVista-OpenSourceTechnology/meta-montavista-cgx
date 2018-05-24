@@ -1,8 +1,8 @@
 DESCRIPTION = "Boot cycle detection"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a23a74b3f4caf9616230789d94217acb"
-
-SRCREV="1.0"
+#Version 1.0
+SRCREV="c001072b564b945e4f77ef903cf1e4cf650bf0d7"
 PR = "r8"
 
 SRC_URI = "git://github.com/MontaVista-OpenSourceTechnology/bootcycle.git;protocol=https \

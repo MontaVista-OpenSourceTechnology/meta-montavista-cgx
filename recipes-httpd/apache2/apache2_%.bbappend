@@ -1,4 +1,16 @@
-PR .= ".1"
+PR .= ".2"
+
+do_install_append () {
+    mv ${D}${sysconfdir}/init.d/apache2 ${D}${sysconfdir}/apache2/apache2
+    cat << EOF > ${D}${sysconfdir}/init.d/apache2
+#! /bin/sh
+
+# Start original apache2 script
+. ${sysconfdir}/apache2/apache2
+
+EOF
+    chmod 0755 ${D}${sysconfdir}/init.d/apache2
+}
 
 inherit multilib-alternatives
 MULTILIB_ALTERNATIVES_${PN} = "${sbindir}/envvars \
@@ -6,16 +18,13 @@ MULTILIB_ALTERNATIVES_${PN} = "${sbindir}/envvars \
                                ${sysconfdir}/apache2/httpd.conf \
                                ${datadir}/apache2/build/config.nice \
                                ${datadir}/apache2/build/config_vars.mk \
-                               ${sysconfdir}/apache2/extra/httpd-ssl.conf "
-#Fix me alternatives don't work with init.d any more
-#                               ${sysconfdir}/init.d/apache2 
+                               ${sysconfdir}/apache2/extra/httpd-ssl.conf \
+                               ${sysconfdir}/apache2/apache2"
 MULTILIB_HEADERS = "apache2/ap_config_layout.h"
+
 SSTATE_SCAN_FILES_remove = "config_vars.mk"
 SSTATE_SCAN_FILES += "config_vars.mk.${PN}"
 
-do_install_append () {
-    mv ${D}${sysconfdir}/init.d/apache2 ${D}${sysconfdir}/init.d/apache2.${PN}
-}
 FILE_${PN} += "${sysconfdir}/init.d/apache2.${PN}"
 apache_sysroot_preprocess () {
     install -d ${SYSROOT_DESTDIR}${bindir_crossscripts}/

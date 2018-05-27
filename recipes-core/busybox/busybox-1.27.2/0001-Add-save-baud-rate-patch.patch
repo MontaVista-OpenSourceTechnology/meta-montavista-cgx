@@ -1,6 +1,17 @@
---- busybox-1.20.2_org/loginutils/getty.c	2013-04-10 10:44:29.853491559 +0530
-+++ busybox-1.20.2/loginutils/getty.c	2013-04-10 10:50:37.785505887 +0530
-@@ -152,12 +152,12 @@ static void parse_speeds(char *arg)
+From 38b7e7f1ea9e1d819c3902e2c0fadf0d35dc4c7d Mon Sep 17 00:00:00 2001
+From: Jeremy Puhlman <jpuhlman@mvista.com>
+Date: Sun, 27 May 2018 20:11:05 +0000
+Subject: [PATCH] Add save baud rate patch
+
+---
+ loginutils/getty.c | 32 ++++++++++++++++++--------------
+ 1 file changed, 18 insertions(+), 14 deletions(-)
+
+diff --git a/loginutils/getty.c b/loginutils/getty.c
+index ba6c784..d460155 100644
+--- a/loginutils/getty.c
++++ b/loginutils/getty.c
+@@ -174,12 +174,12 @@ static void parse_speeds(char *arg)
  }
  
  /* parse command-line arguments */
@@ -10,12 +21,12 @@
  	char *ts;
  	int flags;
  
--	opt_complementary = "-2:t+"; /* at least 2 args; -t N */
-+	opt_complementary = "-1:t+"; /* at least 2 args; -t N */
+-	opt_complementary = "-2"; /* at least 2 args; -t N */
++	opt_complementary = "-1"; /* at least 2 args; -t N */
  	flags = getopt32(argv, opt_string,
  		&G.initstring, &G.fakehost, &G.issue,
  		&G.login, &G.timeout
-@@ -169,20 +169,23 @@ static void parse_args(char **argv)
+@@ -191,20 +191,23 @@ static void parse_args(char **argv)
  	}
  	argv += optind;
  	debug("after getopt\n");
@@ -50,7 +61,7 @@
  	debug("exiting parse_args\n");
  }
  
-@@ -534,7 +537,7 @@ int getty_main(int argc UNUSED_PARAM, ch
+@@ -562,7 +565,7 @@ int getty_main(int argc UNUSED_PARAM, char **argv)
  	G.eol = '\r';
  
  	/* Parse command-line arguments */
@@ -59,7 +70,7 @@
  
  	/* Create new session and pgrp, lose controlling tty */
  	pid = setsid();  /* this also gives us our pid :) */
-@@ -614,6 +617,7 @@ int getty_main(int argc UNUSED_PARAM, ch
+@@ -659,6 +662,7 @@ int getty_main(int argc UNUSED_PARAM, char **argv)
  	/* Make ourself a foreground process group within our session */
  	if (tcsetpgrp(STDIN_FILENO, pid) < 0)
  		bb_perror_msg_and_die("tcsetpgrp");
@@ -67,3 +78,6 @@
  #endif
  
  	/*
+-- 
+2.11.1
+

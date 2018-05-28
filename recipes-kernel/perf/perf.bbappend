@@ -1,4 +1,4 @@
-PR .= ".2"
+PR .= ".3"
 
 EXTRA_OEMAKE += " NO_LIBUNWIND=1 NO_LIBDW_DWARF_UNWIND=1 "
 
@@ -9,3 +9,6 @@ do_configure_prepend () {
         ${S}/tools/perf/util/libunwind/x86_32.c
     fi
 }
+
+inherit multilib-alternatives
+MULTILIB_ALTERNATIVES_${PN} = "${bindir}/perf"

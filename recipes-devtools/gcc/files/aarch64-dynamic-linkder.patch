@@ -1,0 +1,12 @@
+diff -u gcc-6.2.0/gcc/config/aarch64/aarch64-linux.h gcc-6.2.0/gcc/config/aarch64/aarch64-linux.h
+--- gcc-6.2.0/gcc/config/aarch64/aarch64-linux.h	2017-06-15 16:59:07.588425851 -0700
++++ gcc-6.2.0/gcc/config/aarch64/aarch64-linux.h	2017-06-15 20:22:28.456808685 -0700
+@@ -21,7 +21,7 @@
+ #ifndef GCC_AARCH64_LINUX_H
+ #define GCC_AARCH64_LINUX_H
+ 
+-#define GLIBC_DYNAMIC_LINKER  SYSTEMLIBS_DIR "ld-linux-aarch64%{mbig-endian:_be}%{mabi=ilp32:_ilp32}.so.1"
++#define GLIBC_DYNAMIC_LINKER  "%{mabi=ilp32:/libilp32/}%{mabi=lp64:/lib64/}ld-linux-aarch64%{mbig-endian:_be}%{mabi=ilp32:_ilp32}.so.1"
+ 
+ #undef MUSL_DYNAMIC_LINKER
+ #define MUSL_DYNAMIC_LINKER  SYSTEMLIBS_DIR "ld-musl-aarch64%{mbig-endian:_be}%{mabi=ilp32:_ilp32}.so.1"

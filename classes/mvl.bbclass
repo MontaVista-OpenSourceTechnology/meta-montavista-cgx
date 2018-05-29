@@ -8,11 +8,14 @@ do_package_write_deb[rdeptask] = "${DEBIANRDEP}"
 do_package_write_tar[rdeptask] = "${DEBIANRDEP}"
 do_package_write_rpm[rdeptask] = "${DEBIANRDEP}"
 
+IMAGE_FEATURES[validitems] += "src-pkgs"
+COMPLEMENTARY_GLOB[src-pkgs] = '*-src'
+
 python () {
     if not d.getVar("PACKAGES", True):
         d.setVar("DEBIANRDEP", "")
 #   Remove CSL_VER_MAIN     
-    toolchainflags = d.getVarFlag('TOOLCHAIN_OPTIONS', 'vardeps',False) or ""
+    toolchainflags = d.getVarFlag('TOOLCHAIN_OPTIONS', 'vardeps', True) or ""
     d.setVarFlag('TOOLCHAIN_OPTIONS', 'vardeps' , toolchainflags.replace('CSL_VER_MAIN',''))
     if bb.data.inherits_class("kernel",d):
        configs=get_kernel_config_env(d)
@@ -26,123 +29,31 @@ python () {
              errorList.remove('arch')
              errorQA = " ".join(errorList)
              d.setVar("ERROR_QA", errorQA)
-          
+    if bb.data.inherits_class("image",d) :
+          bb.build.addtask("do_populate_sdk", None, 'do_rootfs', d)    
+# Add 10 to base abi priority to remove warnings in image creation when two abis have the same prioity
+    if bb.data.inherits_class("update-alternatives",d):
+          pnMult = d.getVar("PN", True)
+          bpnMult = d.getVar("BPN", True)
+          if (pnMult == bpnMult):
+             prioMult = int(d.getVar("ALTERNATIVE_PRIORITY", True)) 
+             prioMult += 10
+             d.setVar("ALTERNATIVE_PRIORITY", prioMult)
 }
+
 SDKTARGETSYSROOT_mvista-cgx="${SDKPATH}/sysroots/${MACHINE}-montavista-linux"
-
-toolchain_create_sdk_env_script_append () {
-	rm -f $script
-	touch $script
-	echo 'if [ -z "${SDK_ROOT}" ] ; then' >> $script
-	echo '   SDK_ROOT="${SDKTARGETSYSROOT}"' >> $script
-	echo 'fi' >> $script
-	echo 'if [ -z "${SDK_PATH_NATIVE}" ] ; then' >> $script
-	echo '   SDK_PATH_NATIVE="${SDKPATHNATIVE}"' >> $script
-	echo '   export OECORE_NATIVE_SYSROOT="${SDKPATHNATIVE}"' >> $script
-        echo 'else' >> $script
-	echo '   export OECORE_NATIVE_SYSROOT="${SDK_PATH_NATIVE}"' >> $script
-	echo 'fi' >> $script
-	echo 'export TARGET_PREFIX="${TARGET_PREFIX}"' >> $script
-	echo 'export MVL_TOOL_DIR="${MVL_TOOL_DIR}"' >> $script
-	echo 'export CSL_TARGET_SYS="${CSL_TARGET_SYS}"' >> $script
-	echo 'COMPILER=$(which $(echo ${TARGET_PREFIX})gcc 2>/dev/null)' >> $script
-	echo 'BITBAKE=$(which bitbake 2>/dev/null)' >> $script
-	echo '' >> $script
-        echo 'if [ -z "${COMPILER}" -a -n "${BITBAKE}" ] ; then' >> $script
-        echo '     PATH_SAVE=$PATH' >> $script
-        echo '     CCPATH=$(dirname $(dirname ${BITBAKE}))/tools/${MVL_TOOL_DIR}/bin' >> $script
-        echo '     export PATH=${CCPATH}:${PATH_SAVE}' >> $script
-        echo '     COMPILER=$(which $(echo ${TARGET_PREFIX})gcc 2>/dev/null)' >> $script
-        echo '     if [ -z "${COMPILER}" ] ; then' >> $script
-        echo '        export PATH=${PATH_SAVE}' >> $script
-        echo '     fi' >> $script
-        echo 'fi' >> $script
-        echo '' >> $script
-	echo 'export PATH=${SDK_PATH_NATIVE}${bindir_nativesdk}:${SDK_PATH_NATIVE}${bindir_nativesdk}/${REAL_MULTIMACH_TARGET_SYS}:$PATH' >> $script
-        echo 'if [ -n "${COMPILER}" ] ; then' >> $script
-        echo 'if [ -z "${TOOL_ROOT}" ] ; then' >> $script
-        echo '   TOOL_ROOT=$(dirname $(dirname ${COMPILER}))' >> $script
-        echo 'fi' >> $script
-        echo 'export TOOL_INCLUDE=${TOOL_ROOT}/${CSL_TARGET_SYS}/sys-root/usr/include' >> $script
-	echo 'export PKG_CONFIG_SYSROOT_DIR=${SDK_ROOT}' >> $script
-	echo 'export PKG_CONFIG_PATH=${SDK_ROOT}${libdir}/pkgconfig' >> $script
-	echo 'export CONFIG_SITE=${SDKPATH}/site-config-${REAL_MULTIMACH_TARGET_SYS}' >> $script
-	echo 'export CC="${TARGET_PREFIX}gcc ${TARGET_CC_ARCH} --sysroot=${SDK_ROOT}"' >> $script
-	echo 'export CXX="${TARGET_PREFIX}g++ ${TARGET_CC_ARCH} --sysroot=${SDK_ROOT}"' >> $script
-	echo 'export CPP="${TARGET_PREFIX}gcc -E ${TARGET_CC_ARCH} --sysroot=${SDK_ROOT}"' >> $script
-	echo 'export AS="${TARGET_PREFIX}as ${TARGET_AS_ARCH}"' >> $script
-	echo 'export LD="${TARGET_PREFIX}ld ${TARGET_LD_ARCH} --sysroot=${SDK_ROOT}"' >> $script
-	echo 'export GDB=${TARGET_PREFIX}gdb' >> $script
-	echo 'export STRIP=${TARGET_PREFIX}strip' >> $script
-	echo 'export RANLIB=${TARGET_PREFIX}ranlib' >> $script
-	echo 'export OBJCOPY=${TARGET_PREFIX}objcopy' >> $script
-	echo 'export OBJDUMP=${TARGET_PREFIX}objdump' >> $script
-	echo 'export AR=${TARGET_PREFIX}ar' >> $script
-	echo 'export NM=${TARGET_PREFIX}nm' >> $script
-	echo 'export CONFIGURE_FLAGS="--target=${TARGET_SYS} --host=${TARGET_SYS} --build=${SDK_ARCH}-linux --with-libtool-sysroot=${SDK_ROOT}"' >> $script
-	echo 'export CFLAGS=$(echo ${TARGET_CFLAGS} | sed -e "s|##STAGINGDIRTARGET##|${SDK_ROOT}|g" -e "s|##MVLSDKPREFIX##|${TOOL_ROOT}/|g")' >> $script
-	echo 'export CXXFLAGS=$(echo ${TARGET_CXXFLAGS} | sed -e "s|##STAGINGDIRTARGET##|${SDK_ROOT}|g" -e "s|##MVLSDKPREFIX##|${TOOL_ROOT}/|g")' >> $script
-	echo 'export LDFLAGS=$(echo ${TARGET_LDFLAGS} | sed -e "s|##STAGINGDIRTARGET##|${SDK_ROOT}|g" -e "s|##MVLSDKPREFIX##|${TOOL_ROOT}/|g")' >> $script
-	echo 'export CPPFLAGS=$(echo ${TARGET_CPPFLAGS} | sed -e "s|##STAGINGDIRTARGET##|${SDK_ROOT}|g" -e "s|##MVLSDKPREFIX##|${TOOL_ROOT}/|g") ' >> $script
-	echo 'export ARCH=${ARCH}' >> $script
-	echo 'else' >> $script
-        echo ' echo "Could not find external toolchain $(echo ${TARGET_PREFIX})gcc. Please add path to toolchain install."' >> $script
-	echo 'fi' >> $script
-	echo 'export OECORE_TARGET_SYSROOT="${SDK_ROOT}"' >> $script
-        echo 'export OECORE_ACLOCAL_OPTS="-I ${SDK_PATH_NATIVE}/usr/share/aclocal"' >> $script
-	echo 'export OECORE_DISTRO_VERSION="${DISTRO_VERSION}"' >> $script
-	echo 'export OECORE_SDK_VERSION="${SDK_VERSION}"' >> $script
-
-	# Replace ${MVL_SDK_PREFIX} and ${STAGING_DIR_TARGET} 
-	# with ##MVLSDKPREFIX## and ##STAGINGDIRTARGET## respectively 
-	# to avoid populating actual paths in environment-setup-* scripts.
-	# Replace $PATH with ${PATH}.
-	RAW_PATH1="$"
-	RAW_PATH2="{PATH}"
-	sed -i -e "s|${MVL_SDK_PREFIX}|##MVLSDKPREFIX##|g" \
-	-e "s|${STAGING_DIR_TARGET}|##STAGINGDIRTARGET##|g" \
-	-e "s|\$PATH|${RAW_PATH1}${RAW_PATH2}|g" $script
-}
 
 P2BUILDDIR="${WORKDIR}/p2"
 P2DIR="${DEPLOY_DIR}/p2/${SDK_ARCH}"
 SDK_NAME = "${SDK_NAME_PREFIX}-${MACHINE}-${SDK_ARCH}"
-TOOLCHAIN_OUTPUTNAME ?= "${SDK_NAME}-${SDK_VERSION}"
 MSD_VERSION ?="${DATETIME}"
 PLUGIN_ID ?= "com.mvista.sdk.core-${MACHINE}-${SDK_ARCH}-mvlsdk"
 FEATURE_ID ?= "com.mvista.sdk-${MACHINE}-${SDK_ARCH}-mvlsdk"
 PLUGIN_NAME ?="MontaVista SDK ${MACHINE}-${SDK_ARCH}"
 FEATURE_NAME ?="MontaVista SDK ${MACHINE}-${SDK_ARCH}"
 VENDOR_NAME ?= "MontaVista Software, LLC."
-ADK_VERSION ?= "2.0.0"
+ADK_VERSION ?= "${DISTRO_VERSION}"
 MSD_REVISION ?= "${MSD_VERSION}"
-
-fakeroot create_shar_append_mvista-cgx () {
-	# Make sure OECORE_NATIVE_SYSROOT doesn't read user
-	# defined SDK_PATH_NATIVE variable during SDK installation.
-	sed -i "s:^native_sysroot=\(.*\)OECORE_NATIVE_SYSROOT=\(.*\)|cut\(.*\):native_sysroot=\1OECORE_NATIVE_SYSROOT=\2| grep -v SDK_PATH_NATIVE | cut\3:g" ${T}/post_install_command ${SDK_DEPLOY}/${TOOLCHAIN_OUTPUTNAME}.sh
-}
-
-create_shar_append () {
-	SDK2P2=$(which sdk2p2)
-	if [ -n "$SDK2P2" ] ; then
-                mkdir -p ${P2BUILDDIR}/../p2-tmp/
-                cp -a $(dirname $SDK2P2)/../share/p2installer ${P2BUILDDIR}/../p2-tmp/
-                licensedirs=$(find ${P2BUILDDIR}/../sdk/image/ -type d | grep licenses\$) || true
-                if [ -n "$licensedirs" ] ; then
-                   liceman -t ${P2BUILDDIR}/../p2-tmp/p2installer/com.mvista.sdk $licensedirs
-                fi
-		mkdir -p ${P2BUILDDIR}
-                bash -x $SDK2P2 -s ${SDK_DEPLOY}/${TOOLCHAIN_OUTPUTNAME}.sh -d ${P2BUILDDIR} \
-                -i "${PLUGIN_ID}" -j "${FEATURE_ID}" \
-                -f "${FEATURE_NAME}" -p "${PLUGIN_NAME}" \
-                -v "${ADK_VERSION}" -q ${MSD_REVISION} -S ${P2BUILDDIR}/../p2-tmp/ -n "${VENDOR_NAME}"
-		mkdir -p ${P2DIR}
-                cp ${P2BUILDDIR}/*/*.jar ${P2DIR}
-                cp ${P2BUILDDIR}/features/*/category.xml ${P2DIR}
-	fi
-}
-	
 
 OE_TERMINAL_EXPORTS += "MVL_SDK_PREFIX PATH"
 
@@ -251,19 +162,21 @@ do_make_scripts_mvista-cgx() {
         unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
         make CC="${KERNEL_CC}" LD="${KERNEL_LD}" AR="${KERNEL_AR}" \
                    -C ${STAGING_KERNEL_DIR} O=${STAGING_KERNEL_BUILDDIR} \
-                   HOSTCC='gcc -I${STAGING_INCDIR_NATIVE} -L${STAGING_DIR_NATIVE}/lib -Wl,-rpath,${STAGING_DIR_NATIVE}/lib' \
+                   HOSTCC='gcc -I${STAGING_INCDIR_NATIVE} -L${STAGING_DIR_NATIVE}/usr/lib \
+		   -Wl,-rpath,${STAGING_DIR_NATIVE}/usr/lib -L${STAGING_DIR_NATIVE}/lib \
+		   -Wl,-rpath,${STAGING_DIR_NATIVE}/lib' \
                    scripts
 }
 
 # KERNEL_INTERNAL_CFG_LOCATION holds location of internal 
 # kernel fragment files (.cfg files)
-KERNEL_INTERNAL_CFG_LOCATION := "${@ bb.data.getVar("MVLBASE",d,1)}/recipes-kernel/linux/cfg-files/"
+KERNEL_INTERNAL_CFG_LOCATION := "${@ d.getVar("MVLBASE",d,1)}/recipes-kernel/linux/cfg-files/"
 
 # KERNEL_CFG_LOCATION contains internal kernel fragment files (.cfg files)
 # EXTRA_CFG_DIRECTORY_LIST contains list of directories containing external 
 # kernel fragment files (.cfg files). The list is delimited by colon (:).
 EXTRA_KERNEL_CFG_DIRECTORY_LIST ?= ""
-KERNEL_CFG_LOCATION := "${@ bb.data.getVar("MVLBASE",d,1)}/recipes-kernel/linux/cfg-files/:${EXTRA_KERNEL_CFG_DIRECTORY_LIST}"
+KERNEL_CFG_LOCATION := "${@ d.getVar("MVLBASE",d,1)}/recipes-kernel/linux/cfg-files/:${EXTRA_KERNEL_CFG_DIRECTORY_LIST}"
 
 # KERNEL_CFG_AVAILABLE - lists available internal and external kernel fragment 
 # files via getCfgs function
@@ -292,3 +205,141 @@ def appendKernelCfgFiles(d):
 PERLLIBDIRS_class-target = "${libdir}/perl"
 PERLLIBDIRS_class-native = "${libdir}/perl-native"
 
+PACKAGE_PREPROCESS_FUNCS_prepend += "get_fileperms"
+PACKAGEBUILDPKGD_append += "fixup_stripped_perms"
+PACKAGEFILEPERMS = "${WORKDIR}/dir.perms ${WORKDIR}/file.perms"
+PACKAGEFILEPERMS_DISABLE ?= "0"
+
+get_fileperms () {
+    find ${PKGD} -type d | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${WORKDIR}/dir.perms
+    find ${PKGD} -type f | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${WORKDIR}/file.perms
+}
+
+python fixup_stripped_perms () {
+    # Provide method for turning off this code from the metadata.
+    disable = d.getVar("PACKAGEFILEPERMS_DISABLE", True)
+    if disable == "1":
+       return
+
+    # If strip can load pseudo there is no reason to execute these fix ups.
+    # This can be either because the host abi and the toolchain are the same or
+    # pseudo was built with both abi libraries.
+    strip = d.getVar("STRIP", True)
+    cmd = strip + " --info 2>&1 > /dev/null"
+    (retval, output) = oe.utils.getstatusoutput(cmd)
+    if not output.startswith("ERROR: ld.so: object"): 
+       return
+
+    import shutil
+
+    # Copy package directory to allocate inodes in the off chance the pseudo database has conflicts.
+    dvar = d.getVar("PKGD", True)
+
+    # If packages.old exists remove it.
+    if os.path.isdir(dvar + ".old"):
+       shutil.rmtree(dvar + ".old")
+
+    # If packages.save exists remove it
+    if os.path.isdir(dvar + ".save"):
+       shutil.rmtree(dvar + ".save")
+
+    # Copy packages to packages.save, move packages to packages.old and
+    # packages.new to packages
+    shutil.copytree(dvar, dvar + ".save", symlinks=True)
+    shutil.move(dvar, dvar + ".old")
+    shutil.move(dvar + ".save", dvar)
+
+    check_uid = d.getVar('HOST_USER_UID', True)
+
+    pkgfileperms = d.getVar("PACKAGEFILEPERMS", True)
+
+    for iter in pkgfileperms.split():
+        files = open(iter).read()
+        import stat
+        for file in files.split("\n"):
+            fsplit = file.split(" ")
+            if len(fsplit) != 5:
+               continue 
+            fname, mode, user, group, inode = fsplit
+            tfile = dvar + "/" + fname
+            if os.path.exists(tfile):
+               filest = os.stat(tfile)
+
+               # Fix mode if not correct from do_install
+               if (stat.S_IMODE(filest.st_mode) != int(mode,8)):
+                  os.chmod(tfile, int(mode,8))
+
+               # Fix owner/group if not correct from do_install
+               if (filest.st_uid != 0) or (filest.st_uid != user) or (filest.st_gid != group):
+                  if (filest.st_uid == int(check_uid)) or (user == check_uid):
+                     setuid = 0
+                     setgid = 0
+                  else:
+                     setuid = int(user)
+                     setgid = int(group)
+                  os.chown(tfile, setuid, setgid)
+               
+               # If the debug file is found, make sure it is owned by root. 
+               dtfile = "%s" % os.path.dirname(tfile) + "/.debug/" + os.path.basename(tfile)
+               if os.path.exists(dtfile):
+                  bb.note("found: %s" % dtfile)
+                  os.chown(dtfile, 0, 0)
+
+}
+
+# Code not to remove debug symbols from kernel module for AArch64
+python () {
+    if bb.data.inherits_class("module",d) or bb.data.inherits_class("module-base",d):
+        if bb.utils.contains('TUNE_FEATURES', 'aarch64', True, False, d):
+            d.setVar('INHIBIT_PACKAGE_STRIP', '1')
+}
+
+kernel_do_install_append () {
+     mkdir -p ${D}/usr/src/
+     cp ${B}/.config ${STAGING_KERNEL_DIR}/
+     tar -C ${STAGING_KERNEL_DIR}  --exclude='.git' -czvf ${D}/usr/src/linux.tar.gz .
+     rm ${STAGING_KERNEL_DIR}/.config
+}
+
+kernel_do_deploy_append () {
+    if [ "${KERNEL_IMAGETYPE}" != "vmlinux" ]; then
+        if [ -e vmlinux ] ; then
+            BASE_NAME=$(echo "${KERNEL_IMAGE_BASE_NAME}" | cut -d - -f 2-)
+            BASE_SYMLINK_NAME=$(echo "${KERNEL_IMAGE_SYMLINK_NAME}" | cut -d - -f 2-)
+
+            install -m 0644 vmlinux ${DEPLOYDIR}/vmlinux-$BASE_NAME.bin
+
+            # Make sure image symbolic links always point to latest image built.
+            rm -f ${DEPLOYDIR}/vmlinux-$BASE_SYMLINK_NAME.bin
+            rm -f ${DEPLOYDIR}/vmlinux
+            ln -sf vmlinux-$BASE_NAME.bin ${DEPLOYDIR}/vmlinux-$BASE_SYMLINK_NAME.bin
+            ln -sf vmlinux-$BASE_NAME.bin ${DEPLOYDIR}/vmlinux
+       fi
+    fi
+
+    # Make sure image symbolic links always point to latest image built.
+    rm -f ${DEPLOYDIR}/${KERNEL_IMAGE_SYMLINK_NAME}.bin
+    rm -f ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
+}
+
+PACKAGES_append_pn-linux-mvista += "kernel-src"
+FILES_kernel-src_pn-linux-mvista = "/usr/src/linux.tar.gz"
+
+prep_copy_buildsystem () {
+    mkdir -p ${SDK_OUTPUT}/${SDKPATH}/conf
+    mkdir -p ${SDK_OUTPUT}/${SDKPATH}/sources
+    set -x 
+    if [ -e "${TOPDIR}/conf/local-content.conf" ] ; then
+       cp ${TOPDIR}/conf/local-content.conf ${SDK_OUTPUT}/${SDKPATH}/conf
+       cat ${TOPDIR}/conf/local-content.conf | grep '^MV.*_TREE =' | sed -e 's,",,g' | sed -e "s,',,g"| while read META EQ TREE; do
+           if [ -d $(echo $TREE | sed s,git://,,) ] ; then
+              cp -a $(echo $TREE | sed s,git://,,) ${SDK_OUTPUT}/${SDKPATH}/sources
+              sed -i ${SDK_OUTPUT}/${SDKPATH}/conf/local-content.conf -e "s,$TREE,git://\$\{TOPDIR\}/sources/$(basename $TREE),"
+           fi
+       done
+    fi
+}
+
+python copy_buildsystem_prepend_mvista-cgx () {
+    bb.build.exec_func("prep_copy_buildsystem", d)
+}

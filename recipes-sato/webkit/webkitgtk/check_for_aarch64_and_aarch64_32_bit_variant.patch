@@ -1,7 +1,6 @@
-diff -Naurp webkitgtk-2.8.5_org/Source/WTF/wtf/Platform.h webkitgtk-2.8.5/Source/WTF/wtf/Platform.h
---- webkitgtk-2.8.5_org/Source/WTF/wtf/Platform.h	2015-12-07 23:41:18.958818278 -0800
-+++ webkitgtk-2.8.5/Source/WTF/wtf/Platform.h	2015-12-07 23:58:53.438720941 -0800
-@@ -344,6 +344,15 @@
+--- webkitgtk-2.12.3/Source/WTF/wtf/Platform.h.orig	2016-09-29 15:02:17.095100863 -0700
++++ webkitgtk-2.12.3/Source/WTF/wtf/Platform.h	2016-09-29 16:07:35.942195364 -0700
+@@ -346,6 +346,15 @@
  #define WTF_CPU_NEEDS_ALIGNED_ACCESS 1
  #endif
  
@@ -17,14 +16,13 @@ diff -Naurp webkitgtk-2.8.5_org/Source/WTF/wtf/Platform.h webkitgtk-2.8.5/Source
  /* ==== OS() - underlying operating system; only to be used for mandated low-level services like 
     virtual memory, not to choose a GUI toolkit ==== */
  
-@@ -653,7 +662,9 @@
+@@ -699,7 +708,8 @@
      || CPU(S390X) \
      || CPU(MIPS64) \
      || CPU(PPC64) \
 -    || CPU(PPC64LE)
 +    || CPU(PPC64LE) \
 +    || CPU(AARCH64) && !CPU(AARCH64_32)
-+
- #define WTF_USE_JSVALUE64 1
+ #define USE_JSVALUE64 1
  #else
- #define WTF_USE_JSVALUE32_64 1
+ #define USE_JSVALUE32_64 1

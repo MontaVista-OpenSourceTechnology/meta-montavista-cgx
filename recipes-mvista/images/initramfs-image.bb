@@ -8,7 +8,7 @@ IMAGE_INSTALL = "packagegroup-core-boot kmod initramfs-module-block initramfs-mo
 PACKAGE_REMOVE = "kernel-image-* update-modules"
 IMAGE_FEATURES = ""
 
-export IMAGE_BASENAME = "initramfs"
+export IMAGE_BASENAME = "initramfs-image"
 IMAGE_LINGUAS = " "
 
 LICENSE = "MIT"

@@ -16,4 +16,10 @@ def getprofiles(d):
     return pkgs
 
 IMAGE_INSTALL += "${PROFILE_PKGS}"
-    
+
+#FIXME: For some reason mkfs chokes on the yumdb
+ROOTFS_POSTPROCESS_COMMAND += "remove_yum_dir;"
+
+remove_yum_dir () {
+	rm -rf ${IMAGE_ROOTFS}/var/lib/dnf/yumdb/
+}    

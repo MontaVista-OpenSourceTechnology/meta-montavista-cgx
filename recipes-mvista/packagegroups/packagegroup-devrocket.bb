@@ -3,7 +3,7 @@
 # Released under the MIT license (see LICENSE.MIT for the terms)
 
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=3f40d7994397109285ec7b81fdeb3b58"
+LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=4d92cd373abda3937c2bc47fbc49d690"
 DESCRIPTION = "Task for using DevRocket on the target for development"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
@@ -25,7 +25,7 @@ RDEPENDS_${PN} = " \
            coreutils \
            file \
            glibc-utils \
-           ${@base_conditional("LTTNG_VERSION", None, "", "lttng-control lttng-viewer", d)} \
+           ${@oe.utils.conditional("LTTNG_VERSION", None, "", "lttng-control lttng-viewer", d)} \
            mv-target-daemon \
 "
 #           libmtraq \

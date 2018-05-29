@@ -1,0 +1,13 @@
+diff -ru findutils-4.6.0-orig/lib/fdleak.c findutils-4.6.0/lib/fdleak.c
+--- findutils-4.6.0-orig/lib/fdleak.c	2015-12-28 13:10:23.000000000 -0800
++++ findutils-4.6.0/lib/fdleak.c	2017-03-24 14:50:33.166137994 -0700
+@@ -108,7 +108,9 @@
+ static int
+ get_max_fd (void)
+ {
++#if defined HAVE_GETRLIMIT && defined RLIMIT_NOFILE
+   struct rlimit fd_limit;
++#endif
+   long open_max;
+ 
+   open_max = get_proc_max_fd ();

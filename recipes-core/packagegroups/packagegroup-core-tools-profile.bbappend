@@ -7,14 +7,9 @@ VALGRIND_x86-64 = "valgrind"
 VALGRIND_x86-generic-64 = "valgrind"
 VALGRIND_i686 = "valgrind"
 VALGRIND_mips = "valgrind"
+VALGRIND_mips64 = "valgrind"
 VALGRIND_powerpc = "valgrind"
 VALGRIND_powerpc64 = "valgrind"
 VALGRIND_armv7a = "valgrind"
+VALGRIND_aarch64 = "valgrind"
 
-PROFILETOOLS = "\
-    powertop \
-    latencytop \
-    lttng-tools \
-    lttng-modules \
-    "
-PROFILE_TOOLS_X_aarch64 = ""

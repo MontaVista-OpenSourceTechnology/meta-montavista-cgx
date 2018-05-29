@@ -1,0 +1,41 @@
+--- git/tests/Makefile.am	2016-11-16 06:35:10.197853110 -0800
++++ git_mod/tests/Makefile.am	2016-11-16 06:33:35.645094304 -0800
+@@ -104,13 +104,36 @@ endif
+ # ptrace request used in the tests.
+ XFAIL_TESTS_PTRACE_SINGLESTEP = run-ptrace-mapper run-ptrace-misc
+ 
++# test-ptrace and test-async-sig are known failures for ARM.
++# As libunwind doesn't support unwinding of,
++# call stack after a asynchoronous signal for test-async-sig.
++# remote applications on prelinked images for test-ptrace
++XFAIL_TESTS_FOR_ARM = test-async-sig test-ptrace
++
++# run-check-namespace and run-ptrace-mapper are known failures for AArch64
++# 1. run-check-namespace - _Uaarch64_getcontext is not implemented for AArch64
++# 2. run-ptrace-mapper - PTRACE_SINGLESTEP syscall is not completing the
++# execution of program in AArch64, this caused PC to get same values again and
++# again; leading to infinite loop. Also this test case is a known failure
++# in open source/upstream.
++XFAIL_TESTS_FOR_AARCH64 = run-check-namespace run-ptrace-mapper
++
++# Gtest-exe, Ltest-exe, and run-check-namespace are known failures for MIPS
++# 1. Gtest-exe, Ltest-exe - unw_resume is not implemented for MIPS yet.
++# 2. run-check-namespace - unw_is_signal_frame is not implemented for MIPS yet.
++XFAIL_TESTS_FOR_MIPS = Gtest-exe Ltest-exe run-check-namespace
++
+ if ARCH_MIPS
+-XFAIL_TESTS += $(XFAIL_TESTS_PTRACE_SINGLESTEP)
++XFAIL_TESTS += $(XFAIL_TESTS_PTRACE_SINGLESTEP) $(XFAIL_TESTS_FOR_MIPS)
+ endif
+ 
+ if ARCH_ARM
+ # ARM Linux kernel >=2.6.39 removed PTRACE_SINGLESTEP emulation
+-XFAIL_TESTS += $(XFAIL_TESTS_PTRACE_SINGLESTEP)
++XFAIL_TESTS += $(XFAIL_TESTS_PTRACE_SINGLESTEP) $(XFAIL_TESTS_FOR_ARM)
++endif
++
++if ARCH_AARCH64
++XFAIL_TESTS += $(XFAIL_TESTS_FOR_AARCH64)
+ endif
+ 
+ noinst_PROGRAMS = $(noinst_PROGRAMS_common) $(noinst_PROGRAMS_cdep) \

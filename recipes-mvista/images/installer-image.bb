@@ -8,17 +8,18 @@ PR = "${INC_PR}.1"
 INSTALLED_IMAGE = "default-image"
 
 #Add the installed image to the root filesystem
-IMAGE_PREPROCESS_COMMAND = " \
-        if [ "x${INSTALLER_TARBALL}" != "x" ]; then \
-                install -m 755 "${INSTALLER_TARBALL}" ${IMAGE_ROOTFS}/to_install.tar.gz; \
-        elif [ "x${INSTALLED_IMAGE}" != "x" ]; then \
-                IIMAGE="${DEPLOY_DIR_IMAGE}/${INSTALLED_IMAGE}-${MACHINE}.tar.gz"; \
-                install -m 755 "${IIMAGE}" ${IMAGE_ROOTFS}/to_install.tar.gz; \
-        else \
-                touch ${IMAGE_ROOTFS}/to_install.tar.gz; \
-        fi"
+IMAGE_PREPROCESS_COMMAND = "installer_image_preprocess"
 
-
+installer_image_preprocess () {
+        if [ "x${INSTALLER_TARBALL}" != "x" ]; then
+                install -m 755 "${INSTALLER_TARBALL}" ${IMAGE_ROOTFS}/to_install.tar.gz
+        elif [ "x${INSTALLED_IMAGE}" != "x" ]; then
+                IIMAGE="${DEPLOY_DIR_IMAGE}/${INSTALLED_IMAGE}-${MACHINE}.tar.gz"
+                install -m 755 "${IIMAGE}" ${IMAGE_ROOTFS}/to_install.tar.gz
+        else
+                touch ${IMAGE_ROOTFS}/to_install.tar.gz
+        fi
+}
 
 # Make sure we build the kernel
 #DEPENDS = "virtual/kernel"
@@ -72,10 +73,11 @@ addtask install_installerbinary after do_rootfs before do_bootimg
 do_bootimg[depends] += "${PN}:do_rootfs ${PN}:do_install_installerbinary"
 
 python () {
-      deps = (d.getVarFlag('do_bootimg', 'depends') or "").split()
-      deps.remove('${INITRD_IMAGE}:do_rootfs')
+      deps = (d.getVarFlag('do_bootimg', 'depends', True) or "").split()
+      deps.remove(d.expand('${INITRD_IMAGE_LIVE}') + ':do_image_complete')
       d.setVarFlag('do_bootimg', 'depends', " ".join(deps))
 }
+
 #def remove_initrd_image_dependency(d):
 #      localdata = d.createCopy()
 #      task_depends = (localdata.getVarFlag('do_bootimg', 'depends') or "").split()

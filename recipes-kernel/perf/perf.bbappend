@@ -1,21 +1,9 @@
-# Copyright (c) 2013 MontaVista Software, Inc.  All rights reserved.
-#
-# Released under the MIT license (see LICENSE.MIT for the terms)
-#
+PR .= ".1"
 
-PR .= ".6"
-
-DEPENDS += "flex-native"
-
-SET_ARCH_FOR_ARM := ""
-SET_ARCH_FOR_ARM_armv6 := " ARM_ARCH="6" "
-EXTRA_OEMAKE += '\
-		${SET_ARCH_FOR_ARM} \
-		CC="${CC} ${CFLAGS} ${TARGET_LDFLAGS} -fPIC" \
-                LD="${LD}" \
-                '
-
-do_configure () {
-       sed -i ${S}/tools/perf/Makefile.perf -e /^LD/d
+do_configure_prepend () {
+    if [ -e "${S}/tools/perf/util/libunwind/x86_32.c" ] ; then
+        grep -q "#include <error.h>" ${S}/tools/perf/util/libunwind/x86_32.c ||
+        sed -i 's:#include "unwind.h":#include <errno.h>\n#include "unwind.h":g' \
+        ${S}/tools/perf/util/libunwind/x86_32.c
+    fi
 }
-

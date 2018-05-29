@@ -1,11 +1,20 @@
+From ff4a8a4ad8ab429efca28693ec765ca6b5ffaf9f Mon Sep 17 00:00:00 2001
+From: Jeremy Puhlman <jpuhlman@mvista.com>
+Date: Mon, 28 May 2018 02:20:35 +0000
+Subject: [PATCH] Add kgraph support
+
 Pulled from kgraph project: https://github.com/useidel/kgraft-tools
 GitId: b4f069f849d7d9266310fbfaf78a765f7a3a4de7
 
+---
+ binutils/objcopy.c | 106 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 105 insertions(+), 1 deletion(-)
+
 diff --git a/binutils/objcopy.c b/binutils/objcopy.c
-index 14f6b96..a6d59de 100644
+index 1e39f6d876..c761d840d2 100644
 --- a/binutils/objcopy.c
 +++ b/binutils/objcopy.c
-@@ -1301,7 +1301,14 @@ filter_symbols (bfd *abfd, bfd *obfd, asymbol **osyms,
+@@ -1611,7 +1611,14 @@ filter_symbols (bfd *abfd, bfd *obfd, asymbol **osyms,
  	keep = TRUE;
  
        if (keep && is_strip_section (abfd, bfd_get_section (sym)))
@@ -21,8 +30,8 @@ index 14f6b96..a6d59de 100644
  
        if (keep)
  	{
-@@ -1564,6 +1571,72 @@ copy_unknown_object (bfd *ibfd, bfd *obfd)
-   return TRUE;
+@@ -2400,6 +2407,72 @@ merge_gnu_build_notes (bfd * abfd, asection * sec, bfd_size_type size, bfd_byte
+   return size;
  }
  
 +static bfd_boolean traverse_reloc_changed;
@@ -94,8 +103,8 @@ index 14f6b96..a6d59de 100644
  /* Copy object file IBFD onto OBFD.
     Returns TRUE upon success, FALSE otherwise.  */
  
-@@ -1746,6 +1819,37 @@ copy_object (bfd *ibfd, bfd *obfd, const bfd_arch_info_type *input_arch)
-       return FALSE;
+@@ -2622,6 +2695,37 @@ copy_object (bfd *ibfd, bfd *obfd, const bfd_arch_info_type *input_arch)
+       osympp = isympp = NULL;
      }
  
 +  if (1)
@@ -132,3 +141,6 @@ index 14f6b96..a6d59de 100644
    /* BFD mandates that all output sections be created and sizes set before
       any output is done.  Thus, we traverse all sections multiple times.  */
    bfd_map_over_sections (ibfd, setup_section, obfd);
+-- 
+2.11.1
+

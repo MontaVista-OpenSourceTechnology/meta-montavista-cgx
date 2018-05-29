@@ -1,0 +1,197 @@
+From 126771b6685a219963d39b97f9d899dac5abdb39 Mon Sep 17 00:00:00 2001
+From: Corey Minyard <cminyard@mvista.com>
+Date: Wed, 21 Jun 2017 11:05:16 -0500
+Subject: [PATCH] Fix handling of x86_64 process->thread extraction in 4.9
+
+The context switch code was rewritten in 4.9, adjust the code
+for that.
+
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
+---
+ kdump-elftool.1 | 12 +++++++-----
+ kdump-elftool.c | 40 ++++++++++++++++++++++++++++++++++++++++
+ kdump-elftool.h |  7 +++++++
+ kdump-x86_64.c  | 52 ++++++++++++++++++++++++++++++++++++++++++----------
+ 4 files changed, 96 insertions(+), 15 deletions(-)
+
+diff --git a/kdump-elftool.1 b/kdump-elftool.1
+index ff9e261..ee97872 100644
+--- a/kdump-elftool.1
++++ b/kdump-elftool.1
+@@ -264,11 +264,13 @@ Note that you do
+ get the userland traceback here.  You get the
+ kernel side of the traceback.
+ 
+-.SH PROCESSES TO GDB THREADS EXTRAS FOR X86
+-Unfortuantely, x86 doesn't provide all the information you need to
+-properly generate threads for each process.  Two additional pieces
+-of information are required: The context switch point and the value
+-of the BP register at context switch.
++.SH PROCESSES TO GDB THREADS EXTRAS FOR X86_64
++Unfortuantely, x86_64 kernels before 4.9 do not provide all the
++information you need to properly generate threads for each process.
++Two additional pieces of information are required: The context switch
++point and the value of the BP register at context switch.
++
++Kernels 4.9 and later do not need this extra handling.
+ 
+ The kernel does not store the value of the BP register at context
+ switch, and that would slow down context switches a little so it's
+diff --git a/kdump-elftool.c b/kdump-elftool.c
+index 1bbd3bd..7fa4beb 100644
+--- a/kdump-elftool.c
++++ b/kdump-elftool.c
+@@ -172,6 +172,10 @@ enum base_vmci {
+ 	VMCI_PAGESIZE
+ };
+ 
++char *osrelease;
++int os_major_release;
++int os_minor_release;
++
+ #define _VMCI_CHECK_FOUND(vmci, fullname)				\
+ 	({if (!vmci[VMCI_ ## fullname].found) {		\
+ 		pr_err("Error: %s not in vmcore\n", #fullname); \
+@@ -184,6 +188,26 @@ int process_base_vmci(struct kdt_data *d, struct vmcoreinfo_data *vmci,
+ 		      struct elfc *elf)
+ {
+ 	int rv;
++	char *str, *end;
++
++	if (!osrelease) {
++		pr_err("Error: OSRELEASE not in vmcore\n");
++		return -1;
++	}
++	str = osrelease;
++	os_major_release = strtoul(str, &end, 10);
++	if (end == str || *end != '.') {
++		pr_err("Error: OSRELEASE major version not valid: %s\n",
++			osrelease);
++		return -1;
++	}
++	str = end + 1;
++	os_minor_release = strtoul(str, &end, 10);
++	if (end == str || *end != '.') {
++		pr_err("Error: OSRELEASE minor version not valid: %s\n",
++			osrelease);
++		return -1;
++	}
+ 
+ 	VMCI_CHECK_FOUND(vmci, SYMBOL, _stext);
+ 
+@@ -365,6 +389,22 @@ vmcoreinfo_scanner(const char *nameptr, int namelen,
+ 	struct vmcoreinfo_data *vals = userdata;
+ 	int i;
+ 
++	if (namelen == strlen("OSRELEASE") &&
++	    strncmp(nameptr, "OSRELEASE", namelen) == 0) {
++		if (osrelease)
++			return 0;
++
++		osrelease = malloc(vallen + 1);
++		if (!osrelease) {
++			pr_err("Out of memory allocation OSRELEASE data\n");
++		} else {
++			memcpy(osrelease, valptr, vallen);
++			osrelease[vallen] = '\0';
++		}
++
++		return 0;
++	}
++
+ 	for (i = 0; vals[i].name; i++) {
+ 		char *name = vals[i].name;
+ 		int namesize = strlen(name);
+diff --git a/kdump-elftool.h b/kdump-elftool.h
+index 258a77d..03abce3 100644
+--- a/kdump-elftool.h
++++ b/kdump-elftool.h
+@@ -64,6 +64,13 @@ int copy_elf_notes(struct elfc *out, struct elfc *in,
+ 		   void *userdata);
+ 
+ /*
++ * Extracted information about which OS version we are running.
++ */
++char *osrelease;
++int os_major_release;
++int os_minor_release;
++
++/*
+  * Scan the vmcoreinfo in the notes looking for values.  A value
+  * matching "name" will be hunted for.  If found, "found" will be set
+  * to true and the value will be extracted using "base" (like base 10,
+diff --git a/kdump-x86_64.c b/kdump-x86_64.c
+index bf9cc34..8f19a7d 100644
+--- a/kdump-x86_64.c
++++ b/kdump-x86_64.c
+@@ -253,25 +253,57 @@ x86_64_task_ptregs(struct kdt_data *d, GElf_Addr task, void *regs)
+ 	struct x86_64_pt_regs *pt_regs = regs;
+ 	int rv;
+ 
+-	if (!d->thread_sp_found || !d->x86___thread_sleep_point_found ||
+-	    !d->x86_context_switch_frame_size_found) {
+-		pr_err("x86-specific thread symbols not found, ptregs cannot "
++	if (!d->thread_sp_found) {
++		pr_err("x86-specific thread SP offset not found, ptregs cannot "
+ 		       "be extracted.\n");
+ 		return -1;
+ 	}
+-	if (d->x86_context_switch_frame_size == 1) {
+-		pr_err("You must set SIZE(context_switch_frame) in your "
+-		       "extracted symbols.  See the man page for details.\n");
+-		return -1;
+-	}
+ 
+-	pt_regs->rip = d->x86___thread_sleep_point;
+ 	rv = fetch_vaddr64(d, reg + d->thread_sp, &pt_regs->rsp, "thread.sp");
+ 	if (rv) {
+ 		pr_err("Unable to fetch SP from task struct\n");
+ 		return rv;
+ 	}
+-	pt_regs->rbp = pt_regs->rsp - d->x86_context_switch_frame_size;
++
++	if (os_major_release < 4 ||
++	    (os_major_release == 4 && os_minor_release < 9)) {
++		if (!d->x86___thread_sleep_point_found ||
++		    !d->x86_context_switch_frame_size_found) {
++			pr_err("x86-specific thread symbols not found, ptregs "
++			       "cannot be extracted.\n");
++			return -1;
++		}
++
++		if (d->x86_context_switch_frame_size == 1) {
++			pr_err("You must set SIZE(context_switch_frame) in "
++			       "your extracted symbols.  See the man page "
++			       "for details.\n");
++			return -1;
++		}
++
++		pt_regs->rbp = pt_regs->rsp - d->x86_context_switch_frame_size;
++		pt_regs->rip = d->x86___thread_sleep_point;
++	} else {
++		/* Context switch was redone in 4.9. */
++		/* Pushed BP register (frame pointer) is at this address. */
++		GElf_Addr fr = pt_regs->rsp + (5 * 8);
++
++		/* We back out of __switch_to_asm to it's parent. */
++		rv = fetch_vaddr64(d, fr, &pt_regs->rbp, "thread.bp");
++		if (rv) {
++			pr_err("Unable to fetch BP from stack\n");
++			return rv;
++		}
++
++		rv = fetch_vaddr64(d, fr + 8, &pt_regs->rip, "thread.ip");
++		if (rv) {
++			pr_err("Unable to fetch ip from stack\n");
++			return rv;
++		}
++
++		/* 6 pushes in __switch_to_asm, plus the call. */
++		pt_regs->rsp += (7 * 8);
++	}
+ 
+ 	/* We should only need the EIP, EBP and ESP. */
+ 
+-- 
+2.7.4
+

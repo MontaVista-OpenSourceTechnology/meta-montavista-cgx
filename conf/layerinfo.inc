@@ -1,15 +1,21 @@
+BB_HASHBASE_WHITELIST_append = " PROTECTED_SOURCE_URL PERSONAL_SOURCE_MIRROR MVLFETCH_OPTS MVLFETCH "
+BB_HASHBASE_WHITELIST_append = " FETCHCMD_wget USE_MVLFETCH "
 
-LAYER_NAME="${@ get_layername(bb.data.getVar("FILE",d,1),d)}"
-SOURCE_MIRROR_URL="${@get_layermirror(d)}/"
+LAYER_NAME="${@ get_layername(d.getVar("FILE",d,1),d)}"
+SOURCE_MIRROR_URL?="${@get_layermirror(d)}/"
 inherit own-mirrors
-
+PROTECTED_SOURCE_URL ?= ""
+PERSONAL_SOURCE_MIRROR ?= ""
+MVLFETCH_OPTS ?= ""
+MVLFETCH ?= "/usr/bin/env mvl-fetch ${MVLFETCH_OPTS}"
+USE_MVLFETCH ?= "0"
 def get_layername(file, d):
     import re
     if not os.path.isabs(file):
         file = bb.which(d.getVar("BBPATH", 1), file)
     filedir = os.path.realpath(os.path.dirname(file))
-    named = d.getVar("BBLAYERS_NAMED",1) or ""
-    for layer in named.split():
+    named = (d.getVar("BBLAYERS_NAMED",1) or "").split()
+    for layer in named:
         splitname = layer.split(":")
 
         if len(splitname) == 2:
@@ -25,3 +31,36 @@ def get_layermirror(d):
     layer = d.getVar("LAYER_NAME",1)
     layer_mirror = d.getVar("LAYER_SOURCES_%s" % layer , 1) or "file://${TOPDIR}/sources"
     return layer_mirror
+
+def set_source_mirror(d):
+    if d.getVar("NO_SOURCE_MIRROR") == "1":
+       return
+    layer = d.getVar("LAYER_NAME")
+    source_url=d.getVar("SOURCE_MIRROR_URL")
+    protected_mirror = d.getVar("PROTECTED_SOURCES_%s" % layer)
+    protected_url = d.getVar("PROTECTED_SOURCE_URL_%s" % layer)
+    if not protected_url: 
+       protected_url = d.getVar("PROTECTED_SOURCE_URL")
+    if protected_mirror == "1" and protected_url:
+       source_url=protected_url
+    personal_mirror = d.getVar("PERSONAL_SOURCE_MIRROR_%s" % layer)
+    if not personal_mirror:
+       personal_mirror = d.getVar("PERSONAL_SOURCE_MIRROR")
+    if personal_mirror:
+       source_url=personal_mirror
+       d.setVar("SOURCE_MIRROR_URL", personal_mirror)
+    if (source_url and source_url.startswith("https://") and source_url.find("mvista.com") != -1) or d.getVar("USE_MVLFETCH") == "1":
+       mvlbase=d.getVar("MVLBASE")
+       pathadd=None
+       if mvlbase:
+         pathadd = os.path.dirname(os.path.dirname(mvlbase)) + "/bin"
+         newpath = d.getVar("PATH")
+         newpath = pathadd + ":" + newpath
+         d.setVar("PATH", newpath)
+       mvlfetch = d.getVar("MVLFETCH")
+       if mvlfetch:
+          d.setVar("FETCHCMD_wget", mvlfetch)
+
+python() {
+    set_source_mirror(d)
+}

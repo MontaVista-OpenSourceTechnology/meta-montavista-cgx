@@ -1,0 +1,12 @@
+diff -Naurp gcc-6.2.0_org/gcc/config/mips/mips.h gcc-6.2.0/gcc/config/mips/mips.h
+--- gcc-6.2.0_org/gcc/config/mips/mips.h	2016-01-18 05:30:43.000000000 -0800
++++ gcc-6.2.0/gcc/config/mips/mips.h	2017-07-16 20:26:14.822348876 -0700
+@@ -1379,7 +1379,7 @@ FP_ASM_SPEC "\
+    Do not define this macro if it does not need to do anything.  */
+ 
+ #define EXTRA_SPECS							\
+-  { "subtarget_cc1_spec", SUBTARGET_CC1_SPEC },				\
++  { "subtarget_cc1_spec", SUBTARGET_CC1_SPEC " -fasynchronous-unwind-tables " }, \
+   { "subtarget_cpp_spec", SUBTARGET_CPP_SPEC },				\
+   { "subtarget_asm_debugging_spec", SUBTARGET_ASM_DEBUGGING_SPEC },	\
+   { "subtarget_asm_spec", SUBTARGET_ASM_SPEC },				\

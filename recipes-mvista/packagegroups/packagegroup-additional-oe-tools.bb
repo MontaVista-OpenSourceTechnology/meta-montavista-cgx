@@ -30,6 +30,7 @@ PACKAGES = "\
         packagegroup-oe-database-utilities  \
         packagegroup-oe-netprotocol-utilities \
         packagegroup-oe-test-tools \
+        packagegroup-oe-extra-dev-libraries \
 	"
 
 RDEPENDS_packagegroup-additional-oe-tools = "\
@@ -53,22 +54,33 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
 	packagegroup-oe-database-utilities \
         packagegroup-oe-netprotocol-utilities \
         packagegroup-oe-test-tools \
+        packagegroup-oe-extra-dev-libraries \
 	"
 
+LIBVIRT=" \
+        libvirt \
+        libvirt-libvirtd \
+        libvirt-virsh \
+        libvirt-python \
+"
+# FIXME libvirt depends on qemu which does not build on mips64
+LIBVIRT_qemumips64 = ""
+LIBVIRT_qemumips64nfp = ""
+
+
 RDEPENDS_packagegroup-oe-virtualization = " \
-	libvirt \
-	libvirt-libvirtd \
-	libvirt-virsh \
-	libvirt-python \
-	"
+	${LIBVIRT} \
+	lua \
+"
 
 RDEPENDS_packagegroup-oe-filesystemutilities = "\
 	squashfs-tools \
-	cpuset \
+	python-cpuset \
 	cramfs \
-	stat \
         util-linux-fsck \
 	"
+# FIXME stat is missing
+# stat
 
 RDEPENDS_packagegroup-oe-hotplugutilities = "\
 	pcmciautils \
@@ -77,6 +89,10 @@ RDEPENDS_packagegroup-oe-hotplugutilities = "\
 RDEPENDS_packagegroup-oe-wirelessutilities = "\
 	irda-utils \
 	"
+OPROFILE="oprofile"
+OPROFILE_linux-gnuilp32 = "" 
+#Fix Me: This should work
+OPROFILE_linux-gnun32 = "" 
 RDEPENDS_packagegroup-oe-console-utilities = "\
 	autofs \
 	console-tools \
@@ -86,14 +102,12 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	libcgroup \
 	libgcc \
 	run-postinsts \
-	stat \
 	linux-firmware \
 	mtd-utils \
-	oprofile \
+	${OPROFILE} \
 	pax-utils \
 	tiff \
 	libunwind \
-	guile \
 	lvm2 \
 	libc-client \
 	libol \
@@ -105,12 +119,21 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	glibc-scripts \
 	glibc-gconv-utf-16 \
 	udev-extraconf \
-"
-
-RDEPENDS_packagegroup-oe-database-utilities ="\
 	postgresql \
 	postgresql-client \
 	postgresql-timezone \
+	multipath-tools \
+	poco \
+	util-linux-hwclock \
+"
+
+RDEPENDS_packagegroup-oe-extra-dev-libraries = "\
+        poco \
+"
+# FIXME stat is missing
+# stat
+
+RDEPENDS_packagegroup-oe-database-utilities ="\
 	mariadb-setupdb \
 	mariadb-client \
 	mariadb-server \
@@ -119,6 +142,9 @@ RDEPENDS_packagegroup-oe-database-utilities ="\
 
 RDEPENDS_packagegroups-oe-networkmanagement ="\
 	ntp \
+	ntpdate \
+	ntp-utils \
+	sntp \
 	radvd \
 	tunctl \
 	gnupg \
@@ -129,16 +155,26 @@ RDEPENDS_packagegroups-oe-networkmanagement ="\
 	openl2tp \
 	openldap \
 	quagga \
-	quagga-watchquagga \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'quagga-watchquagga', '', d)} \
 	quagga-ospfclient \
 	strongswan \
 	tunctl \
-	iscsitarget \
-	iscsi-initiator-utils \
 	ethtool \
-	portmap \
 	net-tools \
-	"
+	dhcp-client \
+	dhcp-server \
+	tcpdump \
+        lksctp-tools \
+        tipcutils \
+        tipcutils-demos \
+        vlan \
+	sg3-utils \
+	sg3-utils-udev \
+	iscsi-initiator-utils \
+	traceroute \	
+"
+#FIXME
+#	iscsitarget 
 
 RDEPENDS_packagegroups-oe-logmanagement ="\
 	syslog-ng \
@@ -196,7 +232,7 @@ RDEPENDS_packagegroup-oe-webserver =" \
         apache2 \
 	"
 
-
+DEPENDS += "rsyslog nginx"
 
 RDEPENDS_packagegroup-oe-console-utils += "${X86_PACKAGES_OE_CONSOLE_UTILS}"
 
@@ -230,6 +266,7 @@ RDEPENDS_packagegroup-oe-security = "\
 RDEPENDS_packagegroup-oe-debug = "\
 	gdb-kdump-helpers \
 	libunwind \
+	kdump-elftool \
 	"
 
 RDEPENDS_packagegroup-oe-netprotocol-utilities = " \
@@ -238,4 +275,5 @@ RDEPENDS_packagegroup-oe-netprotocol-utilities = " \
 
 RDEPENDS_packagegroup-oe-test-tools = " \
         rt-tests \
+        python-pip \
 "

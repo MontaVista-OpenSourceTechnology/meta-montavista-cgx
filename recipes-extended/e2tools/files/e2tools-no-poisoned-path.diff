@@ -1,0 +1,17 @@
+--- e2tools-0.0.16/Makefile.am	2003-07-12 10:06:54.000000000 -0700
++++ e2tools-0.0.16-fixed/Makefile.am	2017-04-20 16:10:51.279316930 -0700
+@@ -1,4 +1,4 @@
+-INCLUDES = -I@includedir@
++INCLUDES = 
+ 
+ .c.o:
+ 	$(COMPILE) -c $<
+@@ -17,7 +17,7 @@
+ 	tail.c \
+ 	util.c \
+ 	write.c
+-e2cp_LDADD = -L@libdir@ -lext2fs -lcom_err
++e2cp_LDADD = -lext2fs -lcom_err
+ EXTRA_DIST = README TODO e2tools.spec
+ 
+ install-exec-hook:

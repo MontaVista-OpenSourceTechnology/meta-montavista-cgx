@@ -9,8 +9,17 @@ DESCRIPTION_${PN}-dbg="Image Package Group for ${PN}"
 DESCRIPTION_${PN}-dev="Image Package Group for ${PN}"
 RDEPENDS_${PN} := "${RDEPENDS}"
 RDEPENDS=""
+IMAGE_TYPES="ext2"
+IMAGE_GEN_DEBUGFS="0"
 do_rootfs[noexec] = "1"
 do_deploy[noexec] = "1"
+do_image[noexec] = "1"
+do_bootimg[noexec] = "1"
+do_bootimg[depends] = ""
+do_image_ext2[noexec] = "1"
+do_bootdirectdisk[depends] = ""
+do_bootdirectdisk[noexec] = "1"
+IMAGE_FSTYPES=""
 PACKAGES="${PN}"
 RRECOMMENDS_${PN} := "${RRECOMMENDS}"
 RRECOMMENDS = ""
@@ -33,6 +42,8 @@ python packagegroupimage_virtclass_handler () {
     if "packagegroup-image" not in classextend:
         return
     if classextendvar != "base":
+       raw_pn = classextendvar + "-packagegroup-" + pn.replace("-packagegroup-image", "")
+       e.data.setVar("RAW_PN", raw_pn)
        pn=classextendvar + "-" + pn
     e.data.setVar("PN", "packagegroup-" + pn.replace("-packagegroup-image", ""))
     e.data.setVar("OVERRIDES", e.data.getVar("OVERRIDES", False) + ":virtclass-packagegroup")
@@ -43,6 +54,7 @@ addtask do_package before do_build
 python () {
     d.delVarFlag("do_package_write_rpm", "noexec")
     d.delVarFlag("do_package", "noexec")
+    d.delVarFlag("do_packagedata", "noexec")
     d.delVarFlag("do_build", "noexec")
     variant = d.getVar("BBEXTENDVARIANT", True)
     extend =  d.getVar("BBEXTENDCURR",True)
@@ -55,7 +67,9 @@ python () {
        pkgarch = d.getVar("PACKAGE_ARCH", False)
        d.setVar("PACKAGE_ARCH",variant + "_" + pkgarch)
        pn = d.getVar("PN", True)
-       d.setVar("RPROVIDES_%s" % pn, variant + "-" + pn)
+       rprovides = variant + "-" + pn
+       rprovides += " " + d.getVar("RAW_PN", True)
+       d.setVar("RPROVIDES_%s" % pn, rprovides)
     bpn = d.getVar("BPN", True)
     skips=d.getVar("SKIP_IMAGES", True) or ""
     if bpn.replace("packagegroup-","").replace(variant + "-" , "") in set(skips.split()):

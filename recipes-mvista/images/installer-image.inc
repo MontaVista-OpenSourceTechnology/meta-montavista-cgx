@@ -22,7 +22,7 @@ label serial
 EOF
 }
 
-inherit image bootimg
+inherit image image-live 
 #inherit image mv_bootimg
 
 build_iso() {

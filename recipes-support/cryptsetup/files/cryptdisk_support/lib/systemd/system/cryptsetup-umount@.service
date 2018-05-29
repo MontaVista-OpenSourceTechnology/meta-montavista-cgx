@@ -1,0 +1,12 @@
+
+[Unit]
+Description=Cryptography disk unmount  
+SourcePath=/etc/crypttab
+Conflicts=umount.target
+DefaultDependencies=no
+Before=umount.target
+
+[Service]
+Restart=always
+RestartSec=0
+ExecStart=/sbin/cryptdisks_stop /dev/%I

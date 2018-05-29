@@ -8,13 +8,13 @@
 python () {
     import bb
 
-    blacklist = bb.data.getVar("PN_BLACKLIST", d, 1)
+    blacklist = d.getVar("PN_BLACKLIST", True)
     if not blacklist:
-       basePackage = bb.data.getVar("BPN", d, 1)
-       packageName = bb.data.getVar("PN", d, 1)
-       mlPrefix = bb.data.getVar("MLPREFIX", d, 1)
+       basePackage = d.getVar("BPN", True)
+       packageName = d.getVar("PN", True)
+       mlPrefix = d.getVar("MLPREFIX", True)
        if ( packageName == mlPrefix + basePackage ):
-          blacklist = bb.data.getVar("PN_BLACKLIST_pn-%s" % basePackage, d, 1)
+          blacklist = d.getVar("PN_BLACKLIST_pn-%s" % basePackage, True)
 
     if blacklist:
         bb.debug(1, "%s" % (blacklist))

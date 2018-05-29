@@ -1,0 +1,7 @@
+#!/bin/sh
+make -C tests -k LOG_DRIVER="$PWD/tests/test-driver" check-TESTS 2>&1 | tee libunwind_test.log
+if grep -q "# FAIL:  0$" libunwind_test.log ; then
+   exit 0
+else
+   exit 1
+fi

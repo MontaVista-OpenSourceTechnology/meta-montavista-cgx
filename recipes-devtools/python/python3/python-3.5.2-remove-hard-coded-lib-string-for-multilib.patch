@@ -1,0 +1,60 @@
+Having hard coded "lib" string in lib_python path, searches for modules 
+under /usr/lib/python3.X directory. This would result in an error on 
+multilib environment, where base_libdir is other than lib.
+
+Having "lib" hardcoded string in site.py, makes python3 to look for
+modules under /usr/lib/python3.x/site-packages directory. This 
+results in ImportError when libdir is other than "/usr/lib".
+
+Example:
+
+1. On qemux86-64 with base_libdir and libdir as /lib64 and /usr/lib64
+respectively, would result in below error when python3 is executed:
+root@qemux86-64:~# python3
+Could not find platform independent libraries <prefix>
+Could not find platform dependent libraries <exec_prefix>
+Consider setting $PYTHONHOME to <prefix>[:<exec_prefix>]
+Fatal Python error: Py_Initialize: Unable to get the locale encoding
+ImportError: No module named 'encodings'
+
+Current thread 0x00007f65dbb53700 (most recent call first):
+Aborted
+root@qemux86-64:~# 
+
+2. Importing python3 modules fails with below error, when
+   libdir is other than "/usr/lib"
+
+# python3
+Python 3.5.2 (default, Apr 19 2017, 17:02:16) 
+[GCC 6.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import six
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: No module named 'six'
+>>>
+
+diff -Naurp Python-3.5.2_org/Modules/getpath.c Python-3.5.2/Modules/getpath.c
+--- Python-3.5.2_org/Modules/getpath.c	2017-02-17 00:58:28.312583182 +0530
++++ Python-3.5.2/Modules/getpath.c	2017-02-17 01:01:58.984805492 +0530
+@@ -502,7 +502,7 @@ calculate_path(void)
+     _pythonpath = Py_DecodeLocale(PYTHONPATH, NULL);
+     _prefix = Py_DecodeLocale(PREFIX, NULL);
+     _exec_prefix = Py_DecodeLocale(EXEC_PREFIX, NULL);
+-    lib_python = Py_DecodeLocale("lib/python" VERSION, NULL);
++    lib_python = Py_DecodeLocale(LIB "/python" VERSION, NULL);
+ 
+     if (!_pythonpath || !_prefix || !_exec_prefix || !lib_python) {
+         Py_FatalError(
+diff -Naurp Python-3.5.2_org/Lib/site.py Python-3.5.2/Lib/site.py
+--- Python-3.5.2_org/Lib/site.py	2016-06-25 14:38:36.000000000 -0700
++++ Python-3.5.2/Lib/site.py	2017-04-27 09:09:53.229849344 -0700
+@@ -303,7 +303,7 @@ def getsitepackages(prefixes=None):
+         seen.add(prefix)
+ 
+         if os.sep == '/':
+-            sitepackages.append(os.path.join(prefix, "lib",
++            sitepackages.append(os.path.join(prefix, sys.lib,
+                                         "python" + sys.version[:3],
+                                         "site-packages"))
+         else:

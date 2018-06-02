@@ -43,6 +43,7 @@ def set_source_mirror(d):
        protected_url = d.getVar("PROTECTED_SOURCE_URL")
     if protected_mirror == "1" and protected_url:
        source_url=protected_url
+       d.setVar("SOURCE_MIRROR_URL", source_url)
     personal_mirror = d.getVar("PERSONAL_SOURCE_MIRROR_%s" % layer)
     if not personal_mirror:
        personal_mirror = d.getVar("PERSONAL_SOURCE_MIRROR")

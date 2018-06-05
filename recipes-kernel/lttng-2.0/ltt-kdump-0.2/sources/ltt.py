@@ -268,10 +268,10 @@ class dumpltt(gdb.Command):
             session = fetch_container(p, "struct lttng_session", "list")
             active = gdb.parse_and_eval("%s->active" % session)
             if (int(active)):
-		chanlist = gdb.parse_and_eval("&(%s->chan)" % session)
-		chan = self.find_channel(chanlist)
-		if (chan is not None):
-		    return (session, chan)
+                chanlist = gdb.parse_and_eval("&(%s->chan)" % session)
+                chan = self.find_channel(chanlist)
+                if (chan is not None):
+                    return (session, chan)
             p = gdb.parse_and_eval("((struct list_head *) %s)->next" % p)
         return (None, None)
 

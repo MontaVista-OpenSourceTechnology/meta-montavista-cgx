@@ -357,9 +357,9 @@ class dumpltt(gdb.Command):
         padded_size = align(written_size, self.page_size)
         self.add_alignment(cpu, padded_size - written_size)
 
-        print "    subbuf size = %d (pad %d) %d" % (padded_size, 
+        print("    subbuf size = %d (pad %d) %d" % (padded_size,
                                                     padded_size - written_size,
-                                                    size)
+                                                    size))
         
         # Now fix the values in the header
         f = open("%s/channel0_%d" % (self.dumpdir, cpu), "r+")
@@ -380,7 +380,7 @@ class dumpltt(gdb.Command):
 
     def handle_buffer(self, cpu, buf):
         """Dump the given ring buffer to the given cpu's output file."""
-        print "Handling cpu %d buffer %s" % (cpu, buf)
+        print("Handling cpu %d buffer %s" % (cpu, buf))
         offset = int(gdb.parse_and_eval("%s->offset.v" % buf))
         oidx = (offset / self.subbuf_size) % self.num_subbuf
         ooffset = offset % self.subbuf_size
@@ -391,13 +391,13 @@ class dumpltt(gdb.Command):
                        "struct lib_ring_buffer_backend_subbuffer")
         subbuf_num = 1;
         while (oidx != cidx):
-            print "  subbuffer %d" % subbuf_num
+            print("  subbuffer %d" % subbuf_num)
             self.handle_subbuffer(cpu, buf, rbbe, cidx, coffset, 0)
             cidx = (cidx + 1) % self.num_subbuf
             coffset = 0
             subbuf_num += 1
         
-        print "  subbuffer %d" % subbuf_num
+        print("  subbuffer %d" % subbuf_num)
         self.handle_subbuffer(cpu, buf, rbbe, cidx, coffset, ooffset - coffset)
         return
 

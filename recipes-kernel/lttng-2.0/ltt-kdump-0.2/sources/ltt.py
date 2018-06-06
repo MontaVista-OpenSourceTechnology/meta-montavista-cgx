@@ -232,7 +232,7 @@ def find_and_load_module(symfile, modname):
                 sect_strs.append("-s %s %s" % (name, addr))
     if (textaddr == 0):
         raise gdb.GdbError("No .text address for module %s" % modname)
-    gdb.execute("add-symbol-file %s %s -s .data %s" %
+    gdb.execute("add-symbol-file %s %s %s" %
                 (symfile, textaddr, " ".join(sect_strs)))
 
 class dumpltt(gdb.Command):

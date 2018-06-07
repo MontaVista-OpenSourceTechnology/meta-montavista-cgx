@@ -12,3 +12,5 @@ SRC_URI = "https://archive.mozilla.org/pub/js/${BPN}${PV}.tar.gz \
            file://Manually_mmap_heap_memory_esr17.patch;patchdir=../../ \
            file://0001-compare-the-first-character-of-string-to-be-null-or-.patch;patchdir=../../ \
            "
+inherit multilib-alternatives
+MULTILIB_ALTERNATIVES_${PN} = "${bindir}/js17-config"

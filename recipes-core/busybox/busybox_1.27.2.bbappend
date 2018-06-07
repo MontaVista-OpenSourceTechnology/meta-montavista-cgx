@@ -7,5 +7,9 @@ PR .= ".2"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:${THISDIR}/files:"
 SRC_URI += "file://0001-Add-save-baud-rate-patch.patch \
+            file://mv.cfg \ 
 "
+DEPENDS += "libtirpc"
+EXTRA_CFLAGS += "-I${STAGING_INCDIR}/tirpc"
+EXTRA_LDFLAGS += "-ltirpc"
 

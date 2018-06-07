@@ -21,7 +21,6 @@ RDEPENDS_${PN} = "busybox \
 		  ldd \
 		  cpio \
 		  bash \
-		  stat \
 		 "
 RDEPENDS_${PN}_append_i386 = " grub"
 RDEPENDS_${PN}_append_x86_64 = " grub"

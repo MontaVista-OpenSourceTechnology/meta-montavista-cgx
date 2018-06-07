@@ -9,7 +9,7 @@ HOMEPAGE="http://www.mvista.com"
 PR = "r2"
 DEPENDS += "mtools"
 
-RDEPENDS_${PN} = "grub efibootmgr python python-readline \
+RDEPENDS_${PN} = "grub efibootmgr python \
                 util-linux-mount \
                 util-linux-umount\
                 util-linux \

@@ -204,7 +204,6 @@ RDEPENDS_packagegroup-oe-graphics = "\
 	libfontenc \
 	libmatchbox\
 	libgcc \
-	libxcalibrate \
 	libxfont \ 
 	libxkbfile \
 	libxres  \ 

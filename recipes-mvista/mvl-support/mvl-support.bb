@@ -26,8 +26,6 @@ fakeroot python do_install_bits () {
 
     destdir = d.getVar("D")
     mvldir = "/".join([destdir, d.getVar("mvldir")])
-    bb.warn(destdir)
-    bb.warn(mvldir)
     bb.utils.mkdirhier(os.path.join(mvldir, "conf"))
      
     # Store specified configuration files

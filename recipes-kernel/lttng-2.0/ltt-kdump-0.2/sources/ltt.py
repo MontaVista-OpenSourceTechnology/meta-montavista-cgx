@@ -366,7 +366,8 @@ class dumpltt(gdb.Command):
         f.seek(last_subbuf_start + 32, os.SEEK_SET)
         end_tsc = read_value(f, "uint64_t")
         if (end_tsc == 0):
-            end_tsc = self.panic_timestamp
+            # It's the last packet, just hack it to the max possible value.
+            end_tsc = 0xffffffffffffffff
             f.seek(last_subbuf_start + 32, os.SEEK_SET)
             val = value_to_binary(self.dumpdir, "uint64_t", end_tsc)
             f.write(val)
@@ -428,7 +429,6 @@ class dumpltt(gdb.Command):
                              "lttng_lib_ring_buffer")
 
         self.PER_CPU_CHANNEL = gdb.parse_and_eval("PER_CPU_CHANNEL")
-        self.panic_timestamp = gdb.parse_and_eval("ring_buffer_panic_timestamp")
 
         (session, backend) = self.find_session_channel()
         if (backend is None):

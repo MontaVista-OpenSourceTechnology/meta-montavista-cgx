@@ -127,7 +127,7 @@ def value_to_binary(tmpdir, typestr, v):
     on the typestr given.  Return a string with the raw binary value
     in target-endian order"""
     fn = "%s/dummy" % tmpdir
-    gdb.execute("append value %s ((%s) %ld)" % (fn, typestr, long(v)))
+    gdb.execute("append value %s ((%s) %ld)" % (fn, typestr, int(v)))
     f = open(fn, "r")
     str = f.read()
     f.close()
@@ -192,7 +192,7 @@ def get_member_unsigned_long(p, member):
     """Given a pointer to a structure, get the given member that is an
     integer."""
     v = gdb.parse_and_eval("(unsigned long) (%s->%s)" % (p, member))
-    return long(v)
+    return int(v)
 
 def find_module(modname):
     """Return a pointer to the given module name's data structure"""
@@ -287,7 +287,7 @@ class dumpltt(gdb.Command):
         to the per-CPU output file."""
         if (size == 0):
             return
-        addr = long(gdb.parse_and_eval("%s->virt" % page)) + start
+        addr = int(gdb.parse_and_eval("%s->virt" % page)) + start
         end = addr + size
         gdb.execute("append memory %s/channel0_%d %ld %ld" %
                     (self.dumpdir, cpu, addr, end))
@@ -336,7 +336,7 @@ class dumpltt(gdb.Command):
         the size padded to a page to the header after writing it
         out.
         """
-        sid = long(gdb.parse_and_eval("%s[%d].id" % (rbbe, cidx)))
+        sid = int(gdb.parse_and_eval("%s[%d].id" % (rbbe, cidx)))
         sbidx = sid & self.idmask
         rbbep = get_ptr("%s->backend.array[%d]" % (buf, sbidx),
                         "struct lib_ring_buffer_backend_pages")

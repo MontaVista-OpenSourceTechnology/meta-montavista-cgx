@@ -445,7 +445,7 @@ class dumpltt(gdb.Command):
         self.num_pages_per_subbuf = gdb.parse_and_eval(
             "%s->backend.num_pages_per_subbuf" % p);
         self.page_size = self.subbuf_size / self.num_pages_per_subbuf
-        self.idshift = int(gdb.parse_and_eval("sizeof(long)")) * 8 / 2
+        self.idshift = int((gdb.parse_and_eval("sizeof(long)")) * 8 / 2)
         self.idmask = (1 << self.idshift) - 1
         cpus = get_cpu_list()
         for cpu in cpus:

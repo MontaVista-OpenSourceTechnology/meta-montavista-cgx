@@ -5,7 +5,7 @@
 
 PR .= ".4"
 
-do_install_append () {
+do_install_append_class-target () {
 	# Install shared libraries in /lib, not /usr/lib
 	mkdir ${D}/${base_libdir}
 	mv ${D}/${libdir}/*.so.* ${D}/${base_libdir}

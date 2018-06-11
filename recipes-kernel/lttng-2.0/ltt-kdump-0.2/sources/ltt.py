@@ -168,7 +168,8 @@ def get_cpu_list():
                     cpus.append(cpu)
                 mask = mask >> 1
                 cpu = cpu + 1
-    except e:
+    except:
+        print("***Unable to get number of CPUs, defaulting to 1")
         cpus = [ 0 ]
     return cpus
 

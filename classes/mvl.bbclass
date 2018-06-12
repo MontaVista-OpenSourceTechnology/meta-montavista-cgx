@@ -37,7 +37,7 @@ python () {
           bpnMult = d.getVar("BPN", True)
           if (pnMult == bpnMult):
              prioMult = int(d.getVar("ALTERNATIVE_PRIORITY", True)) 
-             prioMult += 10
+             prioMult += 5
              d.setVar("ALTERNATIVE_PRIORITY", prioMult)
 }
 

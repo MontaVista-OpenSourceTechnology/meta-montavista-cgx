@@ -156,13 +156,13 @@ def read_value(f, typestr):
 def get_cpu_list():
     """Return a list of online CPUs on the target."""
     try:
-        ulongsize = gdb.parse_and_eval("sizeof(unsigned long)")
-        nr_cpumask = gdb.parse_and_eval("sizeof(*cpu_online_mask)")
-        nr_cpumask = int(nr_cpumask) / int(ulongsize)
+        ulongsize = int(gdb.parse_and_eval("sizeof(unsigned long)"))
+        nr_cpumask = int(gdb.parse_and_eval("sizeof(__cpu_online_mask)"))
+        nr_cpumask = int(nr_cpumask / ulongsize)
         cpu = 0;
         cpus = []
         for i in range(0, nr_cpumask):
-            mask = gdb.parse_and_eval("cpu_online_mask->bits[%d]" % i)
+            mask = int(gdb.parse_and_eval("__cpu_online_mask.bits[%d]" % i))
             for j in range(0, ulongsize * 8):
                 if ((mask & 1) != 0):
                     cpus.append(cpu)

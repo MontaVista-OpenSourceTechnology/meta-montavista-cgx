@@ -364,18 +364,24 @@ class dumpltt(gdb.Command):
         
         # Now fix the values in the header
         f = open("%s/channel0_%d" % (self.dumpdir, cpu), "r+b")
-        f.seek(last_subbuf_start + 32, os.SEEK_SET)
+
+        # End timestamp
+        f.seek(last_subbuf_start + 40, os.SEEK_SET)
         end_tsc = read_value(f, "uint64_t")
         if (end_tsc == 0):
             # It's the last packet, just hack it to the max possible value.
             end_tsc = 0xffffffffffffffff
-            f.seek(last_subbuf_start + 32, os.SEEK_SET)
+            f.seek(last_subbuf_start + 40, os.SEEK_SET)
             val = value_to_binary(self.dumpdir, "uint64_t", end_tsc)
             f.write(val)
-        f.seek(last_subbuf_start + 40, os.SEEK_SET)
+
+        # content size
+        f.seek(last_subbuf_start + 48, os.SEEK_SET)
         val = value_to_binary(self.dumpdir, "uint64_t", written_size * 8)
         f.write(val)
-        f.seek(last_subbuf_start + 48, os.SEEK_SET)
+
+        # packet size.
+        f.seek(last_subbuf_start + 56, os.SEEK_SET)
         val = value_to_binary(self.dumpdir, "uint64_t", padded_size * 8)
         f.write(val)
         f.close()

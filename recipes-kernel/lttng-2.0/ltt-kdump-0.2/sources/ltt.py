@@ -128,7 +128,7 @@ def value_to_binary(tmpdir, typestr, v):
     in target-endian order"""
     fn = "%s/dummy" % tmpdir
     gdb.execute("append value %s ((%s) %ld)" % (fn, typestr, int(v)))
-    f = open(fn, "r")
+    f = open(fn, "rb")
     str = f.read()
     f.close()
     os.unlink(fn)
@@ -279,7 +279,7 @@ class dumpltt(gdb.Command):
     def add_alignment (self, cpu, size):
         """Dump 'size' bytes to the per-CPU output file."""
         f = open("%s/channel0_%d" % (self.dumpdir, cpu), "ab")
-        f.write("".ljust(size, chr(0)))
+        f.write(bytes(size))
         f.close()
         return
 
@@ -363,7 +363,7 @@ class dumpltt(gdb.Command):
                                                     size))
         
         # Now fix the values in the header
-        f = open("%s/channel0_%d" % (self.dumpdir, cpu), "r+")
+        f = open("%s/channel0_%d" % (self.dumpdir, cpu), "r+b")
         f.seek(last_subbuf_start + 32, os.SEEK_SET)
         end_tsc = read_value(f, "uint64_t")
         if (end_tsc == 0):

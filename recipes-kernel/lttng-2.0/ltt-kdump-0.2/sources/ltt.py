@@ -144,7 +144,7 @@ def is_little_endian():
 def read_value(f, typestr):
     """Read a value from a file.  The size depends
     on the typestr given.  Return an integer."""
-    tsize = gdb.parse_and_eval("sizeof(%s)" % typestr)
+    tsize = int(gdb.parse_and_eval("sizeof(%s)" % typestr))
     vs = bytearray(f.read(tsize))
     if is_little_endian():
         vs = reversed(vs)
@@ -222,7 +222,7 @@ def find_and_load_module(symfile, modname):
     sect_strs = []
     sect_count = gdb.parse_and_eval("%s->sect_attrs->nsections" % modp)
     textaddr = 0
-    for i in range(0, sect_count):
+    for i in range(0, int(sect_count)):
         name = get_str("%s->sect_attrs->attrs[%d].name" % (modp, i))
         if (name in sections_needed):
             addr = gdb.parse_and_eval("%s->sect_attrs->attrs[%d].address"
@@ -297,10 +297,10 @@ class dumpltt(gdb.Command):
     def dump_subbuffer(self, cpu, rbbep, start, size):
         """Dump 'size' bytes from offset 'start' in the given subbuffer
         'rbbep' to the per-CPU output file."""
-        start_page = start / self.page_size
-        start_offset = start % self.page_size
+        start_page = int(start / self.page_size)
+        start_offset = int(start % self.page_size)
         written = 0
-        for i in range(start_page, self.num_pages_per_subbuf):
+        for i in range(start_page, int(self.num_pages_per_subbuf)):
             bepage = get_ptr("&(%s->p[%d])" % (rbbep, i),
                              "struct lib_ring_buffer_backend_page")
             if (size > self.page_size - start_offset):
@@ -335,7 +335,7 @@ class dumpltt(gdb.Command):
         Note that each subbuffer has a header, and it may not be
         completely filled out.  So add the subbuffer size and
         the size padded to a page to the header after writing it
-        out.
+        out.  Plus fix the timestamp if it has not been set yet.
         """
         sid = int(gdb.parse_and_eval("%s[%d].id" % (rbbe, cidx)))
         sbidx = sid & self.idmask
@@ -390,18 +390,18 @@ class dumpltt(gdb.Command):
         """Dump the given ring buffer to the given cpu's output file."""
         print("Handling cpu %d buffer %s" % (cpu, buf))
         offset = int(gdb.parse_and_eval("%s->offset.v" % buf))
-        oidx = (offset / self.subbuf_size) % self.num_subbuf
-        ooffset = offset % self.subbuf_size
+        oidx = int((offset / self.subbuf_size) % self.num_subbuf)
+        ooffset = int(offset % self.subbuf_size)
         consumed =  int(gdb.parse_and_eval("%s->consumed.counter" % buf))
-        cidx = (consumed / self.subbuf_size) % self.num_subbuf
-        coffset = consumed % self.subbuf_size
+        cidx = int((consumed / self.subbuf_size) % self.num_subbuf)
+        coffset = int(consumed % self.subbuf_size)
         rbbe = get_ptr("%s->backend.buf_wsb" % buf,
                        "struct lib_ring_buffer_backend_subbuffer")
         subbuf_num = 1;
         while (oidx != cidx):
             print("  subbuffer %d" % subbuf_num)
             self.handle_subbuffer(cpu, buf, rbbe, cidx, coffset, 0)
-            cidx = (cidx + 1) % self.num_subbuf
+            cidx = int((cidx + 1) % self.num_subbuf)
             coffset = 0
             subbuf_num += 1
         
@@ -442,17 +442,17 @@ class dumpltt(gdb.Command):
             raise gdb.GdbError("Unable to find operating session, are you sure "
                                "lttng was running with --snapshot?")
         self.dump_metadata(session)
-        self.num_subbuf = gdb.parse_and_eval("%s->num_subbuf" % backend)
-        self.subbuf_size = gdb.parse_and_eval("%s->subbuf_size" % backend)
+        self.num_subbuf = int(gdb.parse_and_eval("%s->num_subbuf" % backend))
+        self.subbuf_size = int(gdb.parse_and_eval("%s->subbuf_size" % backend))
         self.config = get_ptr("&(%s->config)" % backend,
                               "struct lib_ring_buffer_config")
-        self.tsc_bits = gdb.parse_and_eval("%s->tsc_bits" % self.config)
+        self.tsc_bits = int(gdb.parse_and_eval("%s->tsc_bits" % self.config))
         p = get_percpu_ptr("%s->buf" % backend, 0, "struct lib_ring_buffer")
-        self.last_tsc = gdb.parse_and_eval("%s->last_tsc.v" % p)
-        self.num_pages_per_subbuf = gdb.parse_and_eval(
-            "%s->backend.num_pages_per_subbuf" % p);
-        self.page_size = self.subbuf_size / self.num_pages_per_subbuf
-        self.idshift = int((gdb.parse_and_eval("sizeof(long)")) * 8 / 2)
+        self.last_tsc = int(gdb.parse_and_eval("%s->last_tsc.v" % p))
+        self.num_pages_per_subbuf = int(gdb.parse_and_eval(
+            "%s->backend.num_pages_per_subbuf" % p))
+        self.page_size = int(self.subbuf_size / self.num_pages_per_subbuf)
+        self.idshift = int(int(gdb.parse_and_eval("sizeof(long)")) * 8 / 2)
         self.idmask = (1 << self.idshift) - 1
         cpus = get_cpu_list()
         for cpu in cpus:

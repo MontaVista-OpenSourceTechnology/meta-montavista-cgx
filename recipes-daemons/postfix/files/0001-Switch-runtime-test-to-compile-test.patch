@@ -1,0 +1,29 @@
+From df5bac935b4a8168ada68159d40f08c116002c03 Mon Sep 17 00:00:00 2001
+From: Jeremy Puhlman <jpuhlman@mvista.com>
+Date: Wed, 13 Jun 2018 08:57:33 +0000
+Subject: [PATCH] Switch runtime test to compile test
+
+---
+ makedefs | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/makedefs b/makedefs
+index 1b6e4e7..d9f2a75 100644
+--- a/makedefs
++++ b/makedefs
+@@ -796,9 +796,9 @@ int main(int argc, char **argv)
+ 				  &error) != 14);
+ }
+ EOF
+-		    ${BUILD_CC-gcc} -o makedefs.test makedefs.test.c $icu_cppflags \
+-			$icu_ldflags >/dev/null 2>&1
+-		    if ./makedefs.test 2>/dev/null ; then
++		    ${CC-gcc} -o makedefs.test makedefs.test.c \
++			$icu_ldflags 
++		    if [ -e makedefs.test ] ; then
+ 			SYSLIBS="$SYSLIBS $icu_ldflags"
+ 		    else
+ 			CCARGS="$CCARGS -DNO_EAI"
+-- 
+2.11.1
+

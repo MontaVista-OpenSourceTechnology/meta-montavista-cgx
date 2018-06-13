@@ -32,7 +32,6 @@ def set_multilib_alternatives(d):
      splitmoves.sort()
      mlmoves = "\n".join(splitmoves)
      d.setVar("MULTILIB_INSTALL_MOVES", mlmoves)
-     print (mlmoves)
 python () {
      set_multilib_alternatives(d)
 }

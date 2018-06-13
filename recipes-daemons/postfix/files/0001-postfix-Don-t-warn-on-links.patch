@@ -1,0 +1,25 @@
+From a6c556ccac0b9a8bb87c28e5d84d1f8d59ec65f8 Mon Sep 17 00:00:00 2001
+From: Jeremy Puhlman <jpuhlman@mvista.com>
+Date: Wed, 13 Jun 2018 07:18:45 +0000
+Subject: [PATCH] postfix: Don't warn on links
+
+---
+ conf/postfix-script | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/conf/postfix-script b/conf/postfix-script
+index 9d414b0..5fa1a26 100755
+--- a/conf/postfix-script
++++ b/conf/postfix-script
+@@ -275,7 +275,7 @@ check-warn)
+ 	find $todo ! -user root \
+ 	    -exec $WARN not owned by root: {} \;
+ 
+-	find $todo \( -perm -020 -o -perm -002 \) \
++	find $todo -type f \( -perm -020 -o -perm -002 \) \
+ 	    -exec $WARN group or other writable: {} \;
+ 
+ 	# Check Postfix mail_owner-owned directory tree owner/permissions.
+-- 
+2.11.1
+

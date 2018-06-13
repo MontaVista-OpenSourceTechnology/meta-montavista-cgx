@@ -1,4 +1,4 @@
-PR .= ".3"
+PR .= ".4"
 
 EXTRA_OEMAKE += " NO_LIBUNWIND=1 NO_LIBDW_DWARF_UNWIND=1 "
 
@@ -11,4 +11,4 @@ do_configure_prepend () {
 }
 
 inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN} = "${bindir}/perf"
+MULTILIB_ALTERNATIVES_${PN} = "${bindir}/perf ${bindir}/trace"

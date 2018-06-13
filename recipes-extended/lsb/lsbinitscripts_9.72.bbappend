@@ -17,10 +17,19 @@ do_install_append () {
     fi
     mv ${D}${sysconfdir}/init.d/functions ${D}${sysconfdir}/init.d/functions.${PN}
 }
+def get_priority(d):
+          pnMult = d.getVar("PN", True)
+          bpnMult = d.getVar("BPN", True)
+          if (pnMult == bpnMult):
+             return "100"
+          else:
+             return "90"
+
+ALTERNATIVE_PRIORITY="${@get_priority(d)}"
 
 pkg_postinst_${PN} () {
 #!/bin/sh
-    update-alternatives --install ${sysconfdir}/init.d/functions functions functions.${PN}  100
+    update-alternatives --install ${sysconfdir}/init.d/functions functions functions.${PN} ${ALTERNATIVE_PRIORITY}
 }
 
 BBCLASSEXTEND = "native"

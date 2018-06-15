@@ -1,0 +1,1 @@
+EXTRA_OEMAKE="DEFAULT_GROUP='nogroup'"

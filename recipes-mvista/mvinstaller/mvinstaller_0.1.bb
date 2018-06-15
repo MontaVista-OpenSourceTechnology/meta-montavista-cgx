@@ -52,5 +52,5 @@ PROVIDES = "${PACKAGES}"
 FILES_${PN} = "/installer.py /t /etc/init.d/mktmpwrite \
 	    /etc/rcS.d/S01mktmpwrite \
 	    /etc/init.d/ifuploop /etc/rcS.d/S40ifuploop \
-	    /to_install.tar.gz"
+	    /to_install.tar.gz /usr/bin /etc/ld.so.conf"
 FILES_${PN} += "/user_installer.py*"

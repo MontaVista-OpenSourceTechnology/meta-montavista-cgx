@@ -11,4 +11,5 @@ do_install_append_class-target () {
        fi
 }
 inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN}-core  = "${bindir}/python3.5m-config ${bindir}/python3"
+
+MULTILIB_ALTERNATIVES_${PN}-core_class-target = "${bindir}/python3.5m-config ${bindir}/python3"

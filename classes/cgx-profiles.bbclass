@@ -1,6 +1,4 @@
-CGX_DEFINED_PROFILES = "iot security"
-CGX_PROFILE_iot="meta-java"
-CGX_PROFILE_security="security selinux measured"
+CGX_DEFINED_PROFILES = ""
 
 CGX_PROFILES += "${@checkprofiles(d)}"
 

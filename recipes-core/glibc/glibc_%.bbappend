@@ -1,7 +1,11 @@
-
+datadir="${libdir}/share"
+EXTRA_OEMAKE += "localedir=${libdir}/share/locale"
 do_install_append () {
       mv ${D}${bindir}/ldd ${D}${bindir}/ldd.${PN}
+      mkdir -p ${D}${prefix}/share/info
+      mv ${D}${libdir}/share/info ${D}${prefix}/share/info
 }
+FILES_${PN}-doc += "${prefix}/share/info/*"
 FILES_ldd += "${bindir}/ldd.${PN}"
 
 ALTERNATIVE_PRIORITY='${@oe.utils.conditional("PN", d.getVar("BPN", True), "110", "100", d)}'

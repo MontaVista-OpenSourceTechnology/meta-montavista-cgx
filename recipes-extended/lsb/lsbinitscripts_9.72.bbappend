@@ -29,7 +29,7 @@ ALTERNATIVE_PRIORITY="${@get_priority(d)}"
 
 pkg_postinst_${PN} () {
 #!/bin/sh
-    update-alternatives --install ${sysconfdir}/init.d/functions functions functions.${PN} ${ALTERNATIVE_PRIORITY}
+    update-alternatives --install ${sysconfdir}/init.d/functions functions functions.${BPN} ${ALTERNATIVE_PRIORITY}
 }
 
 BBCLASSEXTEND = "native"

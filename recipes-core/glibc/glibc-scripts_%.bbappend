@@ -1,4 +1,4 @@
-do_install_append_class-target () {
-       mv ${D}${bindir}/xtrace ${D}${bindir}/xtrace.${PN}
-}
+PR .= ".1"
+inherit multilib-alternatives
 
+MULTILIB_ALTERNATIVES_${PN} = "${bindir}/xtrace  ${bindir}/sotruss"

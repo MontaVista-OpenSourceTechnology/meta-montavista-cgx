@@ -8,6 +8,8 @@ DESCRIPTION = "Additional packages for cge complete image"
 PR = "r1"
 LICENSE = "MIT"
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 inherit packagegroup
 
 PACKAGES = "\
@@ -91,6 +93,7 @@ RDEPENDS_packagegroup-oe-wirelessutilities = "\
 OPROFILE="oprofile"
 OPROFILE_linux-gnuilp32 = "" 
 #Fix Me: This should work
+
 OPROFILE_linux-gnun32 = "" 
 RDEPENDS_packagegroup-oe-console-utilities = "\
 	autofs \
@@ -129,7 +132,12 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 
 RDEPENDS_packagegroup-oe-extra-dev-libraries = "\
         poco \
+	${PMDK} \
 "
+
+PMDK = ""
+PMDK_i586 = ""
+PMDK_x86-64 = "pmdk"
 
 RDEPENDS_packagegroup-oe-database-utilities ="\
 	mariadb-setupdb \

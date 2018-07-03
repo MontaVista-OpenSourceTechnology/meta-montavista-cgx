@@ -4,7 +4,4 @@ SRC_URI += " \
 "
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN}  = "${sysconfdir}/postfix/makedefs.out"
-
 libexecdir="${prefix}/libexec/postfix"

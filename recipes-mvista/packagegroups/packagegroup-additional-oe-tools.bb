@@ -259,8 +259,9 @@ RDEPENDS_packagegroup-oe-security = "\
 	liblockfile \
 	lockfile-progs \
 	pinentry \
-	wireshark \
 	"
+# FIXME Does not build with latest update
+#	wireshark 
 
 RDEPENDS_packagegroup-oe-debug = "\
 	gdb-kdump-helpers \

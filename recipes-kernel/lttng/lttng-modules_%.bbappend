@@ -2,7 +2,8 @@ PR .= ".1"
 
 DEPENDS += "elfutils-native"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
-SRC_URI += "file://0001-Fix-update-timer-instrumentation-on-4.16-and-4.14-rt.patch"
+# FIXME no longer applies
+#SRC_URI += "file://0001-Fix-update-timer-instrumentation-on-4.16-and-4.14-rt.patch"
 
 EXTRA_OEMAKE += "KDIR='${STAGING_KERNEL_DIR}' HOSTCC='gcc -I${STAGING_INCDIR_NATIVE} \
                  -L${STAGING_DIR_NATIVE}/usr/lib -Wl,-rpath,${STAGING_DIR_NATIVE}/usr/lib \

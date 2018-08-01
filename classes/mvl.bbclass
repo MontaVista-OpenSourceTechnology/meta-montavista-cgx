@@ -318,8 +318,12 @@ kernel_do_deploy_append () {
     fi
 
     # Make sure image symbolic links always point to latest image built.
-    rm -f ${DEPLOYDIR}/${KERNEL_IMAGE_SYMLINK_NAME}.bin
-    rm -f ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
+    for type in ${KERNEL_IMAGETYPES} ; do
+		base_name=${type}-${KERNEL_IMAGE_BASE_NAME}
+		symlink_name=${type}-${KERNEL_IMAGE_SYMLINK_NAME}
+		ln -sf ${base_name}.bin ${DEPLOYDIR}/${symlink_name}.bin
+		ln -sf ${base_name}.bin ${DEPLOYDIR}/${type}
+    done
 }
 
 PACKAGES_append_pn-linux-mvista += "kernel-src"

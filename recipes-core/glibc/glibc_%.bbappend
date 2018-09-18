@@ -1,8 +1,17 @@
 
 do_install_append () {
       mv ${D}${bindir}/ldd ${D}${bindir}/ldd.${PN}
+      for LDLINK in ${D}${base_libdir}/ld-*; do
+          if [ -h $LDLINK -a ! -e ${D}/lib/$(basename $LDLINK) ] ; then
+             mkdir -p ${D}/lib
+             ln -s ..${base_libdir}/$(basename $(readlink $LDLINK)) ${D}/lib/$(basename $LDLINK)
+          fi
+      done
 }
+FILES_${PN} += "/lib/ld-*"
 FILES_ldd += "${bindir}/ldd.${PN}"
+
+INSANE_SKIP_${PN} += "libdir"
 
 ALTERNATIVE_PRIORITY='${@oe.utils.conditional("PN", d.getVar("BPN", True), "110", "100", d)}'
 pkg_postinst_ldd () {

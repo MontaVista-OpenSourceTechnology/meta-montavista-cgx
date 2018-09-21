@@ -92,7 +92,8 @@ RDEPENDS_packagegroup-oe-wirelessutilities = "\
 OPROFILE="oprofile"
 OPROFILE_linux-gnuilp32 = "" 
 #Fix Me: This should work
-OPROFILE_linux-gnun32 = "" 
+OPROFILE_linux-gnun32 = ""
+PREFERRED_PROVIDER_libunwind ?= "libunwind" 
 RDEPENDS_packagegroup-oe-console-utilities = "\
 	autofs \
 	console-tools \
@@ -107,7 +108,7 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	${OPROFILE} \
 	pax-utils \
 	tiff \
-	libunwind \
+	${PREFERRED_PROVIDER_libunwind} \
 	lvm2 \
 	libc-client \
 	libol \
@@ -265,7 +266,7 @@ RDEPENDS_packagegroup-oe-security = "\
 
 RDEPENDS_packagegroup-oe-debug = "\
 	gdb-kdump-helpers \
-	libunwind \
+	${PREFERRED_PROVIDER_libunwind} \
 	kdump-elftool \
 	"
 

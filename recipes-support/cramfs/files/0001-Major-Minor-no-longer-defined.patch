@@ -1,0 +1,31 @@
+From 8fd4ae1846f6d42acfb576b29ae6c6bee761bb57 Mon Sep 17 00:00:00 2001
+From: Jeremy Puhlman <jpuhlman@mvista.com>
+Date: Wed, 12 Sep 2018 20:02:18 +0000
+Subject: [PATCH] Major/Minor no longer defined
+
+---
+ mkcramfs.c | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/mkcramfs.c b/mkcramfs.c
+index a2ef018..4c3655b 100644
+--- a/mkcramfs.c
++++ b/mkcramfs.c
+@@ -440,14 +440,6 @@ static void print_node(struct entry *e)
+ 	else if (S_ISFIFO(e->mode)) type = 'p';
+ 	else if (S_ISSOCK(e->mode)) type = 's';
+ 
+-	if (S_ISCHR(e->mode) || (S_ISBLK(e->mode))) {
+-		/* major/minor numbers can be as high as 2^12 or 4096 */
+-		snprintf(info, 10, "%4d,%4d", major(e->size), minor(e->size));
+-	}
+-	else {
+-		/* size be as high as 2^24 or 16777216 */
+-		snprintf(info, 10, "%9d", e->size);
+-	}
+ 
+ 	printf("%c %04o %s %5d:%-3d %s\n",
+ 	       type, e->mode & ~S_IFMT, info, e->uid, e->gid, e->name);
+-- 
+2.11.1
+

@@ -26,7 +26,7 @@
  	$(RANLIB) $@
  
 +$(LUA_SO): $(CORE_O) $(LIB_O)
-+	$(CC) -o $@ -shared $?
++	$(CC) -o $@ -shared -Wl,-soname=$@.0.0.0 $?
 +
  $(LUA_T): $(LUA_O) $(LUA_A)
  	$(CC) -o $@ $(LDFLAGS) $(LUA_O) $(LUA_A) $(LIBS)

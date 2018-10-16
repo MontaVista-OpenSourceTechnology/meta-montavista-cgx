@@ -75,7 +75,10 @@ python () {
     if bpn.replace("packagegroup-","").replace(variant + "-" , "") in set(skips.split()):
         raise bb.parse.SkipPackage("No need for this image.")
 }
-
+SSTATETASKS_remove = "do_image_complete do_image_qa do_populate_sdk_ext do_populate_sdk"
+python do_write_qemuboot_conf () {
+   pass
+}
 addhandler packagegroupimage_virtclass_handler
 
 EXCLUDE_FROM_WORLD = ""

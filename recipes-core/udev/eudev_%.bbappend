@@ -15,13 +15,3 @@ do_install_append () {
     rm -rf ${D}${datadir}/pkgconfig
 }
 FILES_${PN}-dev += "${libdir}/pkgconfig/*.pc"
-#FIXME: this shouldn't be needed
-pkg_postinst_eudev-hwdb () {
-        if test -n "$D"; then
-                chown root:root $D${sysconfdir}/udev/hwdb.bin
-                false
-        else
-                udevadm hwdb --update
-        fi
-}
-

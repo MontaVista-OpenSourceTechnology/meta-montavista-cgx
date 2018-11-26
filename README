@@ -8,25 +8,25 @@ Dependencies
 This layer depends on:
 
   URI: git://git.yoctoproject.org/poky
-  branch: master
+  branch: thud
  
   or
 
   URI: git://git.openembedded.org/openembedded-core
-  branch: master
+  branch: thud
 
   URI: git://git.openembedded.org/bitbake
-  branch: 1.38
+  branch: 1.40
 
   URI: git://git.openembedded.org/meta-openembedded
   layers: meta-oe, meta-python, meta-networking, meta-filesystems, meta-webserver
-  branch: master
+  branch: thud
 
   URI: git://git.yoctoproject.org/meta-virtualization
-  branch: master
+  branch: thud
 
   URI: https://github.com/kraj/meta-clang.git 
-  branch: master
+  branch: thud
 
 
 Source code

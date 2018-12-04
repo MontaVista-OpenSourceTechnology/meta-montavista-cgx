@@ -1,6 +1,9 @@
-
+datadir="${libdir}/share"
+EXTRA_OEMAKE += "localedir=${libdir}/share/locale"
 do_install_append () {
       mv ${D}${bindir}/ldd ${D}${bindir}/ldd.${PN}
+      mkdir -p ${D}${prefix}/share/info
+      mv ${D}${libdir}/share/info ${D}${prefix}/share/info
       for LDLINK in ${D}${base_libdir}/ld-*; do
           if [ -h $LDLINK -a ! -e ${D}/lib/$(basename $LDLINK) ] ; then
              mkdir -p ${D}/lib
@@ -8,6 +11,7 @@ do_install_append () {
           fi
       done
 }
+FILES_${PN}-doc += "${prefix}/share/info/*"
 FILES_${PN} += "/lib/ld-*"
 FILES_ldd += "${bindir}/ldd.${PN}"
 

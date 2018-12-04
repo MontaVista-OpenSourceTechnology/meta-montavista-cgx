@@ -15,7 +15,9 @@ do_install_append () {
     fi
 }
 
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN} += "${@bb.utils.contains('DISTRO_FEATURES','systemd','${libexecdir}/sa/sa1','',d)}"
+inherit multilib_script
+# FIXME multilib_script for SYSSTAT_SA1
+#SYSSTAT_SA1 := "${@bb.utils.contains('DISTRO_FEATURES','systemd','${libexecdir}/sa/sa1','',d)}"
+#MULTILIB_SCRIPTS += "${PN}:${SYSSTAT_SA1}"
 
 FILES_${PN}-doc += "${datadir}/${PN}/man"

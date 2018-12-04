@@ -1,3 +1,4 @@
 PACKAGES += "${PN}-lic"
 
-FILES_${PN}-lic += "${datadir}/licenses/${PN}/generic_*"
+FILES_${PN}-lic += "${datadir}/licenses/${PN}/generic_* \
+                    ${datadir}/licenses/${PN}/LICENCE.*"

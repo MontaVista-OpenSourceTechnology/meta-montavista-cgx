@@ -28,8 +28,8 @@ do_install_append_class-target () {
     install -d ${D}/${datadir}/${PN}
     mv ${D}/${datadir}/man ${D}/${datadir}/${PN}/
 }
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN} = "${sysconfdir}/lsb-release"
+inherit multilib_script
+MULTILIB_SCRIPTS += "${PN}:${sysconfdir}/lsb-release"
 
 FILES_${PN}-doc += "${datadir}/${PN}/man"
 BBCLASSEXTEND = "native"

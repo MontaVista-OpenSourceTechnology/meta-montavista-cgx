@@ -1,4 +1,6 @@
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN} = "${bindir}/prxs"
-MULTILIB_HEADERS = "proftpd/buildstamp.h proftpd/config.h"
+inherit multilib_script multilib_header
+MULTILIB_SCRIPTS = "${PN}:${bindir}/prxs"
 
+do_install_append () {
+    oe_multilib_header proftpd/config.h proftpd/buildstamp.h
+}

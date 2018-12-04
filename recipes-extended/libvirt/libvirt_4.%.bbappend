@@ -5,8 +5,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 PACKAGECONFIG_remove_mips64 = "qemu"
 PACKAGECONFIG_remove_aarchilp32 = "qemu"
 
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN} = "${sysconfdir}/libvirt/qemu/networks/default.xml"
+inherit multilib_script
+MULTILIB_SCRIPTS = "${PN}:${sysconfdir}/libvirt/qemu/networks/default.xml"
 
 do_install_ptest_append () {
 	# Replace "/tmp" with the resolved symbolic link path i.e

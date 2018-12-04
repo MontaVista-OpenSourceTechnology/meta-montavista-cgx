@@ -16,10 +16,9 @@ SRC_URI += " \
 
 LEAD_SONAME = "libunwind"
 
-inherit ptest multilib-alternatives
+inherit ptest
 
 B = "${S}"
-MULTILIB_HEADERS = "libunwind.h"
 
 do_configure () {
     autoreconf -i

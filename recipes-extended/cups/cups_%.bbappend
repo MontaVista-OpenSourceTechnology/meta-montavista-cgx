@@ -14,10 +14,8 @@ do_install_append () {
     fi
 }
 
-inherit multilib-alternatives
+inherit multilib_script
 
-MULTILIB_ALTERNATIVES_${PN} = "${sysconfdir}/cups/cups-files.conf \
-                               ${sysconfdir}/cups/cups-files.conf.default \
-                               "
-MULTILIB_ALTERNATIVES_${PN}-dev = "${bindir}/cups-config"
-MULTILIB_ALTERNATIVES_${PN} += "${@bb.utils.contains('DISTRO_FEATURES','systemd','${libexecdir}/cups/daemon/cups-lpd','',d)}"
+# FIXME add ${libexecdir}/cups/daemon/cups-lpd to MULTILIB_SCRIPTS
+#CUPS_LPD := "${@bb.utils.contains('DISTRO_FEATURES','systemd','${libexecdir}/cups/daemon/cups-lpd','',d)}"
+MULTILIB_SCRIPTS = "${PN}-dev:${bindir}/cups-config"

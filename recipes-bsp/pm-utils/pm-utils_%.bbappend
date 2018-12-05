@@ -1,7 +1,8 @@
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN}  = "${bindir}/pm-is-supported \
-                                ${sbindir}/pm-suspend \
-                                ${sbindir}/pm-hibernate \
-                                ${sbindir}/pm-powersave \
-                                ${sbindir}/pm-suspend-hybrid \
-                               "
+inherit multilib_script
+
+MULTILIB_SCRIPTS = "${PN}:${bindir}/pm-is-supported \
+                    ${PN}:${sbindir}/pm-suspend \
+                    ${PN}:${sbindir}/pm-hibernate \
+                    ${PN}:${sbindir}/pm-powersave \
+                    ${PN}:${sbindir}/pm-suspend-hybrid \
+                   "

@@ -1,4 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-inherit multilib-alternatives
-MULTILIB_HEADERS = "syslog-ng/syslog-ng-config.h"
+
+inherit multilib_header
+
+do_install_append () {
+    oe_multilib_header syslog-ng/syslog-ng-config.h
+}
 

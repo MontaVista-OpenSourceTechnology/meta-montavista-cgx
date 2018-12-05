@@ -31,7 +31,8 @@ do_install() {
 	install -d ${D}/etc/init.d
 	install -d ${D}/etc/rcS.d
 	install -d ${D}/usr/lib
-	touch ${D}/etc/ld.so.conf
+	# Do not install empty ld.so.conf as it conflicts with glibc's ld.so.conf
+	# touch ${D}/etc/ld.so.conf
 	install -m 0755 mktmpwrite ${D}/etc/init.d
 	ln -sf ../init.d/mktmpwrite ${D}/etc/rcS.d/S01mktmpwrite
 	install -m 0755 ifuploop ${D}/etc/init.d
@@ -52,5 +53,5 @@ PROVIDES = "${PACKAGES}"
 FILES_${PN} = "/installer.py /t /etc/init.d/mktmpwrite \
 	    /etc/rcS.d/S01mktmpwrite \
 	    /etc/init.d/ifuploop /etc/rcS.d/S40ifuploop \
-	    /to_install.tar.gz /usr/bin /etc/ld.so.conf"
+	    /to_install.tar.gz /usr/bin /etc/ld.so.conf /usr/lib"
 FILES_${PN} += "/user_installer.py*"

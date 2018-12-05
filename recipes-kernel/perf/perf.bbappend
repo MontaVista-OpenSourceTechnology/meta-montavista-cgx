@@ -9,5 +9,6 @@ do_configure_prepend () {
     fi
 }
 
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN} = "${bindir}/perf ${bindir}/trace"
+inherit multilib_script
+MULTILIB_SCRIPTS = "${PN}:${bindir}/perf \
+                    ${PN}:${bindir}/trace"

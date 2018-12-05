@@ -1,2 +1,3 @@
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN} = "${bindir}/js52-config"
+inherit multilib_script
+
+MULTILIB_SCRIPTS = "${PN}-dev:${bindir}/js52-config"

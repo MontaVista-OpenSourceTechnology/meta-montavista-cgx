@@ -1,8 +1,8 @@
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN}-server = "${bindir}/mysqld_safe"
-MULTILIB_ALTERNATIVES_${PN}-client = "${bindir}/mysqlbug"
-MULTILIB_ALTERNATIVES_libmysqlclient-dev = "${bindir}/mysql_config"
-MULTILIB_HEADERS = "mysql/my_config.h mysql/private/config.h"
+inherit multilib_script multilib_header
+
+MULTILIB_SCRIPTS = "${PN}-client:${bindir}/mysqlbug \
+                    ${PN}-server:${bindir}/mysqld_safe \
+                    libmysqlclient-dev:${bindir}/mysql_config"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 FILES_${PN} += "${localstatedir}/lib/mysql"
@@ -11,4 +11,5 @@ do_install_append () {
    chmod 4755 ${D}${bindir}/mysqld_safe_helper
    mkdir -p ${D}${localstatedir}/lib/mysql
    chown mysql.mysql ${D}${localstatedir}/lib/mysql
+   oe_multilib_header mysql/my_config.h mysql/private/config.h
 } 

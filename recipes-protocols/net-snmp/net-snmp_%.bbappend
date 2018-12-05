@@ -1,7 +1,9 @@
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN}-dev = "${bindir}/net-snmp-config ${bindir}/net-snmp-create-v3-user"
-MULTILIB_HEADERS = "net-snmp/net-snmp-config.h"
+inherit multilib_script multilib_header
+MULTILIB_SCRIPTS = "${PN}-client:${bindir}/net-snmp-config"
 
+do_install_append () {
+    oe_multilib_header net-snmp/net-snmp-config.h
+}
 net_snmp_sysroot_preprocess () {
     if [ -e ${D}${bindir}/net-snmp-config.${PN} ]; then
         install -d ${SYSROOT_DESTDIR}${bindir_crossscripts}/

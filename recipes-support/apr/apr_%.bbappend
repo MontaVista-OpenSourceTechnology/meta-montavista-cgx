@@ -1,2 +1,3 @@
-inherit multilib-alternatives
-MULTILIB_ALTERNATIVES_${PN}-dev = "${bindir}/apr-1-config ${datadir}/build-1/apr_rules.mk"
+inherit multilib_script
+MULTILIB_SCRIPTS = "${PN}-dev:${bindir}/apr-1-config \
+                    ${PN}-dev:${datadir}/build-1/apr_rules.mk"

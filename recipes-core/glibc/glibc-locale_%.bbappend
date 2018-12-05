@@ -1,4 +1,4 @@
 PR .= ".1"
 
-datadir="${libdir}/share"
-EXTRA_OEMAKE += "localedir=${libdir}/share/locale"
+datadir_class-target="${libdir}/share"
+EXTRA_OEMAKE_class-target += "localedir=${libdir}/share/locale"

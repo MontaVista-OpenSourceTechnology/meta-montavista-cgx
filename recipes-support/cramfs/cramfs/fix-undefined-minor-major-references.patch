@@ -1,0 +1,25 @@
+Fixes below error:
+
+-- snip --
+| mkcramfs.c:445:49: warning: implicit declaration of function 'minor'; did you mean 'mincore'?
+[-Wimplicit-function-declaration]
+|    snprintf(info, 10, "%4d,%4d", major(e->size), minor(e->size));
+|                                                  ^~~~~
+|                                                  mincore
+| /opt/work_jagadeesh/opencgx-x86-generic-64-master/project/tmp/work/corei7-64-montavista-linux/cramfs/1_1.1-r0/recipe-sysroot-native/usr/bin/x86_64-montavista-linux/../../libexec/x86_64-montavista-linux/gcc/x86_64-montavista-linux/8.2.0/ld: /tmp/ccaW7Aux.o: in function `print_node':
+| /usr/src/debug/cramfs/1_1.1-r0/cramfs-1.1/mkcramfs.c:445: undefined reference to `minor'
+| /opt/work_jagadeesh/opencgx-x86-generic-64-master/project/tmp/work/corei7-64-montavista-linux/cramfs/1_1.1-r0/recipe-sysroot-native/usr/bin/x86_64-montavista-linux/../../libexec/x86_64-montavista-linux/gcc/x86_64-montavista-linux/8.2.0/ld: /usr/src/debug/cramfs/1_1.1-r0/cramfs-1.1/mkcramfs.c:445: undefined reference to `major'
+| collect2: error: ld returned 1 exit status
+-- snip --
+
+Signed-off-by: Jagadeesh Krishnanjanappa <jkrishnanjanappa@mvista.com>
+--- cramfs-1.1/mkcramfs.c_org	2018-11-28 09:06:02.690852815 +0530
++++ cramfs-1.1/mkcramfs.c	2018-11-28 09:05:37.631650313 +0530
+@@ -25,6 +25,7 @@
+ #include <sys/types.h>
+ #include <stdio.h>
+ #include <sys/stat.h>
++#include <sys/sysmacros.h>
+ #include <unistd.h>
+ #include <sys/mman.h>
+ #include <fcntl.h>

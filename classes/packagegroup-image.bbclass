@@ -79,7 +79,7 @@ python () {
 }
 SSTATETASKS_remove = "do_image_complete do_image_qa do_populate_sdk_ext do_populate_sdk"
 python do_write_qemuboot_conf () {
-   pass
+    return 
 }
 addhandler packagegroupimage_virtclass_handler
 

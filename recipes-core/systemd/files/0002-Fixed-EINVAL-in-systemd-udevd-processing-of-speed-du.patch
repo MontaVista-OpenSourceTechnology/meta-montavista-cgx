@@ -1,0 +1,41 @@
+From bca10dd8798b35beaaef8a80444de5810e63f260 Mon Sep 17 00:00:00 2001
+From: Jeremy Puhlman <jpuhlman@mvista.com>
+Date: Fri, 7 Dec 2018 22:56:25 +0000
+Subject: [PATCH] Fixed EINVAL in systemd-udevd processing of speed/duplex in
+ valid .link files.
+
+Including BitsPerSecond or Duplex values in .link files did not work when
+set_slinksettings was called because the routine was not copying the base
+parameters to the structure given to ioctl.  As a result, EINVAL was always
+reported, and no change occurred on the Ethernet device.
+---
+ src/udev/net/ethtool-util.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/udev/net/ethtool-util.c b/src/udev/net/ethtool-util.c
+index 5f7cc2a0a0..9a5ea29e05 100644
+--- a/src/udev/net/ethtool-util.c
++++ b/src/udev/net/ethtool-util.c
+@@ -436,15 +436,16 @@ static int set_slinksettings(int *fd, struct ifreq *ifr, const struct ethtool_li
+         struct {
+                 struct ethtool_link_settings req;
+                 __u32 link_mode_data[3 * ETHTOOL_LINK_MODE_MASK_MAX_KERNEL_NU32];
+-        } ecmd = {
+-                .req.cmd = ETHTOOL_SLINKSETTINGS,
+-        };
++        } ecmd;
+         unsigned int offset;
+         int r;
+ 
+         if (u->base.cmd != ETHTOOL_GLINKSETTINGS || u->base.link_mode_masks_nwords <= 0)
+                 return -EINVAL;
+ 
++        memset(&ecmd, sizeof(ecmd), 0);
++        memcpy(&ecmd.req, &u->base, sizeof(ecmd.req));
++        ecmd.req.cmd = ETHTOOL_SLINKSETTINGS;
+         offset = 0;
+         memcpy(&ecmd.link_mode_data[offset], u->link_modes.supported, 4 * ecmd.req.link_mode_masks_nwords);
+ 
+-- 
+2.13.3
+

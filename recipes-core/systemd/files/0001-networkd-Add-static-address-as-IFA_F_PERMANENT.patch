@@ -1,0 +1,57 @@
+From a8584860ee8e1b510263a829665b3e20b0c549fb Mon Sep 17 00:00:00 2001
+From: Susant Sahani <susant@redhat.com>
+Date: Sun, 3 Jun 2018 20:12:06 +0530
+Subject: [PATCH 1/2] networkd: Add static address as IFA_F_PERMANENT
+
+Now we add static address as IFA_F_TENTATIVE. it neverr gets IFA_F_PERMANENT flag.
+The link never gets configured because of it. let the kernel choose the
+flag.
+
+Closes #9130
+---
+ src/network/networkd-address.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/src/network/networkd-address.c b/src/network/networkd-address.c
+index d66b3a288f..1186b13d61 100644
+--- a/src/network/networkd-address.c
++++ b/src/network/networkd-address.c
+@@ -271,8 +271,6 @@ static int address_add_internal(Link *link, Set **addresses,
+         address->family = family;
+         address->in_addr = *in_addr;
+         address->prefixlen = prefixlen;
+-        /* Consider address tentative until we get the real flags from the kernel */
+-        address->flags = IFA_F_TENTATIVE;
+ 
+         r = set_ensure_allocated(addresses, &address_hash_ops);
+         if (r < 0)
+@@ -355,8 +353,6 @@ int address_update(
+                 unsigned char flags,
+                 unsigned char scope,
+                 const struct ifa_cacheinfo *cinfo) {
+-
+-        bool ready;
+         int r;
+ 
+         assert(address);
+@@ -366,15 +362,14 @@ int address_update(
+         if (IN_SET(address->link->state, LINK_STATE_FAILED, LINK_STATE_LINGER))
+                 return 1;
+ 
+-        ready = address_is_ready(address);
+-
+         address->flags = flags;
+         address->scope = scope;
+         address->cinfo = *cinfo;
+ 
+         link_update_operstate(address->link);
+ 
+-        if (!ready && address_is_ready(address)) {
++        if (address_is_ready(address)) {
++
+                 link_check_ready(address->link);
+ 
+                 if (address->family == AF_INET6 &&
+-- 
+2.13.3
+

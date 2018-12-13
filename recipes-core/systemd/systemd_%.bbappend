@@ -4,6 +4,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI += " \
             file://0001-networkd-Add-static-address-as-IFA_F_PERMANENT.patch  \
             file://0002-Fixed-EINVAL-in-systemd-udevd-processing-of-speed-du.patch \
+            file://0001-Revert-core-don-t-load-dropin-data-multiple-times-fo.patch \
 "
 
 inherit multilib-alternatives

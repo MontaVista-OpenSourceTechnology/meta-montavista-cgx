@@ -4,3 +4,4 @@ EXTRA_OECMAKE_prepend_class-target = "\
                                      -DLIBCXX_CXX_ABI_LIBRARY_PATH=${B}/lib${LIBEXT} \
 "
 EXTRA_OECMAKE_remove = "-DLIBCXX_CXX_ABI_LIBRARY_PATH=${B}/lib "
+LDFLAGS .= " -L${B}/lib${LIBEXT} "

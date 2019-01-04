@@ -5,11 +5,12 @@ Author: Mark Wielaard (address@hidden)
 Upstream-Status: Pending
 
 Signed-off-by: Jagadeesh Krishnanjanappa <jkrishnanjanappa@mvista.com>
---- a/coregrind/m_initimg/initimg-linux.c
-+++ b/coregrind/m_initimg/initimg-linux.c
-@@ -703,6 +703,12 @@ Addr setup_client_stack( void*  init_sp,
-                   (and anything above) are not supported by Valgrind. */
-                auxv->u.a_val &= VKI_HWCAP_S390_TE - 1;
+diff -Naurp valgrind-3.14.0_org/coregrind/m_initimg/initimg-linux.c valgrind-3.14.0/coregrind/m_initimg/initimg-linux.c
+--- valgrind-3.14.0_org/coregrind/m_initimg/initimg-linux.c	2018-07-13 14:22:05.000000000 +0530
++++ valgrind-3.14.0/coregrind/m_initimg/initimg-linux.c	2019-01-04 17:42:19.145004978 +0530
+@@ -716,6 +716,12 @@ Addr setup_client_stack( void*  init_sp,
+                                | VKI_HWCAP_ASIMD)
+                auxv->u.a_val &= ARM64_SUPPORTED_HWCAP;
              }
 +#           elif defined(VGP_arm64_linux)
 +            {

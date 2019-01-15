@@ -1,3 +1,8 @@
+PR .= ".1"
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+SRC_URI += "file://fix-build-error.patch"
+
 do_install_append () {
         install -d ${D}${libdir}/clang/${MAJOR_VER}.${MINOR_VER}.${PATCH_VER}/lib/linux
         if [ "${exec_prefix}/lib" != ${libdir} -a -d ${D}${exec_prefix}/lib/linux ]; then

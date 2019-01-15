@@ -1,0 +1,42 @@
+Basically in Yocto 2.4, we have glibc v2.26, hence the below check 
+should be false. But during compilation we have 
+
+#define __GLIBC_PREREQ(maj,min) ((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))
+
+which evalutes to 1 and thereby including
+CHECK_SIZE_AND_OFFSET(ipc_perm, mode); which results in below error:
+
+-- snip --
+/opt/work_jagadeesh/cavium-octeontx-4.14-2.4-cgx/project/tmp/work/aarch64-montavista-linux/compiler-rt/5.0.1+gitAUTOINC+4b38c4038a-r0/git/lib/sanitizer_common/sanitizer_platform_limits_posix.cc:1143:1: error: 'assertion_failed__1143' declared as an array with a negative size
+CHECK_SIZE_AND_OFFSET(ipc_perm, mode);
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/work_jagadeesh/cavium-octeontx-4.14-2.4-cgx/project/tmp/work/aarch64-montavista-linux/compiler-rt/5.0.1+gitAUTOINC+4b38c4038a-r0/git/lib/sanitizer_common/sanitizer_platform_limits_posix.h:1475:3: note: expanded from macro 'CHECK_SIZE_AND_OFFSET'
+  COMPILER_CHECK(sizeof(((__sanitizer_##CLASS *) NULL)->MEMBER) == \
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/work_jagadeesh/cavium-octeontx-4.14-2.4-cgx/project/tmp/work/aarch64-montavista-linux/compiler-rt/5.0.1+gitAUTOINC+4b38c4038a-r0/git/lib/sanitizer_common/sanitizer_internal_defs.h:301:30: note: expanded from macro 'COMPILER_CHECK'
+#define COMPILER_CHECK(pred) IMPL_COMPILER_ASSERT(pred, __LINE__)
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/work_jagadeesh/cavium-octeontx-4.14-2.4-cgx/project/tmp/work/aarch64-montavista-linux/compiler-rt/5.0.1+gitAUTOINC+4b38c4038a-r0/git/lib/sanitizer_common/sanitizer_internal_defs.h:307:57: note: expanded from macro 'IMPL_COMPILER_ASSERT'
+    typedef char IMPL_PASTE(assertion_failed_##_, line)[2*(int)(pred)-1]
+                                                        ^~~~~~~~~~~~~~~
+1 error generated.
+-- snip --
+
+So, replace __GLIBC_PREREQ (2, 21) with 0 to avoid including 
+CHECK_SIZE_AND_OFFSET(ipc_perm, mode);
+
+Signed-off-by: Jagadeesh Krishnanjanappa <jkrishnanjanappa@mvista.com>
+
+diff --git a/lib/sanitizer_common/sanitizer_platform_limits_posix.cc b/lib/sanitizer_common/sanitizer_platform_limits_posix.cc
+index 83f4fd22f..85ed0eb32 100644
+--- a/lib/sanitizer_common/sanitizer_platform_limits_posix.cc
++++ b/lib/sanitizer_common/sanitizer_platform_limits_posix.cc
+@@ -1138,7 +1138,7 @@ CHECK_SIZE_AND_OFFSET(ipc_perm, uid);
+ CHECK_SIZE_AND_OFFSET(ipc_perm, gid);
+ CHECK_SIZE_AND_OFFSET(ipc_perm, cuid);
+ CHECK_SIZE_AND_OFFSET(ipc_perm, cgid);
+-#if !defined(__aarch64__) || !SANITIZER_LINUX || __GLIBC_PREREQ (2, 21)
++#if !defined(__aarch64__) || !SANITIZER_LINUX || 0
+ /* On aarch64 glibc 2.20 and earlier provided incorrect mode field.  */
+ CHECK_SIZE_AND_OFFSET(ipc_perm, mode);
+ #endif

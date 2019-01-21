@@ -9,6 +9,8 @@ PERSONAL_SOURCE_MIRROR ?= ""
 MVLFETCH_OPTS ?= ""
 MVLFETCH ?= "/usr/bin/env mvl-fetch ${MVLFETCH_OPTS}"
 USE_MVLFETCH ?= "0"
+FALLBACK_MIRROR ?= "https://raw.githubusercontent.com/MontaVista-OpenSourceTechnology/source-mirror/master/"
+INHERIT += "mirrors"
 def get_layername(file, d):
     import re
     if not os.path.isabs(file):
@@ -29,7 +31,7 @@ def get_layername(file, d):
 
 def get_layermirror(d):
     layer = d.getVar("LAYER_NAME",1)
-    layer_mirror = d.getVar("LAYER_SOURCES_%s" % layer , 1) or "file://${TOPDIR}/sources"
+    layer_mirror = d.getVar("LAYER_SOURCES_%s" % layer , 1) or d.getVar("FALLBACK_MIRROR", 1) 
     return layer_mirror
 
 def set_source_mirror(d):

@@ -21,4 +21,4 @@ INSTALL_TARGETS_powerpc64 = "install-cxxabi"
 PACKAGES_remove_powerpc = "libunwind"
 PACKAGES_remove_powerpc64 = "libunwind"
 
-PROVIDES_remove_linux-gnuilp32 = "libunwind"
+PROVIDES_remove_aarchilp32 = "libunwind"

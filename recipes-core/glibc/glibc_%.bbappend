@@ -1,3 +1,5 @@
+GLIBC_EXTRA_OECONF_remove_powerpc64 = "${@bb.utils.contains('TUNE_FEATURES', 'e6500', '--with-cpu=e6500', '', d)}"
+GLIBC_EXTRA_OECONF_remove_powerpc = "${@bb.utils.contains('TUNE_FEATURES', 'e6500', '--with-cpu=e6500', '', d)}"
 datadir_class-target="${libdir}/share"
 EXTRA_OEMAKE_class-target += "localedir=${libdir}/share/locale"
 do_install_append_class-target () {

@@ -6,7 +6,7 @@ DESCRIPTION="A basic installer for installing MV Linux"
 HOMEPAGE="http://www.mvista.com"
 
 # No need to build this in a normal build.
-PR = "r2"
+PR = "r3"
 DEPENDS += "mtools"
 
 RDEPENDS_${PN} = "grub efibootmgr python python-readline \
@@ -52,5 +52,5 @@ PROVIDES = "${PACKAGES}"
 FILES_${PN} = "/installer.py /t /etc/init.d/mktmpwrite \
 	    /etc/rcS.d/S01mktmpwrite \
 	    /etc/init.d/ifuploop /etc/rcS.d/S40ifuploop \
-	    /to_install.tar.gz /usr/bin /etc/ld.so.conf"
+	    /to_install.tar.gz /usr/bin /etc/ld.so.conf /usr/lib"
 FILES_${PN} += "/user_installer.py*"

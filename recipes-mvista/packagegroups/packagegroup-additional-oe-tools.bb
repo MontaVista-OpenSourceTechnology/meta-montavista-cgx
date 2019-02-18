@@ -128,6 +128,7 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	multipath-tools \
 	poco \
 	util-linux-hwclock \
+	u-boot-mkimage \
 "
 
 RDEPENDS_packagegroup-oe-extra-dev-libraries = "\

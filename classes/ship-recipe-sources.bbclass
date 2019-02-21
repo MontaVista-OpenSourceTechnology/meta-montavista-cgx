@@ -3,13 +3,14 @@ DESCRIPTION_${PN}-src ?= "${DESCRIPTION}  \
 This package contains pristine source at ${SRC_TAR_PATH} for package test purposes."
 
 SRC_TAR_PATH ?= "${prefix}/src/${PN}-${PV}/"
-FILES_${PN}-src = "${SRC_TAR_PATH}"
+FILES_${PN}-source = " ${SRC_TAR_PATH} "
+
 SHIP_SOURCE_ENABLED = "1"
 SHIP_SOURCE_ENABLED_class-native = ""
 SHIP_SOURCE_ENABLED_class-nativesdk = ""
 SHIP_SOURCE_ENABLED_class-cross-canadian = ""
 
-PACKAGES =+ "${@bb.utils.contains('SHIP_SOURCE_ENABLED', '1', '${PN}-src', '', d)}"
+PACKAGES =+ "${@bb.utils.contains('SHIP_SOURCE_ENABLED', '1', '${PN}-source', '', d)}"
 
 
 do_tar_recipe_sources () {

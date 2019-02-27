@@ -105,7 +105,7 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	libgcc \
 	run-postinsts \
 	stat \
-	linux-firmware \
+	${@["","linux-firmware"][(d.getVar("MACHINE_EXTRA_RRECOMMENDS").find("linux-firmware") == -1)]} \
 	mtd-utils \
 	${OPROFILE} \
 	pax-utils \

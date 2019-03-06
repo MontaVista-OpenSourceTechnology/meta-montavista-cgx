@@ -319,10 +319,12 @@ kernel_do_deploy_append () {
 
     # Make sure image symbolic links always point to latest image built.
     for type in ${KERNEL_IMAGETYPES} ; do
+            if [ "${type}" != "vmlinux" ] ; then
 		base_name=${type}-${KERNEL_IMAGE_BASE_NAME}
 		symlink_name=${type}-${KERNEL_IMAGE_SYMLINK_NAME}
 		ln -sf ${base_name}.bin ${DEPLOYDIR}/${symlink_name}.bin
 		ln -sf ${base_name}.bin ${DEPLOYDIR}/${type}
+            fi
     done
 }
 

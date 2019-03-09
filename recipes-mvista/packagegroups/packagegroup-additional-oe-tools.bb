@@ -266,11 +266,14 @@ RDEPENDS_packagegroup-oe-security = "\
 	"
 # FIXME Does not build with latest update
 #	wireshark 
+KDUMP="kdump-elftool"
+KDUMP_riscv = ""
+KDUMP_riscv64 = ""
 
 RDEPENDS_packagegroup-oe-debug = "\
 	gdb-kdump-helpers \
 	${PREFERRED_PROVIDER_libunwind} \
-	kdump-elftool \
+	${KDUMP} \
 	"
 
 RDEPENDS_packagegroup-oe-netprotocol-utilities = " \

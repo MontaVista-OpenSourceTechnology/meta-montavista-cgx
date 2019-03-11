@@ -18,6 +18,7 @@ SRC_URI = "git://github.com/pmem/pmdk.git; \
 
 S = "${WORKDIR}/git/"
 PV = "1.4+git${SRCPV}"
+PR = "r1"
 
 inherit autotools-brokensep pkgconfig
 

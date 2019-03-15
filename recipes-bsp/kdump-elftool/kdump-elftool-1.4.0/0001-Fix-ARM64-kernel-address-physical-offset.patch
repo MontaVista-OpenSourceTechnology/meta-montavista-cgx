@@ -1,0 +1,163 @@
+From f36298de32df1b02d84c5065f606a8e2f7a2af94 Mon Sep 17 00:00:00 2001
+From: Corey Minyard <cminyard@mvista.com>
+Date: Thu, 14 Mar 2019 18:41:10 -0500
+Subject: [PATCH] Fix ARM64 kernel address physical offset
+
+Using the elf tables to do virtual to physical translation on
+kernel addresses was broken on ARM64, there is some strange
+offset there.  But the offset is given in the vmcore info,
+and it was already extracted, so add the proper code to do
+the address translation using that.
+
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
+
+Upstream-Status: Backport
+
+https://github.com/MontaVista-OpenSourceTechnology/kdump-elftool/commit/f36298de32df1b02d84c5065f606a8e2f7a2af94
+
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
+---
+ kdump-arm64.c | 26 ++++++++++++++++++++++----
+ oldmem.c      | 35 +++++++++++++++++------------------
+ 2 files changed, 39 insertions(+), 22 deletions(-)
+
+diff --git a/kdump-arm64.c b/kdump-arm64.c
+index c686475..8494c98 100644
+--- a/kdump-arm64.c
++++ b/kdump-arm64.c
+@@ -239,6 +239,21 @@ arm64_walk(struct elfc *pelf, GElf_Addr pgdaddr,
+ 	return rv;
+ }
+ 
++static int
++arm64_vmem_to_pmem(struct elfc *elf, GElf_Addr vaddr, GElf_Addr *paddr,
++		   void *arch_data)
++{
++	int rv = 0;
++	struct arm64_walk_data *awd = arch_data;
++
++	if (vaddr > 0xffff000000000000ULL)
++		*paddr = vaddr - awd->kimage_voffset;
++	else
++		rv = elfc_vmem_to_pmem(elf, vaddr, paddr);
++
++	return rv;
++}
++
+ static int
+ arm64_task_ptregs(struct kdt_data *d, GElf_Addr task, void *regs)
+ {
+@@ -288,6 +303,7 @@ enum vmcoreinfo_labels {
+ 	VMCI_NUMBER_VA_BITS,
+ 	VMCI_NUMBER_kimage_voffset,
+ 	VMCI_NUMBER_PHYS_OFFSET,
++	VMCI_PAGESIZE,
+ 	/* End actual elements. */
+ 	VMCI_NUM_ELEMENTS
+ };
+@@ -300,6 +316,7 @@ arm64_arch_setup(struct elfc *pelf, struct kdt_data *d, void **arch_data)
+ 		VMCI_NUMBER(VA_BITS),
+ 		VMCI_HEXNUMBER(kimage_voffset),
+ 		VMCI_HEXNUMBER(PHYS_OFFSET),
++		VMCI_PAGESIZE(),
+ 		{ NULL }
+ 	};
+ 	int i;
+@@ -320,14 +337,14 @@ arm64_arch_setup(struct elfc *pelf, struct kdt_data *d, void **arch_data)
+ 		}
+ 	}
+ 
+-	awd->page_size = d->page_size;
++	awd->page_size = vmci[VMCI_PAGESIZE].val;
+ 	awd->pelf = pelf;
+ 	awd->conv64 = d->conv64;
+ 	awd->va_bits = vmci[VMCI_NUMBER_VA_BITS].val;
+ 	awd->kimage_voffset = vmci[VMCI_NUMBER_kimage_voffset].val;
+ 	awd->phys_offset = vmci[VMCI_NUMBER_PHYS_OFFSET].val;
+ 
+-	switch (d->page_size) {
++	switch (awd->page_size) {
+ 	case 4096:
+ 		if (awd->va_bits > 39)
+ 			awd->pgtable_levels = 4;
+@@ -353,7 +370,7 @@ arm64_arch_setup(struct elfc *pelf, struct kdt_data *d, void **arch_data)
+ 
+ 	default:
+ 		free(awd);
+-		fprintf(stderr, "Invalid page size: %u\n", d->page_size);
++		fprintf(stderr, "Invalid page size: %u\n", awd->page_size);
+ 		return -1;
+ 	}
+ 	
+@@ -380,5 +397,6 @@ struct archinfo arm64_arch = {
+ 	.default_elfclass = ELFCLASS64,
+ 	.setup_arch_pelf = arm64_arch_setup,
+ 	.cleanup_arch_data = arm64_arch_cleanup,
+-	.walk_page_table = arm64_walk
++	.walk_page_table = arm64_walk,
++	.vmem_to_pmem = arm64_vmem_to_pmem
+ };
+diff --git a/oldmem.c b/oldmem.c
+index 6a85993..16fafa5 100644
+--- a/oldmem.c
++++ b/oldmem.c
+@@ -377,11 +377,16 @@ add_phys_pgd_ptr(struct elfc *elf, struct elfc *velf, GElf_Addr virt_pgdir)
+ 	int rv;
+ 	GElf_Addr phys_pgdir;
+ 	char buf[128];
++	struct archinfo *arch;
+ 
+-	rv = elfc_vmem_to_pmem(velf, virt_pgdir, &phys_pgdir);
+-	if (rv == -1) {
+-		int err = elfc_get_errno(velf);
+-		struct archinfo *arch;
++	arch = find_arch(elfc_getmachine(velf));
++	if (!arch) {
++		fprintf(stderr, "Unknown ELF machine in input"
++			" file: %d\n", elfc_getmachine(velf));
++		return -1;
++	}
++
++	if (arch->vmem_to_pmem) {
+ 		void *arch_data;
+ 
+ 		/*
+@@ -389,13 +394,6 @@ add_phys_pgd_ptr(struct elfc *elf, struct elfc *velf, GElf_Addr virt_pgdir)
+ 		 * properly add the vaddr.  There is an arch hack
+ 		 * for those, so look it up.
+ 		 */
+-		arch = find_arch(elfc_getmachine(velf));
+-		if (!arch) {
+-			fprintf(stderr, "Unknown ELF machine in input"
+-				" file: %d\n", elfc_getmachine(velf));
+-			return -1;
+-		}
+-
+ 		if (arch->setup_arch_pelf) {
+ 			struct kdt_data d;
+ 
+@@ -411,13 +409,14 @@ add_phys_pgd_ptr(struct elfc *elf, struct elfc *velf, GElf_Addr virt_pgdir)
+ 						&phys_pgdir, arch_data);
+ 
+ 		arch->cleanup_arch_data(arch_data);
+-
+-		if (rv == -1) {
+-			fprintf(stderr, "Error getting swapper_pg_dir "
+-				"phys addr: %s\n",
+-				strerror(err));
+-			return -1;
+-		}
++	} else {
++		rv = elfc_vmem_to_pmem(velf, virt_pgdir, &phys_pgdir);
++	}
++	if (rv == -1) {
++		int err = elfc_get_errno(velf);
++		fprintf(stderr, "Error getting swapper_pg_dir phys addr: %s\n",
++			strerror(err));
++		return -1;
+ 	}
+ 	sprintf(buf, "ADDRESS(phys_pgd_ptr)=%llx\n",
+ 		(unsigned long long) phys_pgdir);
+-- 
+2.17.1
+

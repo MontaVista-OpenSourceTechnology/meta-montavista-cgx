@@ -12,6 +12,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bae3019b4c6dc4138c217864bd04331f"
 DEPENDS += "elfutils"
 SRC_URI = "\
 	https://github.com/MontaVista-OpenSourceTechnology/kdump-elftool/releases/download/v1.4.0/kdump-elftool-1.4.0.tar.gz \
+        file://0001-Fix-ARM64-kernel-address-physical-offset.patch \
         file://elf-kdump \
         file://elf-kdump.conf \
 "

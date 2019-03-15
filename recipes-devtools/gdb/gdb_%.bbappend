@@ -1,8 +1,10 @@
+#include gdb-extra-fixes.inc
+
 inherit multilib-alternatives
 
 MULTILIB_ALTERNATIVES_gdbserver = "${bindir}/gdbserver"
 
-PR .= ".1"
+PR .= ".2"
 
 EXTRA_OECONF_append += "--mandir=${datadir}/${PN}/man"
 

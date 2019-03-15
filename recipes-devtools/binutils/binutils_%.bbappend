@@ -1,4 +1,5 @@
 PR .= ".1"
+include binutils-extra-fixes.inc
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI += "file://objcopy-kgraft.diff"
 EXTRA_OEMAKE += "WARN_CFLAGS='-W -Wall -Wstrict-prototypes -Wmissing-prototypes -Wshadow'"

@@ -6,7 +6,7 @@ DESCRIPTION="A basic installer for installing MV Linux"
 HOMEPAGE="http://www.mvista.com"
 
 # No need to build this in a normal build.
-PR = "r2"
+PR = "r3"
 DEPENDS += "mtools"
 
 RDEPENDS_${PN} = "grub efibootmgr python \

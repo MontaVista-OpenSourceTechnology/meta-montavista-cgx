@@ -9,13 +9,3 @@ def get_priority(d):
              return "90"
 
 ALTERNATIVE_PRIORITY="${@get_priority(d)}"
-
-pkg_postinst_${PN} () {
-#!/bin/sh
-    update-alternatives --install ${bindir}/telnet telnet telnet.${PN} ${ALTERNATIVE_PRIORITY}
-}
-
-pkg_prerm_${PN} () {
-#!/bin/sh
-    update-alternatives --remove telnet telnet.${PN} ${ALTERNATIVE_PRIORITY}
-}

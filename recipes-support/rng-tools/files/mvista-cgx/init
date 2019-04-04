@@ -12,13 +12,14 @@ if [ -e /etc/default/rng-tools ]; then
     . /etc/default/rng-tools
 fi
 
-if [ -n "$RNG_DEVICE" ]; then
-    EXTRA_ARGS="-- -r $RNG_DEVICE"
-fi
 
 if ! dd if=$RNG_DEVICE of=/dev/null bs=1 count=1 >/dev/null 2>/dev/null; then
    echo rng-tools: $RNG_DEVICE not enabled in kernel
-   exit 1
+   echo rng-tools: falling back to urandom
+   RNG_DEVICE=/dev/urandom   
+fi
+if [ -n "$RNG_DEVICE" ]; then
+    EXTRA_ARGS="-- -r $RNG_DEVICE"
 fi
 
 case "$1" in

@@ -6,7 +6,7 @@ packagegroup-core-boot \
 packagegroup-core-clutter \
 packagegroup-core-nfs \
 packagegroup-core-lsb \
-packagegroup-core-qt \
+${@bb.utils.contains("BBFILE_COLLECTIONS", "qt4-layer", " packagegroup-core-qt ", "", d)} \
 packagegroup-core-sdk \
 packagegroup-core-ssh-dropbear \
 packagegroup-core-ssh-openssh \

@@ -1,0 +1,25 @@
+From 17b646151e7bef0af4005e260a510ee328f98798 Mon Sep 17 00:00:00 2001
+From: Jeremy Puhlman <jpuhlman@mvista.com>
+Date: Tue, 19 Feb 2019 23:22:26 +0000
+Subject: [PATCH] Workaround flags shouldn't be needed for host compiler
+
+---
+ src/Makefile.housekeeping | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/Makefile.housekeeping b/src/Makefile.housekeeping
+index 5fe8c9fc..8cea736c 100644
+--- a/src/Makefile.housekeeping
++++ b/src/Makefile.housekeeping
+@@ -445,7 +445,7 @@ endif
+ CFLAGS		+= $(WORKAROUND_CFLAGS) $(EXTRA_CFLAGS)
+ ASFLAGS		+= $(WORKAROUND_ASFLAGS) $(EXTRA_ASFLAGS)
+ LDFLAGS		+= $(WORKAROUND_LDFLAGS) $(EXTRA_LDFLAGS)
+-HOST_CFLAGS	+= $(WORKAROUND_CFLAGS) -O2 -g
++HOST_CFLAGS	+= -O2 -g
+ 
+ # Inhibit -Werror if NO_WERROR is specified on make command line
+ #
+-- 
+2.11.1
+

@@ -304,8 +304,8 @@ kernel_do_install_append () {
 kernel_do_deploy_append () {
     if [ "${KERNEL_IMAGETYPE}" != "vmlinux" ]; then
         if [ -e vmlinux ] ; then
-            BASE_NAME=$(echo "${KERNEL_IMAGE_BASE_NAME}" | cut -d - -f 2-)
-            BASE_SYMLINK_NAME=$(echo "${KERNEL_IMAGE_SYMLINK_NAME}" | cut -d - -f 2-)
+            BASE_NAME=$(echo "${KERNEL_IMAGE_NAME}" | cut -d - -f 2-)
+            BASE_SYMLINK_NAME=$(echo "${KERNEL_IMAGE_LINK_NAME}" | cut -d - -f 2-)
 
             install -m 0644 vmlinux ${DEPLOYDIR}/vmlinux-$BASE_NAME.bin
 
@@ -320,8 +320,8 @@ kernel_do_deploy_append () {
     # Make sure image symbolic links always point to latest image built.
     for type in ${KERNEL_IMAGETYPES} ; do
             if [ "${type}" != "vmlinux" -a "${type}" != "Image" ] ; then
-		base_name=${type}-${KERNEL_IMAGE_BASE_NAME}
-		symlink_name=${type}-${KERNEL_IMAGE_SYMLINK_NAME}
+		base_name=${type}-${KERNEL_IMAGE_NAME}
+		symlink_name=${type}-${KERNEL_IMAGE_LINK_NAME}
 		ln -sf ${base_name}.bin ${DEPLOYDIR}/${symlink_name}.bin
 		ln -sf ${base_name}.bin ${DEPLOYDIR}/${type}
             fi

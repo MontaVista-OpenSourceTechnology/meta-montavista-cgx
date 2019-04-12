@@ -9,12 +9,12 @@ HOMEPAGE="http://www.mvista.com"
 PR = "r3"
 DEPENDS += "mtools"
 
-RDEPENDS_${PN} = "grub efibootmgr python \
+RDEPENDS_${PN} = "grub \
+		python \
                 util-linux-mount \
                 util-linux-umount\
                 util-linux \
                 mdadm \
-                lvm2 \
                 e2fsprogs e2fsprogs-e2fsck e2fsprogs-mke2fs e2fsprogs-tune2fs \
                 dosfstools \
                 "

@@ -60,6 +60,10 @@ PREFERRED_RPROVIDER_lib32-initd-functions = "lib32-initscripts"
 PREFERRED_RPROVIDER_lib64-initd-functions = "lib64-initscripts"
 OS_DEFAULT_INITSCRIPT_PARAMS ??= "defaults 30 10"
 
+PREFERRED_RPROVIDER_u-boot-mkimage ?= "u-boot-mkimage"
+PREFERRED_RPROVIDER_lib32-u-boot-mkimage ?= "lib32-u-boot-mkimage"
+PREFERRED_RPROVIDER_lib64-u-boot-mkimage ?= "lib64-u-boot-mkimage"
+
 # Get rid of older bbappend files
 BBMASK .= "|(meta-openstack/recipes-connectivity/openssh/openssh_6.%.bbappend)"
 BBMASK .= "|(meta-openstack/recipes-support/iproute2/iproute2_3.%.bbappend)"

@@ -62,7 +62,7 @@ RDEPENDS_packagegroups-oe-mailclient_append = " \
 	mailx \
 "
 
-X86_PACKAGES_OE_CONSOLE_UTILS_x86-64_append = " \
+X86_PACKAGES_OE_CONSOLE_UTILS_append_x86-64 = " \
 	efibootmgr \
 "
 

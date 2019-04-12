@@ -5,7 +5,7 @@ OPROFILE_linux-gnun32 = ""
 
 RDEPENDS_packagegroup-oe-console-utilities_append = " \
 	libc-client \
-	oprofile \
+	${OPROFILE} \
 	pax-utils \
 	lvm2 \
 	libol \

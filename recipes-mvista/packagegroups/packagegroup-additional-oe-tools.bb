@@ -59,43 +59,20 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
         packagegroup-oe-extra-dev-libraries \
 	"
 
-LIBVIRT=" \
-        libvirt \
-        libvirt-libvirtd \
-        libvirt-virsh \
-        libvirt-python \
-"
-# FIXME libvirt depends on qemu which does not build on mips64
-LIBVIRT_qemumips64 = ""
-LIBVIRT_qemumips64nfp = ""
-
-
-RDEPENDS_packagegroup-oe-virtualization = " \
-	${LIBVIRT} \
-	lua \
-"
-
 RDEPENDS_packagegroup-oe-filesystemutilities = "\
 	squashfs-tools \
-	python-cpuset \
 	cramfs \
-        util-linux-fsck \
-	"
+"
 
 RDEPENDS_packagegroup-oe-hotplugutilities = "\
-	pcmciautils \
 	usbutils \
-	"
+"
+
 RDEPENDS_packagegroup-oe-wirelessutilities = "\
 	irda-utils \
-	"
-OPROFILE="oprofile"
-OPROFILE_linux-gnuilp32 = "" 
-#Fix Me: This should work
-OPROFILE_linux-gnun32 = ""
+"
 PREFERRED_PROVIDER_libunwind_toolchain-gcc = "libunwind"
-RDEPENDS_packagegroup-oe-console-utilities = "\
-	autofs \
+RDEPENDS_packagegroup-oe-console-utilities = " \
 	console-tools \
 	cups \
 	dosfstools \
@@ -105,109 +82,49 @@ RDEPENDS_packagegroup-oe-console-utilities = "\
 	run-postinsts \
 	${@["","linux-firmware"][(d.getVar("MACHINE_EXTRA_RRECOMMENDS").find("linux-firmware") == -1)]} \
 	mtd-utils \
-	${OPROFILE} \
-	pax-utils \
 	tiff \
 	${PREFERRED_PROVIDER_libunwind} \
-	lvm2 \
-	libc-client \
-	libol \
         ncurses-tools \
-	smartmontools \
 	bootcycle \
-	vim \
-	cdrkit \
 	glibc-scripts \
 	glibc-gconv-utf-16 \
 	udev-extraconf \
-	postgresql \
-	postgresql-client \
-	postgresql-timezone \
-	multipath-tools \
-	poco \
 	util-linux-hwclock \
 	u-boot-mkimage \
 "
 
-RDEPENDS_packagegroup-oe-extra-dev-libraries = "\
-        poco \
-	${PMDK} \
-"
-
-PMDK = ""
-PMDK_i586 = ""
-PMDK_x86-64 = "pmdk"
-
-RDEPENDS_packagegroup-oe-database-utilities ="\
-	mariadb-setupdb \
-	mariadb-client \
-	mariadb-server \
-	libmysqlclient \
-"
-
-RDEPENDS_packagegroups-oe-networkmanagement ="\
-	ntp \
-	ntpdate \
-	ntp-utils \
-	sntp \
-	radvd \
-	tunctl \
+RDEPENDS_packagegroups-oe-networkmanagement = " \
 	gnupg \
-	bridge-utils \
-	ifenslave \
 	libcap-ng \
-	netkit-telnet \
-	openl2tp \
-	openldap \
-	quagga \
-        ${@bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'quagga-watchquagga', '', d)} \
-	quagga-ospfclient \
-	strongswan \
-	tunctl \
 	ethtool \
 	net-tools \
 	dhcp-client \
 	dhcp-server \
-	tcpdump \
-        lksctp-tools \
-        tipcutils \
-        tipcutils-demos \
-        vlan \
-	sg3-utils \
-	sg3-utils-udev \
-	iscsi-initiator-utils \
-	traceroute \	
 "
-#FIXME
-#	iscsitarget 
-
-RDEPENDS_packagegroups-oe-logmanagement ="\
-	syslog-ng \
+RDEPENDS_packagegroups-oe-logmanagement = " \
 	consolekit \
 	pam-plugin-ck-connector \
-	"
-RDEPENDS_packagegroups-oe-ftpserver ="\
-	proftpd \
-	"
+"
 
-RDEPENDS_packagegroups-oe-ftpclient ="\
-        netkit-ftp \
-        lftp \
-	"
+RDEPENDS_packagegroup-core-ssh-openssh = " \
+"
 
-RDEPENDS_packagegroups-oe-mailclient ="\
-	mailx \
-	"
-RDEPENDS_packagegroups-oe-mailserver ="\
-	postfix \
-        "
+RDEPENDS_packagegroups-oe-ftpserver = " \
+"
+RDEPENDS_packagegroups-oe-ftpclient = " \
+"
 
-RDEPENDS_packagegroup-oe-graphics = "\
+RDEPENDS_packagegroups-oe-mailclient = " \
+"
+RDEPENDS_packagegroups-oe-mailserver = " \
+"
+
+RDEPENDS_packagegroup-oe-graphics = " \
 	encodings \
 	font-util \
  	libdmx \
 	libfontenc \
-	libmatchbox\
+	libmatchbox \
 	libgcc \
 	libxfont \ 
 	libxkbfile \
@@ -230,58 +147,56 @@ RDEPENDS_packagegroup-oe-graphics = "\
 	xset \ 
 	xvinfo  \ 
 	libxpm \
-	"
+"
 
-RDEPENDS_packagegroup-oe-webserver =" \
-        apache2 \
-	"
-
-DEPENDS += "rsyslog nginx"
+RDEPENDS_packagegroup-oe-webserver = " \
+"
 
 RDEPENDS_packagegroup-oe-console-utils += "${X86_PACKAGES_OE_CONSOLE_UTILS}"
 
 X86_PACKAGES_OE_CONSOLE_UTILS = ""
 
 X86_PACKAGES_OE_CONSOLE_UTILS_x86-64 = " \
-  grub \
-  ruby \
-  nasm \
-  efibootmgr \
-  gnu-efi \
-	"
+	grub \
+	ruby \
+	nasm \
+	gnu-efi \
+"
 
 X86_PACKAGES_OE_CONSOLE_UTILS_i686 = " \
-  grub \
-  ruby \
-  nasm \
-  efibootmgr \
-  gnu-efi \
-	"
+	grub \
+	ruby \
+	nasm \
+	gnu-efi \
+"
 
-RDEPENDS_packagegroup-oe-security = "\
-	cyrus-sasl \
-	ipsec-tools \
-	liblockfile \
-	lockfile-progs \
+RDEPENDS_packagegroup-oe-security = " \
 	pinentry \
-	"
+"
 # FIXME Does not build with latest update
 #	wireshark 
 KDUMP="kdump-elftool"
 KDUMP_riscv = ""
 KDUMP_riscv64 = ""
 
-RDEPENDS_packagegroup-oe-debug = "\
+RDEPENDS_packagegroup-oe-debug = " \
 	gdb-kdump-helpers \
 	${PREFERRED_PROVIDER_libunwind} \
 	${KDUMP} \
-	"
-
-RDEPENDS_packagegroup-oe-netprotocol-utilities = " \
-	ptpd \
 "
 
 RDEPENDS_packagegroup-oe-test-tools = " \
         rt-tests \
-        python-pip \
+"
+
+RDEPENDS_packagegroup-oe-extra-dev-libraries = " \
+"
+RDEPENDS_packagegroup-oe-virtualization = " \
+"
+
+RDEPENDS_packagegroup-core-tools-profile = " \
+"
+RDEPENDS_packagegroup-oe-database-utilities = " \
+"
+RDEPENDS_packagegroup-oe-netprotocol-utilities = " \
 "

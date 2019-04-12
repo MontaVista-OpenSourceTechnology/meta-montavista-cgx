@@ -3,6 +3,7 @@ LIBVIRT=" \
         libvirt-libvirtd \
         libvirt-virsh \
         libvirt-python \
+        libvirt-dev \
 "
 # FIXME libvirt depends on qemu which does not build on mips64
 LIBVIRT_qemumips64 = ""

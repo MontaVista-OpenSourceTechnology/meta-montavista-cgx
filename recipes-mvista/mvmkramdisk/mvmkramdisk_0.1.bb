@@ -17,7 +17,6 @@ RDEPENDS_${PN} = "busybox \
 		  linux-firmware \
 		  kernel-dev \
 		  mdadm \
-		  lvm2 \
 		  ldd \
 		  cpio \
 		  bash \

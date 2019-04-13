@@ -1,5 +1,1 @@
-PR .= ".1"
-
-do_install_append () {
-    rm -f ${D}${libdir}/libbz2.la
-}
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

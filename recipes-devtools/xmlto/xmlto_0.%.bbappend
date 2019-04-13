@@ -1,5 +1,1 @@
-DEPENDS_class-native = "libxslt-native libcroco-native"
-
-do_configure_prepend () {
-       sed -i "s:; \$(GEN_MANPAGE)::g" ${S}/Makefile.in ${S}/Makefile.am
-}
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

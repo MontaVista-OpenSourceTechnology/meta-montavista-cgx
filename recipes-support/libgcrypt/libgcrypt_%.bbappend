@@ -1,5 +1,1 @@
-PR .= ".1"
-
-EXTRA_OECONF_append += "--mandir=${datadir}/${PN}/man"
-
-FILES_${PN}-doc += "${datadir}/${PN}/man"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

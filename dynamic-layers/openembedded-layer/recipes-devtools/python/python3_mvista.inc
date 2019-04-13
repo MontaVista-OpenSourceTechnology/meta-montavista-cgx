@@ -1,7 +1,5 @@
 PR .= ".4"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/python3:"
-
 export READELF="${HOST_PREFIX}readelf"
 
 do_install_append_class-target () {

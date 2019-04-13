@@ -1,3 +1,1 @@
-PR .= ".1"
-
-CFLAGS_append_armv6 = " -DMISSING_64BIT_ATOMICS"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

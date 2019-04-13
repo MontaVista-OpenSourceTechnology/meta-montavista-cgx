@@ -1,11 +1,1 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
-
-do_install_append () {
-	install -d ${D}/etc/default/
-	echo "#NONFS=1" > ${D}/etc/default/nfsroot
-}
-
-FILES_${PN} += "/etc/default/nfsroot"
-
-PR .= ".2"
-RCONFLICTS_${PN} = ""
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

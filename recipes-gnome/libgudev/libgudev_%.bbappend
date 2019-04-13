@@ -1,3 +1,1 @@
-PR .= ".1"
-
-RCONFLICTS_${PN} = ""
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

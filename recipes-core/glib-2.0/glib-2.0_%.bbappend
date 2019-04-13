@@ -1,8 +1,1 @@
-PR .= ".2"
-
-# Remove .la files from common area. Seems to be not needed
-# for running tests.
-do_install_ptest_base_append_class-target () {
-    rm -f ${D}${libexecdir}/installed-tests/glib/*.la
-    rm -f ${D}${libexecdir}/installed-tests/glib/modules/*.la
-}
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

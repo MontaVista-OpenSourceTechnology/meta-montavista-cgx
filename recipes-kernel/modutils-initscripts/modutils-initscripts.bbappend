@@ -1,3 +1,1 @@
-PR .= ".1"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += "file://run-depmod-anyway.patch;pnum=0"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

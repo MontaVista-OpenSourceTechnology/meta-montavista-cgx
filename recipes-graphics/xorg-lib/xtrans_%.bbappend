@@ -1,4 +1,1 @@
-do_install_append () {
-      mkdir -p ${D}${libdir}
-      mv ${D}${datadir}/pkgconfig ${D}${libdir}/pkgconfig
-}
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

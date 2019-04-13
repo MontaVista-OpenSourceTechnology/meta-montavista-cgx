@@ -1,0 +1,1 @@
+libexecdir="${libdir}/${BPN}"

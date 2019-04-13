@@ -1,2 +1,1 @@
-PR .= ".1"
-EXTRA_OECONF += "--enable-mini-gmp=no"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

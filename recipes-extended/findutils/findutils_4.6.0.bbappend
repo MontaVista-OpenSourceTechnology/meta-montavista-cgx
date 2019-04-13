@@ -1,3 +1,1 @@
-SRC_URI += "file://findutils-missing-getrlimit.diff"
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
-
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

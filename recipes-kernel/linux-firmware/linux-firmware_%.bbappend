@@ -1,4 +1,1 @@
-PACKAGES += "${PN}-lic"
-
-FILES_${PN}-lic += "${datadir}/licenses/${PN}/generic_* \
-                    ${datadir}/licenses/${PN}/LICENCE.*"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

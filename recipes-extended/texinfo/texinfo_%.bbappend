@@ -1,4 +1,1 @@
-PR .= ".1"
-
-inherit multilib_script
-MULTILIB_SCRIPTS = "${PN}:${bindir}/texi2any"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

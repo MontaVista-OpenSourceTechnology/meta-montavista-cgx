@@ -1,3 +1,1 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SPLASH_IMAGES = "file://psplash-mvista-img.h;outsuffix=default"
-PR .= ".1"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

@@ -1,2 +1,1 @@
-PR .= ".1"
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

@@ -1,4 +1,1 @@
-PR .= ".1"
-BINCONFIG = "${bindir}/curl-config"
-
-inherit binconfig-disabled
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

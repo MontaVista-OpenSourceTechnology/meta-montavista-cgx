@@ -1,8 +1,1 @@
-inherit multilib_script
-
-MULTILIB_SCRIPTS = "${PN}:${bindir}/pm-is-supported \
-                    ${PN}:${sbindir}/pm-suspend \
-                    ${PN}:${sbindir}/pm-hibernate \
-                    ${PN}:${sbindir}/pm-powersave \
-                    ${PN}:${sbindir}/pm-suspend-hybrid \
-                   "
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

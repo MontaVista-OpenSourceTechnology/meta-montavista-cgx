@@ -1,5 +1,1 @@
-PR .= ".1"
-
-inherit multilib_script
-
-MULTILIB_SCRIPTS = "${PN}:${bindir}/x11perfcomp"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

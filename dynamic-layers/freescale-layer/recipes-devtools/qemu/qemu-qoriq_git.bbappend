@@ -1,8 +1,1 @@
-#FIXME: the ptest content does not build.
-
-do_compile_ptest() {
-   continue
-}
-do_compile_install() {
-   continue
-}
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

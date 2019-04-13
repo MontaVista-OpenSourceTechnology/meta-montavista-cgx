@@ -1,3 +1,1 @@
-PR .= ".1"
-
-RDEPENDS_${PN}-ptest += "${PYTHON_PN}-pytz"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

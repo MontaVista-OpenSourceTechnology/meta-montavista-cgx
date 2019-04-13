@@ -1,3 +1,1 @@
-PR .= ".1"
-
-export mandir = "${datadir}/man/${PN}"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

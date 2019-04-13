@@ -1,6 +1,1 @@
-PR.=".2"
-MAKEDUMPFILE = "makedumpfile"
-MAKEDUMPFILE_mips = ""
-MAKEDUMPFILE_mips64 = ""
-MAKEDUMPFILE_aarch64 = ""
-RDEPENDS_kdump += "${MAKEDUMPFILE}"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

@@ -1,5 +1,1 @@
-inherit multilib_header
-
-do_install_append () {
-    oe_multilib_header wireshark/config.h
-}
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

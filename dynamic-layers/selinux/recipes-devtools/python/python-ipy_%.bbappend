@@ -1,3 +1,1 @@
-PR .= ".1"
-
-SRC_URI = "https://pypi.python.org/packages/source/I/IPy/IPy-${PV}.tar.gz"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

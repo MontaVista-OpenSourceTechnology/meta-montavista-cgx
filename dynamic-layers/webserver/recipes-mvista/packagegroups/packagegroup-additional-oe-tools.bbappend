@@ -1,5 +1,1 @@
-DEPENDS_append += "rsyslog nginx"
-
-RDEPENDS_packagegroup-oe-webserver_append = " \
-	apache2 \
-"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

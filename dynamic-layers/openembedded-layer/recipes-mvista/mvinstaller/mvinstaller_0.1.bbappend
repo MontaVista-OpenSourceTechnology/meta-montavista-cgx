@@ -1,1 +1,1 @@
-RDEPENDS_${PN}_append += " efibootmgr lvm2 "
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

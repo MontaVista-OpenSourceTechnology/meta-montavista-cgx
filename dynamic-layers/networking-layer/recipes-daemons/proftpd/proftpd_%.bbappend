@@ -1,6 +1,1 @@
-inherit multilib_script multilib_header
-MULTILIB_SCRIPTS = "${PN}:${bindir}/prxs"
-
-do_install_append () {
-    oe_multilib_header proftpd/config.h proftpd/buildstamp.h
-}
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

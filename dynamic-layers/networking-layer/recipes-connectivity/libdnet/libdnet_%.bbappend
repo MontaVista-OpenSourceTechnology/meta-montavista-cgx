@@ -1,5 +1,1 @@
-PR .= ".1"
-
-PACKAGES =+ "${PN}-bin"
-
-FILES_${PN}-bin = "${sbindir}/dnet ${bindir}/dnet-config"
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mvista-base', '${BPN}_mvista.inc', '', d)}

@@ -3,8 +3,8 @@ EXTRA_OECMAKE_prepend_class-target = "\
                                      -DLLVM_LIBDIR_SUFFIX=${LIBEXT} \
                                      -DLIBCXX_CXX_ABI_LIBRARY_PATH=${B}/lib${LIBEXT} \
 "
-EXTRA_OECMAKE_remove = "-DLIBCXX_CXX_ABI_LIBRARY_PATH=${B}/lib "
-LDFLAGS .= " -L${B}/lib${LIBEXT} "
+EXTRA_OECMAKE_remove_class-target = "-DLIBCXX_CXX_ABI_LIBRARY_PATH=${B}/lib "
+LDFLAGS_class-target .= " -L${B}/lib${LIBEXT} "
 
 
 PROVIDES_remove_powerpc = "libunwind"

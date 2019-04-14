@@ -28,4 +28,6 @@ MKUBIFS_ARGS="-F -m 2048 -e 126976 -c 12000"
 
 remove_yum_dir () {
 	rm -rf ${IMAGE_ROOTFS}/var/lib/dnf/yumdb/
-}    
+}
+
+TOOLCHAIN_TARGET_TASK_remove = "target-sdk-provides-dummy"    

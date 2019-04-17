@@ -7,10 +7,10 @@ do_install() {
 	mv ${D}/usr/local/bin/daxio ${D}${bindir}/
 
 	install -d ${D}${libdir}
-	mv ${D}/usr/local/${baselib}/*so* ${D}${libdir}/
+	mv ${D}/usr/local/lib*/*so* ${D}${libdir}/
 
 	install -d ${D}${libdir}/pkgconfig
-	mv ${D}/usr/local/${baselib}/pkgconfig/*.pc ${D}${libdir}/pkgconfig/
+	mv ${D}/usr/local/lib*/pkgconfig/*.pc ${D}${libdir}/pkgconfig/
 
 	install -d ${D}${includedir}
 	mv ${D}/usr/local/include/* ${D}${includedir}/

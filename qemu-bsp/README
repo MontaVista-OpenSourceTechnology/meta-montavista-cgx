@@ -1,0 +1,76 @@
+This README file contains information on the contents of the MontaVista qemu-bsp layer.
+Please see the corresponding sections below for details.
+
+
+Dependencies
+============
+
+This layer depends on:
+
+  URI: git://git.yoctoproject.org/poky
+  branch: thud
+ 
+  or
+
+  URI: git://git.openembedded.org/openembedded-core
+  branch: thud
+
+  URI: git://git.openembedded.org/bitbake
+  branch: 1.40
+
+Source code
+===========
+
+https://github.com/MontaVista-OpenSourceTechnology/meta-montavista-cgx
+
+
+Maintenance
+===========
+
+Maintainers:
+    support@mvista.com
+
+
+Contributing
+============
+
+Contributions and patches can be sent to the MontaVista  mailing
+list: support@mvista.com"
+
+When sending patches please take a look at the contribution guide available
+here: https://wiki.yoctoproject.org/wiki/Contribution_Guidelines
+
+example:
+git send-email -1 -M --to support@mvista.com  --subject-prefix=meta-montavista-cgx][PATCH
+
+
+Table of Contents
+=================
+
+  I. Adding the qemu-bsp layer to your build
+ II. Misc
+
+
+I. Adding the qemu-bsp layer to your build
+=================================================
+
+In order to use this layer, you need to make the build system aware of
+it.
+
+Assuming the meta-montavista-cgx layer exists at the top-level of your
+yocto build tree, you can add it to the build system by adding the
+location of the meta-montavista-cgx layer to bblayers.conf, along with any
+other layers needed. Adapt the below list to proper format.
+
+  BBLAYERS:
+
+    meta
+    meta-montavista-cgx/qemu-bsp
+
+II. Misc
+========
+
+The layer contains a core package group (packagegroup-cgx-complete-image) that
+should aggregate all the other available package groups.
+
+The core image name is: cgx-complete-image 

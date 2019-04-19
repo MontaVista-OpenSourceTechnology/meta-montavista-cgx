@@ -72,6 +72,7 @@ RDEPENDS_packagegroup-oe-wirelessutilities = "\
 	irda-utils \
 "
 PREFERRED_PROVIDER_libunwind_toolchain-gcc = "libunwind"
+PREFERRED_PROVIDER_libunwind ??= "libunwind"
 RDEPENDS_packagegroup-oe-console-utilities = " \
 	console-tools \
 	cups \

@@ -44,8 +44,7 @@ do_install() {
 	fi
 }
 
-# Always run the installer step, in case USER_INSTALLER changed.
-do_install[nostamp] = "1"
+do_install[vardeps] += "USER_INSTALLER"
 
 PACKAGES = "${PN}"
 PROVIDES = "${PACKAGES}"

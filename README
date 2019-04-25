@@ -94,3 +94,18 @@ The layer contains a core package group (packagegroup-cgx-complete-image) that
 should aggregate all the other available package groups.
 
 The core image name is: cgx-complete-image 
+
+meta-montavista-cgx
+===================
+
+This layer provides the MontaVista support for foundation/base recipes.
+
+The bbappend files for the recipes provided, are only enabled when the
+value 'mvista-base' is added to DISTRO_FEATURES.
+
+  DISTRO_FEATURES_append = " mvista-base "
+
+There is a sanity check warning if that value is missing. That can be disabled
+by setting:
+
+  SKIP_META_MONTAVISTA_CGX_SANITY_CHECK = 1

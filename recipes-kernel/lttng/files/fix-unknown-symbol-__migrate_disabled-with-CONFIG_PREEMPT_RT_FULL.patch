@@ -8,13 +8,19 @@ It solves below error, when target is booted with CONFIG_PREEMPT_RT_FULL
 lttng_tracer: Unknown symbol __migrate_disabled (err 0
 -- snip --
 
---- lttng-modules-2.10.5_org/lttng-context-migratable.c	2018-01-17 08:10:54.000000000 -0800
-+++ lttng-modules-2.10.5/lttng-context-migratable.c	2018-06-20 04:40:46.052103803 -0700
-@@ -44,7 +44,11 @@ void migratable_record(struct lttng_ctx_
+---
+ lttng-context-migratable.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/lttng-context-migratable.c b/lttng-context-migratable.c
+index c886195..6f2fa98 100644
+--- a/lttng-context-migratable.c
++++ b/lttng-context-migratable.c
+@@ -44,7 +44,11 @@ void migratable_record(struct lttng_ctx_field *field,
  		struct lib_ring_buffer_ctx *ctx,
  		struct lttng_channel *chan)
  {
--	uint8_t migratable = !__migrate_disabled(current);
+-	uint8_t migratable = !current->migrate_disable;
 +#if defined(CONFIG_PREEMPT_COUNT) && defined(CONFIG_SMP)
 +	uint8_t migratable = !(current->migrate_disable);
 +#else
@@ -23,11 +29,11 @@ lttng_tracer: Unknown symbol __migrate_disabled (err 0
  
  	lib_ring_buffer_align_ctx(ctx, lttng_alignof(migratable));
  	chan->ops->event_write(ctx, &migratable, sizeof(migratable));
-@@ -55,7 +59,11 @@ void migratable_get_value(struct lttng_c
+@@ -55,7 +59,11 @@ void migratable_get_value(struct lttng_ctx_field *field,
  		struct lttng_probe_ctx *lttng_probe_ctx,
  		union lttng_ctx_value *value)
  {
--	value->s64 = !__migrate_disabled(current);
+-	value->s64 = !current->migrate_disable;
 +#if defined(CONFIG_PREEMPT_COUNT) && defined(CONFIG_SMP)
 +	value->s64 = !(current->migrate_disable);
 +#else
@@ -36,3 +42,6 @@ lttng_tracer: Unknown symbol __migrate_disabled (err 0
  }
  
  int lttng_add_migratable_to_ctx(struct lttng_ctx **ctx)
+-- 
+2.11.1
+

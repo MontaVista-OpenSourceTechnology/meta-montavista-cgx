@@ -7,3 +7,6 @@ BBMASK += "meta-clang/recipes-core/packagegroups/packagegroup-core-standalone-sd
 
 PREFERRED_VERSION_strace ?= "4.26"
 PREFERRED_VERSION_u-boot-fw-utils ?= "2019.01"
+
+QEMUVERSION_riscv64 ?= "4.0%"
+QEMUVERSION_riscv ?= "4.0%"

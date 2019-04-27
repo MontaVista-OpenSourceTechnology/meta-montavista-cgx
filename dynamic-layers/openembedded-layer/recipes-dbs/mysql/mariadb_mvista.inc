@@ -1,3 +1,9 @@
+PR .= ".1"
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+SRC_URI_append_riscv64 = " file://0001-libmysql-Do-not-export-_fini-_init-on-risc-v.patch"
+SRC_URI_append_riscv = " file://0001-libmysql-Do-not-export-_fini-_init-on-risc-v.patch"
+
 inherit multilib_script multilib_header
 
 MULTILIB_SCRIPTS = "${PN}-client:${bindir}/mysqlbug \

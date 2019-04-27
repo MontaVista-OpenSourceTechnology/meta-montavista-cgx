@@ -2,6 +2,8 @@ OPROFILE="oprofile"
 OPROFILE_linux-gnuilp32 = ""
 #Fix Me: This should work
 OPROFILE_linux-gnun32 = ""
+OPROFILE_riscv64 = ""
+OPROFILE_riscv = ""
 
 RDEPENDS_packagegroup-oe-console-utilities_append = " \
 	libc-client \

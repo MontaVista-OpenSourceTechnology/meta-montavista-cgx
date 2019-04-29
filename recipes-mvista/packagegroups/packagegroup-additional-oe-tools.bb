@@ -81,7 +81,7 @@ RDEPENDS_packagegroup-oe-console-utilities = " \
 	libcgroup \
 	libgcc \
 	run-postinsts \
-	${@["","linux-firmware"][(d.getVar("MACHINE_EXTRA_RRECOMMENDS").find("linux-firmware") == -1)]} \
+	${@["","linux-firmware"][(d.getVar("MACHINE_EXTRA_RRECOMMENDS").find("linux-firmware") != -1)]} \
 	mtd-utils \
 	tiff \
 	${PREFERRED_PROVIDER_libunwind} \

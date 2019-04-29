@@ -180,8 +180,12 @@ KDUMP="kdump-elftool"
 KDUMP_riscv = ""
 KDUMP_riscv64 = ""
 
+GDB_KDUMP_HELPERS ?= "gdb-kdump-helpers"
+GDB_KDUMP_HELPERS_riscv = ""
+GDB_KDUMP_HELPERS_riscv64 = ""
+
 RDEPENDS_packagegroup-oe-debug = " \
-	gdb-kdump-helpers \
+	${GDB_KDUMP_HELPERS} \
 	${PREFERRED_PROVIDER_libunwind} \
 	${KDUMP} \
 "

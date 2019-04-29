@@ -73,6 +73,7 @@ RDEPENDS_packagegroup-oe-wirelessutilities = "\
 "
 PREFERRED_PROVIDER_libunwind_toolchain-gcc = "libunwind"
 PREFERRED_PROVIDER_libunwind ??= "libunwind"
+RRECOMMENDS_packagegroup-oe-console-utilities = "linux-firmware"
 RDEPENDS_packagegroup-oe-console-utilities = " \
 	console-tools \
 	cups \
@@ -81,7 +82,6 @@ RDEPENDS_packagegroup-oe-console-utilities = " \
 	libcgroup \
 	libgcc \
 	run-postinsts \
-	${@["","linux-firmware"][(d.getVar("MACHINE_EXTRA_RRECOMMENDS").find("linux-firmware") != -1)]} \
 	mtd-utils \
 	tiff \
 	${PREFERRED_PROVIDER_libunwind} \

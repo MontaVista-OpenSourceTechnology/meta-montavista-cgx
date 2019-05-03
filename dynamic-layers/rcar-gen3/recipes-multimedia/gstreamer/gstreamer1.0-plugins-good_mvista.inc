@@ -1,5 +1,1 @@
-PR .= ".1"
-
-do_init_submodule_prepend () {
-    export GIT_SSL_NO_VERIFY=1
-}
+include gstreamer1.0-plugins-common.inc

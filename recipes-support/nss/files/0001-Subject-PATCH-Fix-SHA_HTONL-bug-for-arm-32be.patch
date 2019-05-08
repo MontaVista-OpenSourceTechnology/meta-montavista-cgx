@@ -1,0 +1,58 @@
+
+# HG changeset patch
+# User Zheng Ruoqin <zhengrq.fnst@cn.fujitsu.com>
+# Date 1544454501 25200
+# Node ID 66cae6a8f4b640bec5e8510dcfc247e0546c973c
+# Parent  ed85af955c78275bb6610a02e9f892e494589398
+Bug 1512923 - Fix SHA_HTONL bug for arm 32be r=jcj
+
+Rpm use nss as digest crypto library and which will cause an error on
+arm 32be platform as follows:
+
+error: test-manual-1.2.3-20181012.noarch.rpm: Header SHA1 digest: BAD
+(Expected
+f1deb7dc4a10742d88ccd1e967dbc62ae45095a5
+!=4ad9d7dad6d70d6086eefec62612ad5d77f2fe81)  => this value is wrong
+error: test-manual-1.2.3-20181012.noarch.rpm: not an rpm package (or
+package manifest)
+
+The error is caused by SHA_HTONL in nss, for there is no need to reverse
+the host value for arm 32be as it is originally big endian, so fix it.
+
+Upstream-Status: Backport from Mozilla bugzilla [https://hg.mozilla.org/projects/nss/rev/66cae6a8f4b640bec5e8510dcfc247e0546c973c]
+
+Signed-off-by: Zheng Ruoqin <zhengrq.fnst@cn.fujitsu.com>
+
+diff --git a/nss/lib/freebl/sha_fast.h b/nss/lib/freebl/sha_fast.h
+--- a/nss/lib/freebl/sha_fast.h
++++ b/nss/lib/freebl/sha_fast.h
+@@ -94,26 +94,28 @@ swap4b(PRUint32 value)
+       defined(__ARM_ARCH_6J__) ||  \
+       defined(__ARM_ARCH_6K__) ||  \
+       defined(__ARM_ARCH_6Z__) ||  \
+       defined(__ARM_ARCH_6ZK__) || \
+       defined(__ARM_ARCH_6T2__) || \
+       defined(__ARM_ARCH_7__) ||   \
+       defined(__ARM_ARCH_7A__) ||  \
+       defined(__ARM_ARCH_7R__)))
++#if defined(IS_LITTLE_ENDIAN)
+ static __inline__ PRUint32
+ swap4b(PRUint32 value)
+ {
+     PRUint32 ret;
+     __asm__("rev %0, %1"
+             : "=r"(ret)
+             : "r"(value));
+     return ret;
+ }
+ #define SHA_HTONL(x) swap4b(x)
++#endif
+ 
+ #endif /* x86 family */
+ 
+ #endif /* __GNUC__ */
+ 
+ #if !defined(SHA_ROTL_IS_DEFINED)
+ #define SHA_NEED_TMP_VARIABLE 1
+ #define SHA_ROTL(X, n) (tmp = (X), ((tmp) << (n)) | ((tmp) >> (32 - (n))))
+

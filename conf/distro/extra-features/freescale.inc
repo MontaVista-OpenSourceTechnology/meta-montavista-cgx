@@ -4,6 +4,9 @@ PREFERRED_PROVIDER_openssl ?= "openssl-qoriq"
 PREFERRED_PROVIDER_qemu = "qemu-qoriq"
 
 QEMU_TARGETS_mx8 ?= "arm aarch64 i386 mips mipsel mips64 mips64el ppc sh4 x86_64"
+PREFERRED_PROVIDER_virtual/kernel_mx8 ?= 'linux-imx'
+DISTRO_FEATURES_append_mx8 += 'wayland'
+PREFERRED_PROVIDER_cryptodev-linux_mx8 ?= 'cryptodev-qoriq-linux'
 
 addhandler fsl_eula_check
 fsl_eula_check[eventmask] = "bb.event.SanityCheck"

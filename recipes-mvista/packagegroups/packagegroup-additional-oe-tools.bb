@@ -173,9 +173,9 @@ X86_PACKAGES_OE_CONSOLE_UTILS_i686 = " \
 
 RDEPENDS_packagegroup-oe-security = " \
 	pinentry \
+	wireshark \
 "
-# FIXME Does not build with latest update
-#	wireshark 
+
 KDUMP="kdump-elftool"
 KDUMP_riscv = ""
 KDUMP_riscv64 = ""

@@ -1,0 +1,24 @@
+diff -Naurp git_org/include/sysemu/kvm.h git/include/sysemu/kvm.h
+--- git_org/include/sysemu/kvm.h	2019-05-07 09:10:21.792038686 -0700
++++ git/include/sysemu/kvm.h	2019-05-07 09:48:19.259663563 -0700
+@@ -475,7 +475,7 @@ void kvm_init_cpu_signals(CPUState *cpu)
+  * @return: virq (>=0) when success, errno (<0) when failed.
+  */
+ int kvm_irqchip_add_msi_route(KVMState *s, int vector, MSIMessage msg,
+-                              uint32_t devid, DeviceState *dev);
++                              uint32_t devid, PCIDevice *dev);
+ int kvm_irqchip_update_msi_route(KVMState *s, int virq, MSIMessage msg,
+                                  uint32_t devid, DeviceState *dev);
+ void kvm_irqchip_commit_routes(KVMState *s);
+diff -Naurp git_org/kvm-all.c git/kvm-all.c
+--- git_org/kvm-all.c	2019-05-07 09:10:21.796038504 -0700
++++ git/kvm-all.c	2019-05-07 09:58:06.692796182 -0700
+@@ -1250,7 +1250,7 @@ int kvm_irqchip_send_msi(KVMState *s, MS
+ }
+ 
+ int kvm_irqchip_add_msi_route(KVMState *s, int vector, MSIMessage msg,
+-                              uint32_t devid, DeviceState *dev)
++                              uint32_t devid, PCIDevice *dev)
+ {
+     struct kvm_irq_routing_entry kroute = {};
+     int virq;

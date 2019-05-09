@@ -1,0 +1,267 @@
+From 04b33e21866412689f18b7ad6daf0a54d8f959a7 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Wed, 28 Jun 2017 13:44:52 -0700
+Subject: [PATCH] Replace 'struct ucontext' with 'ucontext_t' type
+
+glibc used to have:
+
+   typedef struct ucontext { ... } ucontext_t;
+
+glibc now has:
+
+   typedef struct ucontext_t { ... } ucontext_t;
+
+(See https://sourceware.org/bugzilla/show_bug.cgi?id=21457
+ for detail and rationale for the glibc change)
+
+However, QEMU used "struct ucontext" in declarations. This is a
+private name and compatibility cannot be guaranteed. Switch to
+only using the standardized type name.
+
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+Message-id: 20170628204452.41230-1-raj.khem@gmail.com
+Cc: Kamil Rytarowski <kamil@netbsd.org>
+Cc: Riku Voipio <riku.voipio@iki.fi>
+Cc: Laurent Vivier <laurent@vivier.eu>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Reviewed-by: Eric Blake <eblake@redhat.com>
+[PMM: Rewrote commit message, based mostly on the one from
+ Nathaniel McCallum]
+Signed-off-by: Peter Maydell <peter.maydell@linaro.org>
+---
+ linux-user/host/aarch64/hostdep.h |  2 +-
+ linux-user/host/arm/hostdep.h     |  2 +-
+ linux-user/host/i386/hostdep.h    |  2 +-
+ linux-user/host/ppc64/hostdep.h   |  2 +-
+ linux-user/host/s390x/hostdep.h   |  2 +-
+ linux-user/host/x86_64/hostdep.h  |  2 +-
+ linux-user/signal.c               | 10 +++++-----
+ tests/tcg/test-i386.c             |  4 ++--
+ user-exec.c                       | 18 +++++++++---------
+ 9 files changed, 22 insertions(+), 22 deletions(-)
+
+diff -Naurp git_org/linux-user/host/aarch64/hostdep.h git/linux-user/host/aarch64/hostdep.h
+--- git_org/linux-user/host/aarch64/hostdep.h	2019-05-06 03:32:38.817059869 -0700
++++ git/linux-user/host/aarch64/hostdep.h	2019-05-07 09:02:09.786476364 -0700
+@@ -24,7 +24,7 @@ extern char safe_syscall_end[];
+ /* Adjust the signal context to rewind out of safe-syscall if we're in it */
+ static inline void rewind_if_in_safe_syscall(void *puc)
+ {
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     __u64 *pcreg = &uc->uc_mcontext.pc;
+ 
+     if (*pcreg > (uintptr_t)safe_syscall_start
+diff -Naurp git_org/linux-user/host/arm/hostdep.h git/linux-user/host/arm/hostdep.h
+--- git_org/linux-user/host/arm/hostdep.h	2019-05-06 03:32:38.817059869 -0700
++++ git/linux-user/host/arm/hostdep.h	2019-05-07 09:02:09.786476364 -0700
+@@ -24,7 +24,7 @@ extern char safe_syscall_end[];
+ /* Adjust the signal context to rewind out of safe-syscall if we're in it */
+ static inline void rewind_if_in_safe_syscall(void *puc)
+ {
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     unsigned long *pcreg = &uc->uc_mcontext.arm_pc;
+ 
+     if (*pcreg > (uintptr_t)safe_syscall_start
+diff -Naurp git_org/linux-user/host/i386/hostdep.h git/linux-user/host/i386/hostdep.h
+--- git_org/linux-user/host/i386/hostdep.h	2019-05-06 03:32:38.817059869 -0700
++++ git/linux-user/host/i386/hostdep.h	2019-05-07 09:02:09.786476364 -0700
+@@ -24,7 +24,7 @@ extern char safe_syscall_end[];
+ /* Adjust the signal context to rewind out of safe-syscall if we're in it */
+ static inline void rewind_if_in_safe_syscall(void *puc)
+ {
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     greg_t *pcreg = &uc->uc_mcontext.gregs[REG_EIP];
+ 
+     if (*pcreg > (uintptr_t)safe_syscall_start
+diff -Naurp git_org/linux-user/host/ppc64/hostdep.h git/linux-user/host/ppc64/hostdep.h
+--- git_org/linux-user/host/ppc64/hostdep.h	2019-05-06 03:32:38.817059869 -0700
++++ git/linux-user/host/ppc64/hostdep.h	2019-05-07 09:02:09.786476364 -0700
+@@ -24,7 +24,7 @@ extern char safe_syscall_end[];
+ /* Adjust the signal context to rewind out of safe-syscall if we're in it */
+ static inline void rewind_if_in_safe_syscall(void *puc)
+ {
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     unsigned long *pcreg = &uc->uc_mcontext.gp_regs[PT_NIP];
+ 
+     if (*pcreg > (uintptr_t)safe_syscall_start
+diff -Naurp git_org/linux-user/host/s390x/hostdep.h git/linux-user/host/s390x/hostdep.h
+--- git_org/linux-user/host/s390x/hostdep.h	2019-05-06 03:32:38.817059869 -0700
++++ git/linux-user/host/s390x/hostdep.h	2019-05-07 09:02:09.786476364 -0700
+@@ -24,7 +24,7 @@ extern char safe_syscall_end[];
+ /* Adjust the signal context to rewind out of safe-syscall if we're in it */
+ static inline void rewind_if_in_safe_syscall(void *puc)
+ {
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     unsigned long *pcreg = &uc->uc_mcontext.psw.addr;
+ 
+     if (*pcreg > (uintptr_t)safe_syscall_start
+diff -Naurp git_org/linux-user/host/x86_64/hostdep.h git/linux-user/host/x86_64/hostdep.h
+--- git_org/linux-user/host/x86_64/hostdep.h	2019-05-06 03:32:38.817059869 -0700
++++ git/linux-user/host/x86_64/hostdep.h	2019-05-07 09:02:09.786476364 -0700
+@@ -24,7 +24,7 @@ extern char safe_syscall_end[];
+ /* Adjust the signal context to rewind out of safe-syscall if we're in it */
+ static inline void rewind_if_in_safe_syscall(void *puc)
+ {
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     greg_t *pcreg = &uc->uc_mcontext.gregs[REG_RIP];
+ 
+     if (*pcreg > (uintptr_t)safe_syscall_start
+diff -Naurp git_org/linux-user/signal.c git/linux-user/signal.c
+--- git_org/linux-user/signal.c	2019-05-06 03:32:38.821059698 -0700
++++ git/linux-user/signal.c	2019-05-07 09:02:09.814475087 -0700
+@@ -3346,7 +3346,7 @@ static void setup_rt_frame(int sig, stru
+     *
+     *   a0 = signal number
+     *   a1 = pointer to siginfo_t
+-    *   a2 = pointer to struct ucontext
++    *   a2 = pointer to ucontext_t
+     *
+     * $25 and PC point to the signal handler, $29 points to the
+     * struct sigframe.
+@@ -3733,7 +3733,7 @@ struct target_signal_frame {
+ 
+ struct rt_signal_frame {
+     siginfo_t info;
+-    struct ucontext uc;
++    ucontext_t uc;
+     uint32_t tramp[2];
+ };
+ 
+@@ -3949,7 +3949,7 @@ struct rt_signal_frame {
+     siginfo_t *pinfo;
+     void *puc;
+     siginfo_t info;
+-    struct ucontext uc;
++    ucontext_t uc;
+     uint16_t retcode[4];      /* Trampoline code. */
+ };
+ 
+@@ -4484,7 +4484,7 @@ static void setup_rt_frame(int sig, stru
+         tswap_siginfo(&frame->info, info);
+     }
+ 
+-    /*err |= __clear_user(&frame->uc, offsetof(struct ucontext, uc_mcontext));*/
++    /*err |= __clear_user(&frame->uc, offsetof(ucontext_t, uc_mcontext));*/
+     __put_user(0, &frame->uc.tuc_flags);
+     __put_user(0, &frame->uc.tuc_link);
+     __put_user(target_sigaltstack_used.ss_sp,
+@@ -4975,7 +4975,7 @@ enum {
+ 
+ struct target_ucontext {
+     target_ulong tuc_flags;
+-    target_ulong tuc_link;    /* struct ucontext __user * */
++    target_ulong tuc_link;    /* ucontext_t __user * */
+     struct target_sigaltstack tuc_stack;
+ #if !defined(TARGET_PPC64)
+     int32_t tuc_pad[7];
+diff -Naurp git_org/tests/tcg/test-i386.c git/tests/tcg/test-i386.c
+--- git_org/tests/tcg/test-i386.c	2019-05-06 03:32:39.277040296 -0700
++++ git/tests/tcg/test-i386.c	2019-05-07 09:02:09.814475087 -0700
+@@ -1720,7 +1720,7 @@ int tab[2];
+ 
+ void sig_handler(int sig, siginfo_t *info, void *puc)
+ {
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+ 
+     printf("si_signo=%d si_errno=%d si_code=%d",
+            info->si_signo, info->si_errno, info->si_code);
+@@ -1912,7 +1912,7 @@ void test_exceptions(void)
+ /* specific precise single step test */
+ void sig_trap_handler(int sig, siginfo_t *info, void *puc)
+ {
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     printf("EIP=" FMTLX "\n", (long)uc->uc_mcontext.gregs[REG_EIP]);
+ }
+ 
+diff -Naurp git_org/user-exec.c git/user-exec.c
+--- git_org/user-exec.c	2019-05-06 03:32:39.297039445 -0700
++++ git/user-exec.c	2019-05-07 09:02:09.814475087 -0700
+@@ -167,7 +167,7 @@ int cpu_signal_handler(int host_signum,
+ #elif defined(__OpenBSD__)
+     struct sigcontext *uc = puc;
+ #else
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+ #endif
+     unsigned long pc;
+     int trapno;
+@@ -222,7 +222,7 @@ int cpu_signal_handler(int host_signum,
+ #elif defined(__OpenBSD__)
+     struct sigcontext *uc = puc;
+ #else
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+ #endif
+ 
+     pc = PC_sig(uc);
+@@ -289,7 +289,7 @@ int cpu_signal_handler(int host_signum,
+ #if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+     ucontext_t *uc = puc;
+ #else
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+ #endif
+     unsigned long pc;
+     int is_write;
+@@ -316,7 +316,7 @@ int cpu_signal_handler(int host_signum,
+                            void *puc)
+ {
+     siginfo_t *info = pinfo;
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     uint32_t *pc = uc->uc_mcontext.sc_pc;
+     uint32_t insn = *pc;
+     int is_write = 0;
+@@ -414,7 +414,7 @@ int cpu_signal_handler(int host_signum,
+ #if defined(__NetBSD__)
+     ucontext_t *uc = puc;
+ #else
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+ #endif
+     unsigned long pc;
+     int is_write;
+@@ -441,7 +441,7 @@ int cpu_signal_handler(int host_signum,
+ int cpu_signal_handler(int host_signum, void *pinfo, void *puc)
+ {
+     siginfo_t *info = pinfo;
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     uintptr_t pc = uc->uc_mcontext.pc;
+     uint32_t insn = *(uint32_t *)pc;
+     bool is_write;
+@@ -474,7 +474,7 @@ int cpu_signal_handler(int host_signum,
+ int cpu_signal_handler(int host_signum, void *pinfo, void *puc)
+ {
+     siginfo_t *info = pinfo;
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     unsigned long ip;
+     int is_write = 0;
+ 
+@@ -505,7 +505,7 @@ int cpu_signal_handler(int host_signum,
+                        void *puc)
+ {
+     siginfo_t *info = pinfo;
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     unsigned long pc;
+     uint16_t *pinsn;
+     int is_write = 0;
+@@ -558,7 +558,7 @@ int cpu_signal_handler(int host_signum,
+                        void *puc)
+ {
+     siginfo_t *info = pinfo;
+-    struct ucontext *uc = puc;
++    ucontext_t *uc = puc;
+     greg_t pc = uc->uc_mcontext.pc;
+     int is_write;
+ 

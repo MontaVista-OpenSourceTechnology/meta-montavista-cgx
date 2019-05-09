@@ -19,14 +19,14 @@ diff --git a/Makefile b/Makefile
 index 09b597d450..8d4e6050b3 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -348,7 +348,7 @@ OBJCOPY            = $(CROSS_COMPILE)objcopy
- OBJDUMP               = $(CROSS_COMPILE)objdump
- AWK           = awk
- PERL          = perl
--PYTHON                = python
-+PYTHON                ?= python
- DTC           = dtc
- CHECK         = sparse
+@@ -348,7 +348,7 @@ OBJCOPY		= $(CROSS_COMPILE)objcopy
+ OBJDUMP		= $(CROSS_COMPILE)objdump
+ AWK		= awk
+ PERL		= perl
+-PYTHON		= python
++PYTHON		?= python
+ DTC		= dtc
+ CHECK		= sparse
  
 diff --git a/tools/Makefile b/tools/Makefile
 index fa1b85bdae..2fc4a583d4 100644
@@ -36,10 +36,10 @@ index fa1b85bdae..2fc4a583d4 100644
  libfdt:
  
  tools/_libfdt.so: $(patsubst %.o,%.c,$(LIBFDT_OBJS)) tools/libfdt_wrap.c
--      LDFLAGS="$(HOSTLDFLAGS)" python $(srctree)/lib/libfdt/setup.py \
-+      LDFLAGS="$(HOSTLDFLAGS)" ${PYTHON} $(srctree)/lib/libfdt/setup.py \
-               "$(_hostc_flags)" $^
-       mv _libfdt.so $@
+-	LDFLAGS="$(HOSTLDFLAGS)" python $(srctree)/lib/libfdt/setup.py \
++	LDFLAGS="$(HOSTLDFLAGS)" ${PYTHON} $(srctree)/lib/libfdt/setup.py \
+ 		"$(_hostc_flags)" $^
+ 	mv _libfdt.so $@
  
 -- 
 2.17.1

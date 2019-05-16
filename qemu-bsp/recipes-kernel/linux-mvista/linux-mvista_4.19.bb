@@ -1,5 +1,5 @@
-MV_KERNEL_BRANCH ?= "mvl-4.14/msd.cgx"
-MV_KERNEL_TREE ?= "git://${TOPDIR}/linux-mvista-2.4.git"
+MV_KERNEL_BRANCH ?= "mvl-4.19/msd.cgx"
+MV_KERNEL_TREE ?= "git://${TOPDIR}/linux-mvista-2.6.git"
 KBRANCH ?= "${MV_KERNEL_BRANCH}"
 
 require recipes-kernel/linux/linux-yocto.inc
@@ -7,11 +7,12 @@ NO_SOURCE_MIRROR="1"
 BB_GENERATE_MIRROR_TARBALLS = "0"
 SRCREV_machine ?= "${MV_KERNEL_BRANCH}"
 SRCREV_meta ?= "eda4d18ce4b259c84ccd5c249c3dc5958c16928c"
+LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRC_URI = "${MV_KERNEL_TREE};name=machine;branch=${KBRANCH}; \
-           git://git.yoctoproject.org/yocto-kernel-cache;type=kmeta;name=meta;branch=yocto-4.12;destsuffix=${KMETA}"
+           git://git.yoctoproject.org/yocto-kernel-cache;type=kmeta;name=meta;branch=yocto-4.19;destsuffix=${KMETA}"
 
-LINUX_VERSION ?= "4.14.3"
+LINUX_VERSION ?= "4.19"
 
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
@@ -19,8 +20,15 @@ KMETA = "kernel-meta"
 KCONF_BSP_AUDIT_LEVEL = "2"
 
 KERNEL_DEVICETREE_qemuarm = "versatile-pb.dtb"
-
-COMPATIBLE_MACHINE = "qemuarm|qemuarm64|qemux86|qemuppc|qemumips|qemumips64|qemux86-64"
+COMPATIBLE_MACHINE = "null"
+COMPATIBLE_MACHINE_qemuarm = "qemuarm"
+COMPATIBLE_MACHINE_qemuarm64 = "qemuarm64"
+COMPATIBLE_MACHINE_qemux86 = "qemux86"
+COMPATIBLE_MACHINE_qemuppc = "qemuppc"
+COMPATIBLE_MACHINE_qemumips = "qemumips"
+COMPATIBLE_MACHINE_qemumips64 = "qemumips64"
+COMPATIBLE_MACHINE_qemux86-64 = "qemux86-64"
+KERNEL_FEATURES_remove_qemuall = "features/kernel-sample/kernel-sample.scc"
 
 DEPENDS += "elfutils-native"
 

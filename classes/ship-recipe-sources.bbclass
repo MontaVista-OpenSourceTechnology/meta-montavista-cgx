@@ -25,7 +25,7 @@ do_ship_recipe_sources () {
 do_tar_recipe_sources[dirs] = "${WORKDIR}"
 do_ship_recipe_sources[cleandirs] = "${D}${SRC_TAR_PATH}"
 
-addtask tar_recipe_sources after do_patch before do_configure
+addtask tar_recipe_sources after do_populate_lic before do_configure
 addtask ship_recipe_sources after do_install before do_package
 
 python () {

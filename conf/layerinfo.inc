@@ -52,18 +52,23 @@ def set_source_mirror(d):
     if personal_mirror:
        source_url=personal_mirror
        d.setVar("SOURCE_MIRROR_URL", personal_mirror)
+
+def mvlbase_path_element(d):
+    source_url=d.getVar("SOURCE_MIRROR_URL")
     if (source_url and source_url.startswith("https://") and source_url.find("mvista.com") != -1) or d.getVar("USE_MVLFETCH") == "1":
        mvlbase=d.getVar("MVLBASE")
        pathadd=None
-       if mvlbase:
-         pathadd = os.path.dirname(os.path.dirname(mvlbase)) + "/bin"
-         newpath = d.getVar("PATH")
-         newpath = pathadd + ":" + newpath
-         d.setVar("PATH", newpath)
        mvlfetch = d.getVar("MVLFETCH")
        if mvlfetch:
           d.setVar("FETCHCMD_wget", mvlfetch)
+       if mvlbase:
+         pathadd = os.path.dirname(os.path.dirname(mvlbase)) + "/bin:"
+         return pathadd
+       else:
+         return ""
 
 python() {
     set_source_mirror(d)
 }
+
+PATH_prepend = "${@mvlbase_path_element(d)}"

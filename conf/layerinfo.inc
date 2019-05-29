@@ -66,7 +66,7 @@ def mvlbase_path_element(d):
          return pathadd
        else:
          return ""
-
+    return ""
 python() {
     set_source_mirror(d)
 }

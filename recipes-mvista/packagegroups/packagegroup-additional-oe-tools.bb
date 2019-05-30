@@ -174,6 +174,7 @@ X86_PACKAGES_OE_CONSOLE_UTILS_i686 = " \
 RDEPENDS_packagegroup-oe-security = " \
 	pinentry \
 	wireshark \
+	tshark \
 "
 
 KDUMP="kdump-elftool"

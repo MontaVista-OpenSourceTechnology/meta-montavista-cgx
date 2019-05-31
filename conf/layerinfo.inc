@@ -14,7 +14,7 @@ INHERIT += "mirrors"
 def get_layername(file, d):
     import re
     if not os.path.isabs(file):
-        file = bb.which(d.getVar("BBPATH", 1), file)
+        file = bb.utils.which(d.getVar("BBPATH", 1), file)
     filedir = os.path.realpath(os.path.dirname(file))
     named = (d.getVar("BBLAYERS_NAMED",1) or "").split()
     for layer in named:
@@ -29,6 +29,12 @@ def get_layername(file, d):
             return layername
     return ""
 
+def get_layerdir(file, d):
+    layer = get_layername(file,d)
+    bbpattern=d.getVar("BBFILE_PATTERN_%s" % layer,1)
+    return os.path.normpath(bbpattern.replace("^",""))
+
+MVLBASE="${@ get_layerdir('conf/layerinfo.inc',d)}"
 def get_layermirror(d):
     layer = d.getVar("LAYER_NAME",1)
     layer_mirror = d.getVar("LAYER_SOURCES_%s" % layer , 1) or d.getVar("FALLBACK_MIRROR", 1) 

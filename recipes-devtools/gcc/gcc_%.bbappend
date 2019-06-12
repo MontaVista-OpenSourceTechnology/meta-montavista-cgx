@@ -16,6 +16,8 @@ EOF
 
 EXTRACONFFUNCS += "updateMips"
 
+EXTRA_OECONF_append_armv7a += "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--with-float=hard', '--with-float=soft', d)}"
+
 do_install_append () {
      rm -f ${D}${bindir}/gcc
      rm -f ${D}${bindir}/cpp

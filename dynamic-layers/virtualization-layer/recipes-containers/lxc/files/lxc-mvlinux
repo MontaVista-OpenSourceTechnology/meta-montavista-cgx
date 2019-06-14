@@ -32,6 +32,7 @@ TMPDIR="/var"
 ################################################################################
 
 # Write out custom inittab
+SPEED=`stty speed`
 write_mvlinux_inittab() {
     cat <<EOF > "${ROOTFS}"/etc/inittab || exit_failure
 id:3:initdefault:
@@ -45,10 +46,10 @@ l5:5:wait:/etc/init.d/rc 5
 l6:6:wait:/etc/init.d/rc 6
 # Normally not reached, but fallthrough in case of emergency.
 z6:6:respawn:/sbin/sulogin
-t1:2345:respawn:/sbin/getty tty1
-t2:2345:respawn:/sbin/getty tty2
-t3:2345:respawn:/sbin/getty tty3
-t4:2345:respawn:/sbin/getty tty4
+t1:2345:respawn:/sbin/getty ${SPEED} tty1 linux
+t2:2345:respawn:/sbin/getty ${SPEED} tty2 linux
+t3:2345:respawn:/sbin/getty ${SPEED} tty3 linux
+t4:2345:respawn:/sbin/getty ${SPEED} tty4 linux
 EOF
     # set permissions
     chmod 644 "${ROOTFS}"/etc/inittab
@@ -285,10 +286,10 @@ write_lxc_configuration() {
     mkdir -p `dirname "${CONFFILE}"`
 
     cat <<EOF > "${CONFFILE}"
-lxc.utsname = ${UTSNAME}
-lxc.tty = 4
-lxc.pts = 1024
-lxc.rootfs = ${TROOTFS}
+lxc.uts.name = ${UTSNAME}
+lxc.tty.max = 4
+lxc.pty.max = 1024
+lxc.rootfs.patch = ${TROOTFS}
 EOF
 
     # Network configuration
@@ -296,26 +297,26 @@ EOF
 	cat <<EOF >> "${CONFFILE}"
 
 # Container with network virtualized using the vlan device driver
-lxc.network.type = vlan
-lxc.network.vlan.id = ${VDEV_ID}
-lxc.network.flags = up
+lxc.net.0.type = vlan
+lxc.net.0.vlan.id = ${VDEV_ID}
+lxc.network.0.flags = up
 # physical link on the host
-lxc.network.link = ${VLAN_MASTER_DEV}
+lxc.net.0.link = ${VLAN_MASTER_DEV}
 # link name on the guest
-lxc.network.name = ${VDEV}
-lxc.network.mtu = ${MTU}
+lxc.net.0.name = ${VDEV}
+lxc.net.0.mtu = ${MTU}
 EOF
     else
 	cat <<EOF >> "${CONFFILE}"
 
 # Container with network virtualized using the vlan device driver
-lxc.network.type = veth
-lxc.network.flags = up
+lxc.net.0.type = veth
+lxc.net.0.flags = up
 # Bridge net on the host
-lxc.network.link = ${BRIDGE_DEV}
+lxc.net.0.link = ${BRIDGE_DEV}
 # link name on the guest
-lxc.network.name = ${VDEV}
-lxc.network.mtu = ${MTU}
+lxc.net.0.name = ${VDEV}
+lxc.net.0.mtu = ${MTU}
 EOF
     fi
 
@@ -337,7 +338,7 @@ EOF
 
     if [ ! -z "${IPADDR}" ]; then
     cat <<EOF >> "${CONFFILE}"
-lxc.network.ipv4 = ${IPADDR}/${PREFIX_LEN}
+lxc.net.0.ipv4.address = ${IPADDR}/${PREFIX_LEN}
 EOF
     fi
 
@@ -345,7 +346,7 @@ EOF
     cat <<EOF >> "${CONFFILE}"
 
 # Alternate fstab
-lxc.mount = ${TROOTFS_BASE}/fstab
+lxc.mount.fstab = ${TROOTFS_BASE}/fstab
 EOF
 }
 

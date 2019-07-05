@@ -1,6 +1,8 @@
-PR .= ".4"
+PR .= ".5"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/python3:"
+
+SRC_URI += "file://specify-host-cpu-as-armeb-if-cross-compiling-for-armeb.patch"
 
 export READELF="${HOST_PREFIX}readelf"
 

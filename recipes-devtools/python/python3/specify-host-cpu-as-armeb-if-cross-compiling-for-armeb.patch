@@ -1,0 +1,41 @@
+The change prevents native python3 from creating SOABI by name
+*.cpython-35m-x86_64-linux-gnu.so in /usr/lib/python3.5/lib-dynload.
+Due to which 'dnf --version' fails with the following error on 
+armeb target.
+
+-- snip --
+(prompt) # dnf --version
+Traceback (most recent call last):
+  File "/usr/bin/dnf", line 57, in <module>
+    from dnf.cli import main
+  File "/usr/lib/python3.5/site-packages/dnf/__init__.py", line 23, in <module>
+    import dnf.exceptions
+  File "/usr/lib/python3.5/site-packages/dnf/exceptions.py", line 21, in <module>
+    from dnf.i18n import ucd
+  File "/usr/lib/python3.5/site-packages/dnf/i18n.py", line 22, in <module>
+    from dnf.pycomp import unicode
+  File "/usr/lib/python3.5/site-packages/dnf/pycomp.py", line 21, in <module>
+    from gettext import NullTranslations
+  File "/usr/lib/python3.5/gettext.py", line 49, in <module>
+    import locale, copy, io, os, re, struct, sys
+  File "/usr/lib/python3.5/struct.py", line 13, in <module>
+    from _struct import *
+ImportError: No module named '_struct'
+-- snip --
+
+With this change SOABI name generated will be of type
+*cpython-35m-armeb-linux-gnueabihf.so.
+
+Signed-off-by: Jagadeesh Krishnanjanappa <jkrishnanjanappa@mvista.com>
+--- a/configure.ac_org	2019-07-04 02:47:03.157672670 -0700
++++ b/configure.ac	2019-07-05 04:42:38.124188654 -0700
+@@ -411,6 +411,9 @@ if test "$cross_compiling" = yes; then
+ 	case "$host" in
+ 	*-*-linux*)
+ 		case "$host_cpu" in
++		armeb)
++			_host_cpu=armeb
++			;;
+ 		arm*)
+ 			_host_cpu=arm
+ 			;;

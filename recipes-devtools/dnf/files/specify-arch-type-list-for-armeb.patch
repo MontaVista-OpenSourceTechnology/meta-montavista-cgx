@@ -1,0 +1,23 @@
+The armeb architecture list is missing in _BASEARCH_MAP, due to
+which the following error is observed on armeb targets.
+
+-- snip --
+(prompt) # dnf --version
+Error: Incorrect or unknown "arch": armv7b
+-- snip --
+
+This patch fixes the issue.
+
+Signed-off-by: Jagadeesh Krishnanjanappa <jkrishnanjanappa@mvista.com>
+diff --git a/dnf/rpm/__init__.py b/dnf/rpm/__init__.py
+index 79a28614..f18af03f 100644
+--- a/dnf/rpm/__init__.py
++++ b/dnf/rpm/__init__.py
+@@ -78,6 +78,7 @@ _BASEARCH_MAP = _invert({
+     'alpha': ('alpha', 'alphaev4', 'alphaev45', 'alphaev5', 'alphaev56',
+               'alphaev6', 'alphaev67', 'alphaev68', 'alphaev7', 'alphapca56'),
+     'arm': ('armv5tejl', 'armv5tel', 'armv5tl', 'armv6l', 'armv7l'),
++    'armeb': ('armv5tejb', 'armv5teb', 'armv5tb', 'armv6b', 'armv7b'),
+     'armhfp': ('armv6hl', 'armv7hl', 'armv7hnl', 'armv8l'),
+     'i386': ('i386', 'athlon', 'geode', 'i386', 'i486', 'i586', 'i686'),
+     'ia64': ('ia64',),

@@ -289,7 +289,7 @@ write_lxc_configuration() {
 lxc.uts.name = ${UTSNAME}
 lxc.tty.max = 4
 lxc.pty.max = 1024
-lxc.rootfs.patch = ${TROOTFS}
+lxc.rootfs.path = ${TROOTFS}
 EOF
 
     # Network configuration

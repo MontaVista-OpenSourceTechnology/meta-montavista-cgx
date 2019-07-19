@@ -1,0 +1,70 @@
+It solves below error on ARMEB target:
+-- snip --
+root@Fozzie:~# dnf remove kexec
+....
+Running transaction
+Traceback (most recent call last):
+  File "/usr/bin/dnf", line 58, in <module>
+    main.user_main(sys.argv[1:], exit_code=True)
+  File "/usr/lib/python3.5/site-packages/dnf/cli/main.py", line 179, in
+user_main
+    errcode = main(args)
+  File "/usr/lib/python3.5/site-packages/dnf/cli/main.py", line 64, in main
+    return _main(base, args, cli_class, option_parser_class)
+  File "/usr/lib/python3.5/site-packages/dnf/cli/main.py", line 99, in _main
+    return cli_run(cli, base)
+  File "/usr/lib/python3.5/site-packages/dnf/cli/main.py", line 123, in cli_run
+    ret = resolving(cli, base)
+  File "/usr/lib/python3.5/site-packages/dnf/cli/main.py", line 154, in
+resolving
+    base.do_transaction(display=displays)
+  File "/usr/lib/python3.5/site-packages/dnf/cli/cli.py", line 238, in
+do_transaction
+    super(BaseCli, self).do_transaction(display)
+  File "/usr/lib/python3.5/site-packages/dnf/base.py", line 734, in
+do_transaction
+    self._run_transaction(cb=cb)
+  File "/usr/lib/python3.5/site-packages/dnf/base.py", line 782, in
+_run_transaction
+    lastdbv = self.history.last()
+  File "/usr/lib/python3.5/site-packages/dnf/yum/history.py", line 1319, in
+last
+    ret = self.old([], 1, complete_transactions_only)
+  File "/usr/lib/python3.5/site-packages/dnf/yum/history.py", line 1268, in old
+    executeSQL(cur, sql, params)
+  File "/usr/lib/python3.5/site-packages/dnf/yum/sqlutils.py", line 167, in
+executeSQLQmark
+    return cursor.execute(query)
+sqlite3.DatabaseError: database disk image is malformed
+-- snip --
+
+Signed-Off-by: Jagadeesh Krishnanjanappa <jkrishnanjanappa@mvista.com>
+
+--- sqlite-autoconf-3200000_org/shell.c	2019-07-19 16:40:36.670115026 +0530
++++ sqlite-autoconf-3200000/shell.c	2019-07-19 12:23:46.489617741 +0530
+@@ -862,9 +862,9 @@ typedef sqlite3_uint64 u64;
+ # if defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
+      defined(__x86_64) || defined(__x86_64__) || defined(_M_X64)  ||    \
+      defined(_M_AMD64) || defined(_M_ARM)     || defined(__x86)   ||    \
+-     defined(__arm__)
++     (defined(__arm__) && ! defined(__ARMEB__))
+ #   define SHA3_BYTEORDER    1234
+-# elif defined(sparc)    || defined(__ppc__)
++# elif defined(sparc)    || defined(__ppc__) || defined(__ARMEB__)
+ #   define SHA3_BYTEORDER    4321
+ # else
+ #   define SHA3_BYTEORDER 0
+--- sqlite-autoconf-3200000_org/sqlite3.c	2017-08-01 19:24:32.000000000 +0530
++++ sqlite-autoconf-3200000/sqlite3.c	2019-07-19 16:42:51.681361056 +0530
+@@ -12850,9 +12850,9 @@ typedef INT16_TYPE LogEst;
+ # if defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
+      defined(__x86_64) || defined(__x86_64__) || defined(_M_X64)  ||    \
+      defined(_M_AMD64) || defined(_M_ARM)     || defined(__x86)   ||    \
+-     defined(__arm__)
++     (defined(__arm__) && ! defined(__ARMEB__))
+ #   define SQLITE_BYTEORDER    1234
+-# elif defined(sparc)    || defined(__ppc__)
++# elif defined(sparc)    || defined(__ppc__) || defined(__ARMEB__)
+ #   define SQLITE_BYTEORDER    4321
+ # else
+ #   define SQLITE_BYTEORDER 0

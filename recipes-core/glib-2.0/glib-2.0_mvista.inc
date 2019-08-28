@@ -6,3 +6,4 @@ do_install_ptest_base_append_class-target () {
     rm -f ${D}${libexecdir}/installed-tests/glib/*.la
     rm -f ${D}${libexecdir}/installed-tests/glib/modules/*.la
 }
+PACKAGECONFIG[selinux] = "-Dselinux=enabled,-Dselinux=disabled,libselinux,"

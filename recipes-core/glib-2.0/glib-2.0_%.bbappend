@@ -1,4 +1,7 @@
-PR .= ".2"
+PR .= ".3"
+
+inherit multilib-alternatives
+MULTILIB_ALTERNATIVES_${PN}-utils = "${bindir}/gtester-report"
 
 # Remove .la files from common area. Seems to be not needed
 # for running tests.

@@ -1,1 +1,0 @@
-libexecdir="${libdir}/${BPN}"

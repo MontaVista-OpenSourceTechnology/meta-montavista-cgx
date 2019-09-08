@@ -131,8 +131,6 @@ RDEPENDS_packagegroup-oe-graphics = " \
 	libxkbfile \
 	libxres  \ 
 	libxvmc \ 
-	libxxf86dga \ 
-	libxxf86misc \
 	mkfontdir \ 
 	mkfontscale \ 
 	matchbox-desktop \
@@ -149,6 +147,9 @@ RDEPENDS_packagegroup-oe-graphics = " \
 	xvinfo  \ 
 	libxpm \
 "
+# No longer in oe
+#	libxxf86misc 
+#	libxxf86dga 
 
 RDEPENDS_packagegroup-oe-webserver = " \
 "

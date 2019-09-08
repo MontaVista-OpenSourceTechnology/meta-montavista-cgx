@@ -50,7 +50,7 @@ RDEPENDS_packagegroups-oe-mailserver_append = " \
 "
 
 RDEPENDS_packagegroup-oe-security_append = " \
-	ipsec-tools \
+	strongswan \
 "
 
 RDEPENDS_packagegroup-oe-netprotocol-utilities = " \

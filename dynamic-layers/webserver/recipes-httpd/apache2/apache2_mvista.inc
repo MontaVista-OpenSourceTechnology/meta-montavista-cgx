@@ -1,6 +1,6 @@
 PR .= ".2"
 
-do_install_append () {
+do_install_append_class-target () {
     mv ${D}${sysconfdir}/init.d/apache2 ${D}${sysconfdir}/apache2/apache2
     cat << EOF > ${D}${sysconfdir}/init.d/apache2
 #! /bin/sh

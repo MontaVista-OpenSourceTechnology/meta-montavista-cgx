@@ -9,9 +9,9 @@ SRC_URI += " \
            file://arm_testcases_fix.patch \
            file://ignore_invalid_regnum_in_DW_CFA_offset_extended.patch \
            file://libunwind_fix_other_test_cases_for_AARCH64_ILP32.patch \
-	   file://add_attribute_used_to_retain_static_variable.patch \
-	   file://Add-known-failures-into-XFAILS.patch \
-	   file://run-ptest \
+	       file://add_attribute_used_to_retain_static_variable.patch \
+           file://Add-known-failures-into-XFAILS.patch \
+	       file://run-ptest \
           "
 
 LEAD_SONAME = "libunwind"

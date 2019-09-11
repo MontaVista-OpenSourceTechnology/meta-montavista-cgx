@@ -1,18 +1,19 @@
-diff -Naurp git_org/src/dwarf/Gparser.c git/src/dwarf/Gparser.c
---- git_org/src/dwarf/Gparser.c	2015-07-29 10:56:55.128196739 +0530
-+++ git/src/dwarf/Gparser.c	2015-07-29 11:00:29.932571185 +0530
-@@ -157,10 +157,18 @@ run_cfi_program (struct dwarf_cursor *c,
+diff --git a/src/dwarf/Gparser.c b/src/dwarf/Gparser.c
+index 7d255ae..34cb14d 100644
+--- a/src/dwarf/Gparser.c
++++ b/src/dwarf/Gparser.c
+@@ -189,10 +189,18 @@ run_cfi_program (struct dwarf_cursor *c, dwarf_state_record_t *sr,
            break;
  
          case DW_CFA_offset_extended:
 -          if (((ret = read_regnum (as, a, addr, &regnum, arg)) < 0)
 -              || ((ret = dwarf_read_uleb128 (as, a, addr, &val, arg)) < 0))
-+	  if ((ret = dwarf_read_uleb128 (as, a, addr, &val, arg)) < 0)    
-             goto fail;
++	      if ((ret = dwarf_read_uleb128 (as, a, addr, &val, arg)) < 0)    
+             break;
 -          set_reg (sr, regnum, DWARF_WHERE_CFAREL, val * dci->data_align);
 +          regnum = val;
 +          if ((ret = dwarf_read_uleb128 (as, a, addr, &val, arg)) < 0)
-+            goto fail;
++            break;
 +          /* If the register number is invalid then ignore it,
 +           * but continue anyway. */
 +          if (regnum >= DWARF_NUM_PRESERVED_REGS)

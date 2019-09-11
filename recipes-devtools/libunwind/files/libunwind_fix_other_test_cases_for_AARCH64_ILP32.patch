@@ -1,7 +1,8 @@
-diff -Naurp git_org/src/aarch64/Gcreate_addr_space.c git/src/aarch64/Gcreate_addr_space.c
---- git_org/src/aarch64/Gcreate_addr_space.c	2015-07-29 11:07:24.653294124 +0530
-+++ git/src/aarch64/Gcreate_addr_space.c	2015-07-29 11:07:39.061319242 +0530
-@@ -50,10 +50,12 @@ unw_create_addr_space (unw_accessors_t *
+diff --git a/src/aarch64/Gcreate_addr_space.c b/src/aarch64/Gcreate_addr_space.c
+index f217adc..4bb1b7d 100644
+--- a/src/aarch64/Gcreate_addr_space.c
++++ b/src/aarch64/Gcreate_addr_space.c
+@@ -50,10 +50,12 @@ unw_create_addr_space (unw_accessors_t *a, int byte_order)
    as->acc = *a;
  
    /* Default to little-endian for AArch64. */
@@ -17,10 +18,11 @@ diff -Naurp git_org/src/aarch64/Gcreate_addr_space.c git/src/aarch64/Gcreate_add
  
    return as;
  #endif
-diff -Naurp git_org/src/aarch64/Gget_proc_info.c git/src/aarch64/Gget_proc_info.c
---- git_org/src/aarch64/Gget_proc_info.c	2015-07-29 11:07:24.653294124 +0530
-+++ git/src/aarch64/Gget_proc_info.c	2015-07-29 11:07:39.061319242 +0530
-@@ -30,9 +30,20 @@ unw_get_proc_info (unw_cursor_t *cursor,
+diff --git a/src/aarch64/Gget_proc_info.c b/src/aarch64/Gget_proc_info.c
+index c363d24..bfc6bc6 100644
+--- a/src/aarch64/Gget_proc_info.c
++++ b/src/aarch64/Gget_proc_info.c
+@@ -30,9 +30,20 @@ unw_get_proc_info (unw_cursor_t *cursor, unw_proc_info_t *pi)
    struct cursor *c = (struct cursor *) cursor;
    int ret;
  
@@ -42,10 +44,11 @@ diff -Naurp git_org/src/aarch64/Gget_proc_info.c git/src/aarch64/Gget_proc_info.
  
    *pi = c->dwarf.pi;
    return 0;
-diff -Naurp git_org/src/coredump/_UCD_internal.h git/src/coredump/_UCD_internal.h
---- git_org/src/coredump/_UCD_internal.h	2015-07-29 11:07:24.649294117 +0530
-+++ git/src/coredump/_UCD_internal.h	2015-07-29 11:07:39.061319242 +0530
-@@ -75,13 +75,74 @@ struct coredump_phdr
+diff --git a/src/coredump/_UCD_internal.h b/src/coredump/_UCD_internal.h
+index 21ed1c3..b8e9f32 100644
+--- a/src/coredump/_UCD_internal.h
++++ b/src/coredump/_UCD_internal.h
+@@ -110,13 +110,74 @@ struct coredump_phdr
  typedef struct coredump_phdr coredump_phdr_t;
  
  #if defined(HAVE_STRUCT_ELF_PRSTATUS)
@@ -120,52 +123,11 @@ diff -Naurp git_org/src/coredump/_UCD_internal.h git/src/coredump/_UCD_internal.
  struct UCD_info
    {
      int big_endian;  /* bool */
-diff -Naurp git_org/src/ptrace/_UPT_access_mem.c git/src/ptrace/_UPT_access_mem.c
---- git_org/src/ptrace/_UPT_access_mem.c	2015-07-29 11:07:24.653294124 +0530
-+++ git/src/ptrace/_UPT_access_mem.c	2015-07-29 11:13:03.757885247 +0530
-@@ -57,22 +57,36 @@ _UPT_access_mem (unw_addr_space_t as, un
- #ifdef HAVE_TTRACE
- #       warning No support for ttrace() yet.
- #else
--#ifdef __mips__ && _MIPS_SIM == _ABIN32
-+#if ((defined (__mips__)) && (_MIPS_SIM == _ABIN32)) || \
-+    ((defined(__aarch64__)) && (!defined(__LP64__)))
-       unw_word_t val2;
-       *val = ptrace (PTRACE_PEEKDATA, pid, addr, 0);
-       if (errno)
-         return -UNW_EINVAL;
-+
-+#if (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
-       *val <<=32;
-+#else
-+      *val = 0x00000000ffffffff & (*val);
-+#endif /* (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) */
-+
-       val2 = ptrace (PTRACE_PEEKDATA, pid, addr+4, 0);
-       if (errno)
-         return -UNW_EINVAL;
-+
-+#if (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)      
-       val2 = 0x00000000ffffffff & val2 ;
-+#else
-+      val2 <<=32;
-+#endif /* (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) */
-       *val = *val | val2;
-+
- #else
-       *val = ptrace (PTRACE_PEEKDATA, pid, addr, 0);
-       if (errno)
-         return -UNW_EINVAL;
--#endif /* __mips__ && _MIPS_SIM == _ABIN32 */
-+#endif /* ((defined (__mips__)) && (_MIPS_SIM == _ABIN32)) || \
-+          ((defined(__aarch64__)) && (!defined(__LP64__))) */
- #endif
-       Debug (16, "mem[%lx] -> %lx\n", (long) addr, (long) *val);
-     }
-diff -Naurp git_org/src/ptrace/_UPT_access_reg.c git/src/ptrace/_UPT_access_reg.c
---- git_org/src/ptrace/_UPT_access_reg.c	2015-07-29 11:07:24.653294124 +0530
-+++ git/src/ptrace/_UPT_access_reg.c	2015-07-29 11:07:39.061319242 +0530
-@@ -33,6 +33,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DE
+diff --git a/src/ptrace/_UPT_access_reg.c b/src/ptrace/_UPT_access_reg.c
+index ce25c78..1ecf167 100644
+--- a/src/ptrace/_UPT_access_reg.c
++++ b/src/ptrace/_UPT_access_reg.c
+@@ -33,6 +33,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
  # endif
  # include "tdep-ia64/rse.h"
  #endif
@@ -173,9 +135,9 @@ diff -Naurp git_org/src/ptrace/_UPT_access_reg.c git/src/ptrace/_UPT_access_reg.
 +#include <asm/ptrace.h>
 +#endif /* defined(__aarch64__) */
  
- #if HAVE_DECL_PTRACE_POKEUSER || HAVE_TTRACE
- int
-@@ -245,7 +248,26 @@ _UPT_access_reg (unw_addr_space_t as, un
+ #if HAVE_DECL_PTRACE_SETREGSET
+ #include <sys/uio.h>
+@@ -288,7 +291,26 @@ _UPT_access_reg (unw_addr_space_t as, unw_regnum_t reg, unw_word_t *val,
      Debug(16, "ptrace PEEKUSER pid: %lu , reg: %lu , offs: %lu\n", (unsigned long)pid, (unsigned long)reg,
          (unsigned long)_UPT_reg_offset[reg]);
  #endif
@@ -202,21 +164,3 @@ diff -Naurp git_org/src/ptrace/_UPT_access_reg.c git/src/ptrace/_UPT_access_reg.
    }
    if (errno) {
  #if UNW_DEBUG
-diff -Naurp git_org/tests/test-coredump-unwind.c git/tests/test-coredump-unwind.c
---- git_org/tests/test-coredump-unwind.c	2015-07-29 11:07:24.653294124 +0530
-+++ git/tests/test-coredump-unwind.c	2015-07-29 11:07:39.061319242 +0530
-@@ -314,7 +314,14 @@ main(int argc UNUSED, char **argv)
-   while (*argv)
-     {
-       char *colon;
-+      /* If strings contain addresses >= 0x80000000, then
-+         strtol returns LONG_MAX with errno set to ERANGE.
-+         In order to take care of such addresses use strtoll */
-+#if defined(__aarch64__) && !defined(__LP64__)
-+      long vaddr = strtoll(*argv, &colon, 16);
-+#else
-       long vaddr = strtol(*argv, &colon, 16);
-+#endif /* defined(__aarch64__) && !defined(__LP64__) */
-       if (*colon != ':')
-         error_msg_and_die("Bad format: '%s'", *argv);
-       if (_UCD_add_backing_file_at_vaddr(ui, vaddr, colon + 1) < 0)

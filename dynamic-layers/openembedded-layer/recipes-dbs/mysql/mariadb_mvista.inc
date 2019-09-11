@@ -6,7 +6,7 @@ SRC_URI_append_riscv = " file://0001-libmysql-Do-not-export-_fini-_init-on-risc-
 
 inherit multilib_script multilib_header
 
-MULTILIB_SCRIPTS = "${PN}-client:${bindir}/mysqlbug \
+MULTILIB_SCRIPTS = " \
                     ${PN}-server:${bindir}/mysqld_safe \
                     libmysqlclient-dev:${bindir}/mysql_config"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"

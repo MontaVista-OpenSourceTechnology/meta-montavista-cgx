@@ -14,8 +14,7 @@ EOF
 }
 
 inherit multilib_script multilib_header
-MULTILIB_SCRIPTS = "${PN}:${sbindir}/envvars \
-                    ${PN}:${sbindir}/envvars-std \
+MULTILIB_SCRIPTS = " \
                     ${PN}:${sysconfdir}/apache2/httpd.conf \
                     ${PN}:${datadir}/apache2/build/config.nice \
                     ${PN}:${datadir}/apache2/build/config_vars.mk \

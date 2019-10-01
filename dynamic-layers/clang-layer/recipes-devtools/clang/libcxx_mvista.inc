@@ -25,3 +25,4 @@ PACKAGES_remove_powerpc64 = "libunwind"
 PROVIDES_remove_aarchilp32 = "libunwind"
 PROVIDES_remove_armv6 = "libunwind"
 
+TUNE_CCARGS_remove = "--rtlib=compiler-rt"

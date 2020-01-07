@@ -8,7 +8,8 @@ inherit multilib_script multilib_header
 
 MULTILIB_SCRIPTS = " \
                     ${PN}-server:${bindir}/mysqld_safe \
-                    libmysqlclient-dev:${bindir}/mysql_config"
+                    libmysqlclient-dev:${bindir}/mysql_config \
+                    ${PN}-server:${bindir}/mysql_install_db"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 FILES_${PN} += "${localstatedir}/lib/mysql"
@@ -18,4 +19,5 @@ do_install_append () {
    mkdir -p ${D}${localstatedir}/lib/mysql
    chown mysql.mysql ${D}${localstatedir}/lib/mysql
    oe_multilib_header mysql/my_config.h mysql/private/config.h
+   oe_multilib_header mysql/server/my_config.h mysql/server/private/config.h mysql/mariadb_version.h
 } 

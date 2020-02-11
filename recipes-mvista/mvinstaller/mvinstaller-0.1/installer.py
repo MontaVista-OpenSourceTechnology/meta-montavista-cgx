@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
 #    mvinstaller - Installer tool for MV Linux
 #    Copyright (C) 2014  MontaVista Software, LLC
@@ -50,7 +50,7 @@ def uuid_to_dev(uuid):
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (out, err) = p.communicate()
     if (p.returncode):
-        print "Error converting %s to a device: %s" % (uuid, err)
+        print("Error converting %s to a device: %s" % (uuid, err))
         raise InstallerException()
     (dev, rest) = out.split(":", 1)
     return dev
@@ -64,7 +64,7 @@ def find_base_devices(dev):
     if (dev.startswith("UUID=")):
         dev = uuid_to_dev(dev)
     elif not dev.startswith("/dev/"):
-        print "Error: device %s doesn't start with /dev/" % dev
+        print("Error: device %s doesn't start with /dev/" % dev)
         raise InstallerException()
 
     base = dev[5:]
@@ -91,7 +91,7 @@ def find_base_devices(dev):
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (out, err) = v.communicate()
         if (v.returncode != 0):
-            print "Error: pvs command returned: " + err
+            print("Error: pvs command returned: " + err)
             raise InstallerException()
         lines = out.split("\n")
         for l in lines:
@@ -106,9 +106,9 @@ def find_base_devices(dev):
     elif (base.startswith("sd") or base.startswith("hd")):
         subdevs = [ "/dev/" + base[0:3], ]
     else:
-        print ("Error: Device %s is not understood by this installer.  It can"
-               % dev)
-        print "handle /dev/md..., /dev/[hs]d..., and /dev/mapper/..."
+        print(("Error: Device %s is not understood by this installer.  It can"
+               % dev))
+        print("handle /dev/md..., /dev/[hs]d..., and /dev/mapper/...")
         raise InstallerException()
 
     return subdevs
@@ -262,7 +262,7 @@ class Installer:
 
     def clean_vgs(self):
         for v in self.get_vgs():
-            print "Removing volume group " + v
+            print("Removing volume group " + v)
             _call_lvmcmd("vgremove", ["--force", v])
             pass
         return
@@ -289,7 +289,7 @@ class Installer:
         for i in self.smounts:
             self.unmount(i)
             pass
-        keys = self.mounts.keys()
+        keys = list(self.mounts.keys())
         keys.sort(reverse=True)
         for k in keys:
             self.unmount(k)
@@ -320,7 +320,7 @@ class Installer:
 
     def mount_all(self):
         """Mount all mount points in self.mounts, and smounts"""
-        keys = self.mounts.keys()
+        keys = list(self.mounts.keys())
         keys.sort()
         for k in keys:
             m = self.mounts[k]
@@ -341,9 +341,9 @@ class Installer:
         elif "/" in self.mounts:
             mp = "/"
         else:
-            print ("Error: Could not find /boot or / in the mounts, cannot"
-                   + " find boot")
-            print "devices."
+            print(("Error: Could not find /boot or / in the mounts, cannot"
+                   + " find boot"))
+            print("devices.")
             raise InstallerException()
 
         devs = find_base_devices(self.mounts[mp]["dev"])
@@ -399,19 +399,19 @@ class Installer:
         fstab.close()
 
         if ("/" not in m):
-            print "ERROR: / is not in the fstab, please redo the partitions and"
-            print "add / as a mount point"
+            print("ERROR: / is not in the fstab, please redo the partitions and")
+            print("add / as a mount point")
             raise InstallerException()
         
         if (not efi_system and "/boot" not in m):
-            print "WARNING: /boot is not in the fstab. This is not an error,"
-            print " but it is generally recommended that /boot be on a"
-            print " separate partition."
+            print("WARNING: /boot is not in the fstab. This is not an error,")
+            print(" but it is generally recommended that /boot be on a")
+            print(" separate partition.")
             pass
 
         if (efi_system and "/boot/efi" not in m):
-            print "ERROR: This is an EFI system, /boot/efi must be a VFAT"
-            print " partition of 200MB."
+            print("ERROR: This is an EFI system, /boot/efi must be a VFAT")
+            print(" partition of 200MB.")
             raise InstallerException()
 
         self.mounts = m
@@ -513,7 +513,7 @@ echo "terminal_output serial"
         systems grub configuration
         """
         if (not self.mounts):
-            print "You must first partition your system before installing"
+            print("You must first partition your system before installing")
             raise InstallerException()
 
         # We unmount /dev around the untar because we want the devices
@@ -535,11 +535,11 @@ echo "terminal_output serial"
             pass
         tar.wait()
         errfd.close()
-        print ""
+        print("")
         self.mount("/dev", "none", "tmpfs")
         self.copy_dev()
         if (tar.returncode != 0):
-            print "Errors processing the tar archive:"
+            print("Errors processing the tar archive:")
             subprocess.call(("cat", "/tmp/tar-error"))
             return
 
@@ -630,20 +630,20 @@ echo "terminal_output serial"
         """
         self.unmount_all()
         if (not root):
-            print "Enter the device holding the root partition.  Options are:"
+            print("Enter the device holding the root partition.  Options are:")
             for d in self.alldevs:
-                print "  " + d
+                print("  " + d)
                 pass
-            d = raw_input("Please enter the device: ").strip()
+            d = input("Please enter the device: ").strip()
             if (d not in self.alldevs):
-                print "%s is not in the list, please enter a valid device" % d
+                print("%s is not in the list, please enter a valid device" % d)
                 raise InstallerException()
             root = d
             pass
 
         rc = self.mount("/", root)
         if (rc != 0):
-            print "Unable to mount %s" % root
+            print("Unable to mount %s" % root)
             raise InstallerException()
 
         rc = subprocess.call(("cp", self.mpref + "/etc/fstab", "/tmp/fstab"))
@@ -651,7 +651,7 @@ echo "terminal_output serial"
                          "/tmp/mdadm.conf"))
         self.unmount("/")
         if (rc != 0):
-            print "No /etc/fstab on %s, not a valid root partition" % root
+            print("No /etc/fstab on %s, not a valid root partition" % root)
             raise InstallerException()
         self.installed = True
         self.reread_fstab()
@@ -689,19 +689,19 @@ echo "terminal_output serial"
 
         sys.stdout.write("Boot devices for this system appear to be: "
                          + " ".join(bootdevs))
-        print
-        print "If the listed devices are correct, just press 'enter' here"
-        print "If not, enter the devices holding the /boot partition, separated by"
-        print "spaces.  This is generally the device that holds /boot, or"
-        print "if a RAID device is /boot, all the devices.  Options are:"
+        print()
+        print("If the listed devices are correct, just press 'enter' here")
+        print("If not, enter the devices holding the /boot partition, separated by")
+        print("spaces.  This is generally the device that holds /boot, or")
+        print("if a RAID device is /boot, all the devices.  Options are:")
         basedevs = self.get_base_devs()
-        print " ".join(basedevs)
-        print
+        print(" ".join(basedevs))
+        print()
 
         try:
             x = ReadlineDefVal(" ".join(bootdevs))
             readline.set_startup_hook(x.hook)
-            d = raw_input("Please press enter or enter the device(s): ").strip()
+            d = input("Please press enter or enter the device(s): ").strip()
         finally:
             readline.set_startup_hook(None)
             pass
@@ -709,8 +709,8 @@ echo "terminal_output serial"
         d = d.split()
         for i in d:
             if (i not in basedevs):
-                print ("%s is not in the list, please enter a valid device"
-                       % i)
+                print(("%s is not in the list, please enter a valid device"
+                       % i))
                 raise InstallerException()
             pass
         return d
@@ -731,7 +731,7 @@ echo "terminal_output serial"
             pass
 
         for i in bootdevs:
-            print "Installing grub on " + i
+            print("Installing grub on " + i)
             subprocess.call(("grub-install", "--root-directory=" + self.mpref,
                              i))
             pass
@@ -744,7 +744,7 @@ echo "terminal_output serial"
             subprocess.call(("chroot", self.mpref,
                              "grub-mkconfig", "-o", "/boot/grub/grub.cfg"))
         else:
-            print "***WARNING: Unable to configure grub on the target"
+            print("***WARNING: Unable to configure grub on the target")
             pass
         return
 
@@ -758,8 +758,8 @@ echo "terminal_output serial"
         """
 
         if ("/boot/efi" not in self.mounts):
-            print ("You must mount a VFAT filesystem of at least 200MB on"
-                   + " /boot/efi")
+            print(("You must mount a VFAT filesystem of at least 200MB on"
+                   + " /boot/efi"))
             raise InstallerException()
 
         # Create a grub EFI image in /boot/efi/EFI/grub
@@ -801,16 +801,16 @@ echo "terminal_output serial"
             subprocess.call(("chroot", self.mpref,
                              "efi-grub-mkconfig", "-o", "/boot/efi-grub/grub.cfg"))
         else:
-            print "***WARNING: Unable to configure grub on the target"
+            print("***WARNING: Unable to configure grub on the target")
             pass
         return
 
     def do_grub(self, bootdevs=None):
         if (not self.mounts):
-            print "You must first partition your system before adding grub"
+            print("You must first partition your system before adding grub")
             raise InstallerException()
         if (not self.installed):
-            print "You must first install your system before adding grub"
+            print("You must first install your system before adding grub")
             raise InstallerException()
 
         f = open(self.mpref + "/etc/mdadm.conf", "w")
@@ -914,8 +914,8 @@ echo "terminal_output serial"
                 if ((disksize - last_end) >= size):
                     found = True
                 else:
-                    print ("Adding partition %s size %s, no space"
-                           % (dev, size))
+                    print(("Adding partition %s size %s, no space"
+                           % (dev, size)))
                     raise InstallerException()
                 pass
             start = last_end
@@ -940,7 +940,7 @@ echo "terminal_output serial"
         while (not os.access(pdev, os.F_OK)):
             count += 1
             if (count > 10):
-                print "%s did not get created properly" % (pdev,)
+                print("%s did not get created properly" % (pdev,))
                 raise InstallerException
             time.sleep(1)
             pass
@@ -964,7 +964,7 @@ echo "terminal_output serial"
                 break
             pass
         if (dev is None):
-            print "No free MD device numbers"
+            print("No free MD device numbers")
             raise InstallerException()
             
 
@@ -1027,15 +1027,15 @@ echo "terminal_output serial"
         automatically.
         """
         if (not self.installed):
-            print ("You must first install your system before setting the "
-                   + "hostname")
+            print(("You must first install your system before setting the "
+                   + "hostname"))
             raise InstallerException()
 
         dhcpworked = True
         # First see if dhcp works
         try:
             _call_cmd(("udhcpc", "-n", "-q", "-f"))
-        except CmdErr, e:
+        except CmdErr as e:
             dhcpworked = False
             pass
         
@@ -1053,7 +1053,7 @@ echo "terminal_output serial"
             try:
                 _call_cmd(("udhcpc", "-n", "-q", "-f",
                            "-s", "/tmp/dhcp_get_hostname"))
-            except CmdErr, e:
+            except CmdErr as e:
                 gothostname = False
                 pass
             if (gothostname):
@@ -1067,18 +1067,18 @@ echo "terminal_output serial"
             
             if (not gothostname):
                 hostname = "host"
-                print ("Unable to obtain the hostname with DHCP, defaulting to "
-                       + hostname)
+                print(("Unable to obtain the hostname with DHCP, defaulting to "
+                       + hostname))
                 pass
             
             if (prompt):
-                print "Please enter the hostname"
+                print("Please enter the hostname")
                 try:
                     x = ReadlineDefVal(hostname)
                     readline.set_startup_hook(x.hook)
                     hostname = ""
                     while (hostname == ""):
-                        hostname = raw_input("hostname> ").strip()
+                        hostname = input("hostname> ").strip()
                         x.setvalue(hostname)
                         pass
                     pass
@@ -1118,20 +1118,20 @@ def def_user_installer(I):
     first disk.  Then create the RAIDs, LVMs, install the image, and run grub.
     """
 
-    print autoinstall_help
-    d = raw_input("Do you want to continue? (y/n) > ").strip()
+    print(autoinstall_help)
+    d = input("Do you want to continue? (y/n) > ").strip()
     if (d != 'y'):
         return
 
-    print autoinstall_disk_use_help
-    d = raw_input("Press appropiate key (y/n) > ").strip()
+    print(autoinstall_disk_use_help)
+    d = input("Press appropiate key (y/n) > ").strip()
     if (d != 'y') and ( d != 'n'):
         print ("Returning....");  
         return  
     
     dev_lst = I.find_devices(dev=1)
     if not dev_lst:
-        print "No scsi devices are connected" 
+        print("No scsi devices are connected") 
         return
    
     if (d  == 'y'):
@@ -1141,10 +1141,10 @@ def def_user_installer(I):
         print ("Allocating 10GB size ...\n");  
         sz_flg = 1
 
-    print "Setting up temporary fstab"
+    print("Setting up temporary fstab")
     subprocess.call(("cp", "/etc/fstab", "/tmp/fstab"))
 
-    print "Stopping all LVM and RAID devices"
+    print("Stopping all LVM and RAID devices")
     I.clean_system()
 
     basedevs = I.get_base_devs()
@@ -1168,7 +1168,7 @@ def def_user_installer(I):
     count = ""
     for d in setup_devs:
         # Create 200MB boot partition
-        print "Clearing partition table on " + d
+        print("Clearing partition table on " + d)
         I.clear_partition_table(d)
 
         sys.stdout.write("Formatting boot device on " + d + "... ")
@@ -1187,7 +1187,7 @@ def def_user_installer(I):
             d1 = I.create_partition(d, 200, "primary", dest1,
                                     fstype="ext4", mountpoint="/boot")
             pass
-        print("created " + d1)
+        print(("created " + d1))
         # Create a second partition with the rest of the disk
         sys.stdout.write("Formatting LVM device on " + d + "... ")
         sys.stdout.flush()
@@ -1199,7 +1199,7 @@ def def_user_installer(I):
         # "-1s"
         d2 = I.create_partition(d, None, "primary", dest2,
                                 location=(201, "-2s"))
-        print("created " + d2)
+        print(("created " + d2))
         devs.append((d1, d2))
         pass
 
@@ -1215,7 +1215,7 @@ def def_user_installer(I):
         sys.stdout.write("Creating RAID boot device... ")
         sys.stdout.flush()
         bootdev = I.create_raid(rdevs, "fs", "ext4", "/boot")
-        print("created " + bootdev)
+        print(("created " + bootdev))
         pass
 
     if (dest2 == "raid"):
@@ -1226,7 +1226,7 @@ def def_user_installer(I):
         sys.stdout.write("Creating RAID LVM device... ")
         sys.stdout.flush()
         lvmdev = I.create_raid(rdevs, "lvm")
-        print("created " + lvmdev)
+        print(("created " + lvmdev))
     else:
         lvmdev = devs[0][1]
         pass
@@ -1237,9 +1237,9 @@ def def_user_installer(I):
     _call_cmd(("vgchange", "-a", "n"), ignerr=True)
     
 
-    print "Creating volume group vg01"
+    print("Creating volume group vg01")
     vg = I.create_vg([lvmdev], "vg01")
-    print "Creating logical volume root"
+    print("Creating logical volume root")
     
     # Find the total memory so we can calculate swap
     memcount = 0
@@ -1248,8 +1248,8 @@ def def_user_installer(I):
                             stderr=subprocess.PIPE, close_fds=True)
     (out, err) = prog.communicate()
     if (prog.returncode != 0):
-        print "Error finding free memory: " + err
-        print "Unable to calculate memory for swap space."
+        print("Error finding free memory: " + err)
+        print("Unable to calculate memory for swap space.")
     else:
         for l in out.split("\n"):
             w = l.split()
@@ -1263,7 +1263,7 @@ def def_user_installer(I):
         pass
     sz = _call_cmd(("pvdisplay", "-C", "--noheadings", "--nosuffix", "--units", "M", lvmdev),ignerr=True) 
     if not sz:
-       print "Created volume group is not good"
+       print("Created volume group is not good")
        return       
     sz = re.sub(' +',' ',sz)
     sz = sz.strip(' ') 
@@ -1281,40 +1281,40 @@ def def_user_installer(I):
          lv_rt_sz = lv_sz   
       if (sz_flg == 0):
           if (lv_rt_sz < 10000): 
-             print "Insufficiant Space for Installtion"   
+             print("Insufficiant Space for Installtion")   
              return 
         
       if (sz_flg == 1): 
           if (lv_rt_sz >= 10000):   
              lv_rt_sz = 10000
           else:
-             print "Insufficiant Space for Installtion"   
+             print("Insufficiant Space for Installtion")   
              return 
         
 
-    print("Logical volume create for Root is %dMB" % int(lv_rt_sz))  
-    print("Logical volume create for swap is %dMB" % int(memcount * 2))  
+    print(("Logical volume create for Root is %dMB" % int(lv_rt_sz)))  
+    print(("Logical volume create for swap is %dMB" % int(memcount * 2)))  
 
     
 
     if (sz_flg == 1):
-       print "10 GB Create"
+       print("10 GB Create")
        lv = I.create_lv(vg, 10000, "root", "fs", "ext4", "/")
        if (memcount  == 0):
-            print "Not creating logical volume swap"
+            print("Not creating logical volume swap")
        else:
-            print ("Creating logical volume swap at 2 * memory size, or %dMB"
-            % (memcount))
+            print(("Creating logical volume swap at 2 * memory size, or %dMB"
+            % (memcount)))
             lv = I.create_lv(vg, memcount * 2, "swap", "swap")
           
     if (sz_flg == 0):
-        print "Allocate full disk" + str(lv_rt_sz)
+        print("Allocate full disk" + str(lv_rt_sz))
         lv = I.create_lv(vg, lv_rt_sz, "root", "fs", "ext4", "/")
         if (memcount  == 0 ):
-           print "Not creating logical volume swap"
+           print("Not creating logical volume swap")
         else:
-           print ("Creating logical volume swap at 2 * memory size, or %dMB"
-           % (memcount * 2))
+           print(("Creating logical volume swap at 2 * memory size, or %dMB"
+           % (memcount * 2)))
            lv = I.create_lv(vg, memcount * 2, "swap", "swap")
 
     if (dest1 == "raid"):
@@ -1326,21 +1326,21 @@ def def_user_installer(I):
            sys.stdout.write("\033[F") 
            time.sleep(1)
  
-    print "Mounting filesystems"
+    print("Mounting filesystems")
     I.reread_fstab()
     I.mount_all()
     I.installed = True
 
-    print "Installing filesystem image"
+    print("Installing filesystem image")
     I.install()
 
-    print "Setting up grub"
+    print("Setting up grub")
     I.do_grub(bootdevs="")
 
-    print "Setting hostname"
+    print("Setting hostname")
     I.set_hostname(prompt=False)
 
-    print "Install is complete"
+    print("Install is complete")
     return
 
 def default_installer():
@@ -1356,33 +1356,33 @@ def default_installer():
             user_installer.user_installer(I)
             # If the user installed doesn't reboot, we fall into the main
             # installer.
-        except Exception, e:
+        except Exception as e:
             (t, v, tb) = sys.exc_info()
-            print ("Unknown error from user installer: " + str(e) + "\n"
-                   + "\n".join(traceback.format_tb(tb)))
+            print(("Unknown error from user installer: " + str(e) + "\n"
+                   + "\n".join(traceback.format_tb(tb))))
             sys.exit(1)
             pass
         pass
 
-    print "Welcome to the MontaVista Installer!  This installer will allow"
-    print "you to partition your disk and install a generated MontaVista Linux"
-    print "image onto your machine."
+    print("Welcome to the MontaVista Installer!  This installer will allow")
+    print("you to partition your disk and install a generated MontaVista Linux")
+    print("image onto your machine.")
 
     menu_to_use = 0
     while (True):
         try:
             if (menu_to_use == 0):
                 if (efi_system):
-                    print "What would you like to do? (EFI system)"
+                    print("What would you like to do? (EFI system)")
                 else:
-                    print "What would you like to do?"
+                    print("What would you like to do?")
                     pass
-                print " 1 - Partition your hard drive(s)"
-                print " 2 - Install image and GRUB on the system "
-                print " 3 - Recovery sub-menu"
-                print " 5 - Auto-install"
-                print " 9 - Restart the installer"
-                print " 0 - Reboot"
+                print(" 1 - Partition your hard drive(s)")
+                print(" 2 - Install image and GRUB on the system ")
+                print(" 3 - Recovery sub-menu")
+                print(" 5 - Auto-install")
+                print(" 9 - Restart the installer")
+                print(" 0 - Reboot")
                 sys.stdout.write("Press the key then enter: ")
                 v = sys.stdin.readline()
                 try:
@@ -1410,12 +1410,12 @@ def default_installer():
                     subprocess.call(("reboot", "-f"))
                 pass
             else:
-                print " 1 - Set up from an existing root partition"
-                print " 2 - Re-install grub"
-                print " 3 - Run a shell in the installed system"
-                print " 4 - Run a shell in the CD's root directory"
-                print " 5 - Set the installed system's hostname"
-                print " 0 - Return to main menu"
+                print(" 1 - Set up from an existing root partition")
+                print(" 2 - Re-install grub")
+                print(" 3 - Run a shell in the installed system")
+                print(" 4 - Run a shell in the CD's root directory")
+                print(" 5 - Set the installed system's hostname")
+                print(" 0 - Return to main menu")
                 sys.stdout.write("Press the key then enter: ")
                 v = sys.stdin.readline()
                 try:
@@ -1447,10 +1447,10 @@ def default_installer():
         except InstallerException:
             # An error should have already been printed
             pass
-        except Exception, e:
+        except Exception as e:
             (t, v, tb) = sys.exc_info()
-            print ("Unknown error: " + str(e) + "\n"
-                   + "\n".join(traceback.format_tb(tb)))
+            print(("Unknown error: " + str(e) + "\n"
+                   + "\n".join(traceback.format_tb(tb))))
             pass
 
         pass

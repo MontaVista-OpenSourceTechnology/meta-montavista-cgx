@@ -10,9 +10,8 @@ RDEPENDS_${PN} = "parted \
 	          util-linux \
 		  e2fsprogs-mke2fs \
 		  file \
-		  python \
-		  python-curses \
-		  python-subprocess \
+		  python3 \
+		  python3-curses \
 		  util-linux \
 		  util-linux-fdisk \
                   util-linux-blkid \   
@@ -20,7 +19,7 @@ RDEPENDS_${PN} = "parted \
 		  dosfstools \
 		"
 
-inherit distutils
+inherit distutils3
 
 SRC_URI[md5sum] = "052a967fa9c523f817564a390b6d7da6"
 SRC_URI[sha256sum] = "e246de0dfa5d27e93a131a51b7adfaf9f94e39f1af4e55a6aa5085824ccd2205"

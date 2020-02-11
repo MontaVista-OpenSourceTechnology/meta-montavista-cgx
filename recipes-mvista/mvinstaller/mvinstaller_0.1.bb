@@ -10,7 +10,7 @@ PR = "r3"
 DEPENDS += "mtools"
 
 RDEPENDS_${PN} = "grub \
-		python \
+		python3 \
                 util-linux-mount \
                 util-linux-umount\
                 util-linux \

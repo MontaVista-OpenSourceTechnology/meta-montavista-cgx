@@ -20,7 +20,7 @@ RDEPENDS_packagegroup-selfhost-installer = "${PACKAGES_OF_SELFHOST_INSTALLER}"
 X86_PACKAGES_OF_SELFHOST_INSTALLER = "\
                 kernel \
                 kernel-modules \
-                python-debugger \
+                python3-debugger \
                 linux-firmware \
                 ${VIRTUAL-RUNTIME_init_manager} \
                 ${VIRTUAL-RUNTIME_initscripts} \

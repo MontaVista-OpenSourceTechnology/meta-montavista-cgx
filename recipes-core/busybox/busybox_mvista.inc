@@ -1,5 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += "file://0001-Add-save-baud-rate-patch.patch;apply=no \
+SRC_URI += " \
             file://mv.cfg \
 "
 DEPENDS += "libtirpc"

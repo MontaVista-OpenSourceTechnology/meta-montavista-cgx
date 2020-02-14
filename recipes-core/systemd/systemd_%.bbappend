@@ -1,4 +1,4 @@
-PR .= ".3"
+PR .= ".4"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI += " \
@@ -6,6 +6,8 @@ SRC_URI += " \
             file://0002-Fixed-EINVAL-in-systemd-udevd-processing-of-speed-du.patch \
             file://0001-Revert-core-don-t-load-dropin-data-multiple-times-fo.patch \
             file://CVE-2018-15688.patch\
+            file://CVE-2018-15686_dep.patch \
+            file://CVE-2018-15686.patch \
 "
 
 inherit multilib-alternatives

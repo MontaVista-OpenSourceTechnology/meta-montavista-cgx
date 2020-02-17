@@ -5,7 +5,6 @@ PR .= ".4"
 # mlib-initscripts-functions conflicts at cgx-complete-image:do_populate_sdk
 
 do_install_append () {
-    mv ${D}${sysconfdir}/init.d/functions ${D}${sysconfdir}/init.d/functions.${PN}
     sed -i 's:touch /var/log/lastlog: \
 if [ "\${ROOT_DIR}" == "/" ] ; then \
 	touch /var/log/lastlog \
@@ -16,6 +15,12 @@ if [ "\${ROOT_DIR}" == "/" ] ; then \
 	test ! -x /sbin/restorecon || /sbin/restorecon -R /var/volatile/ \
 fi:' ${D}${sysconfdir}/init.d/populate-volatile.sh
 }
+PACKAGE_PREPROCESS_FUNCS += " move_functions "
+
+move_functions () {
+    mv ${PKGD}${sysconfdir}/init.d/functions ${PKGD}${sysconfdir}/init.d/functions.${PN}
+}
+
 def get_priority(d):
           pnMult = d.getVar("PN", True)
           bpnMult = d.getVar("BPN", True)
@@ -26,7 +31,7 @@ def get_priority(d):
 
 ALTERNATIVE_PRIORITY="${@get_priority(d)}"
 
-pkg_postinst_ontarget_${PN} () {
+pkg_postinst_${PN}-functions () {
 #!/bin/sh
     update-alternatives --install ${sysconfdir}/init.d/functions functions functions.${PN}  ${ALTERNATIVE_PRIORITY}
 }

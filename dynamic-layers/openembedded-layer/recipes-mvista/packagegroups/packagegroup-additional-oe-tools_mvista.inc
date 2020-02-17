@@ -58,7 +58,7 @@ RDEPENDS_packagegroup-oe-hotplugutilities_append = " \
 "
 
 RDEPENDS_packagegroups-oe-logmanagement_append = " \
-	syslog-ng \
+	${VIRTUAL-RUNTIME_syslog} \
 "
 
 RDEPENDS_packagegroups-oe-mailclient_append = " \

@@ -12,7 +12,7 @@ CRYPTDISKS_ENABLE="Yes"
 # Sanity check #1
 [ -x /sbin/cryptsetup ] || exit 0
 
-. /lib/lsb/init-functions
+. /etc/init.d/functions
 . /lib/cryptsetup/init-functions
 
 if [ -r /etc/default/cryptdisks ]; then

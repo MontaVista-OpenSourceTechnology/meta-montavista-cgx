@@ -39,10 +39,13 @@ sqlite3.DatabaseError: database disk image is malformed
 -- snip --
 
 Signed-Off-by: Jagadeesh Krishnanjanappa <jkrishnanjanappa@mvista.com>
+Signed-off-by: Rohit Raj <rohitr@mvista.com>
 
---- sqlite-autoconf-3200000_org/shell.c	2019-07-19 16:40:36.670115026 +0530
-+++ sqlite-autoconf-3200000/shell.c	2019-07-19 12:23:46.489617741 +0530
-@@ -862,9 +862,9 @@ typedef sqlite3_uint64 u64;
+diff --git a/shell.c b/shell.c
+index 4e3d397..3d9b1c1 100644
+--- a/shell.c
++++ b/shell.c
+@@ -1360,9 +1360,9 @@ SQLITE_EXTENSION_INIT1
  # if defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
       defined(__x86_64) || defined(__x86_64__) || defined(_M_X64)  ||    \
       defined(_M_AMD64) || defined(_M_ARM)     || defined(__x86)   ||    \
@@ -54,17 +57,19 @@ Signed-Off-by: Jagadeesh Krishnanjanappa <jkrishnanjanappa@mvista.com>
  #   define SHA3_BYTEORDER    4321
  # else
  #   define SHA3_BYTEORDER 0
---- sqlite-autoconf-3200000_org/sqlite3.c	2017-08-01 19:24:32.000000000 +0530
-+++ sqlite-autoconf-3200000/sqlite3.c	2019-07-19 16:42:51.681361056 +0530
-@@ -12850,9 +12850,9 @@ typedef INT16_TYPE LogEst;
- # if defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
-      defined(__x86_64) || defined(__x86_64__) || defined(_M_X64)  ||    \
-      defined(_M_AMD64) || defined(_M_ARM)     || defined(__x86)   ||    \
--     defined(__arm__)
-+     (defined(__arm__) && ! defined(__ARMEB__))
- #   define SQLITE_BYTEORDER    1234
--# elif defined(sparc)    || defined(__ppc__)
+diff --git a/sqlite3.c b/sqlite3.c
+index 55dc686..c6dbcc4 100644
+--- a/sqlite3.c
++++ b/sqlite3.c
+@@ -186467,9 +186467,9 @@ struct RtreeMatchArg {
+ #if defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
+     defined(__x86_64) || defined(__x86_64__) || defined(_M_X64)  ||    \
+     defined(_M_AMD64) || defined(_M_ARM)     || defined(__x86)   ||    \
+-    defined(__arm__)
++    (defined(__arm__) && ! defined(__ARMEB__))
+ # define SQLITE_BYTEORDER    1234
+-#elif defined(sparc)    || defined(__ppc__)
 +# elif defined(sparc)    || defined(__ppc__) || defined(__ARMEB__)
- #   define SQLITE_BYTEORDER    4321
- # else
- #   define SQLITE_BYTEORDER 0
+ # define SQLITE_BYTEORDER    4321
+ #else
+ # define SQLITE_BYTEORDER    0     /* 0 means "unknown at compile-time" */

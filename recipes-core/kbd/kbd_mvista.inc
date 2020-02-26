@@ -1,6 +1,7 @@
 PR .= ".2"
 
 EXTRA_OECONF += " --datadir=${datadir}/${PN}"
+#Moving datadir to causes differences in manpages
 EXTRA_OECONF_append += "--mandir=${datadir}/${PN}/man"
 
 FILES_${PN}-consolefonts += "${datadir}/${PN}/consolefonts"

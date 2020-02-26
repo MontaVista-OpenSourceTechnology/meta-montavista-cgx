@@ -1,5 +1,3 @@
 PR .= ".1"
-MULTILIB_SCRIPTS += "${PN}:${bindir}/afmtodit ${PN}:${bindir}/gropdf ${PN}:${bindir}/chem"
-EXTRA_OECONF_append += "--mandir=${datadir}/${PN}/man --docdir=${datadir}/doc/${PN}-${PV}/"
-EXTRA_OEMAKE_class-target += "dataprogramdir='${datadir}/${PN}/'"
-FILES_${PN} += "${datadir}/${PN}"
+#encodes libdir in manpage
+EXTRA_OECONF_append += "--mandir=${datadir}/man/${PN}"

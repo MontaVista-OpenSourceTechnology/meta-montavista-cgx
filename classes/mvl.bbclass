@@ -202,9 +202,6 @@ def appendKernelCfgFiles(d):
         appendedcfgfiles += "file://" + iter + " "
     return appendedcfgfiles
 
-PERLLIBDIRS_class-target = "${libdir}/perl"
-PERLLIBDIRS_class-native = "${libdir}/perl-native"
-
 PACKAGE_PREPROCESS_FUNCS_prepend += " get_fileperms "
 PACKAGEBUILDPKGD_append += " fixup_stripped_perms "
 PACKAGEFILEPERMS = "${WORKDIR}/dir.perms ${WORKDIR}/file.perms"

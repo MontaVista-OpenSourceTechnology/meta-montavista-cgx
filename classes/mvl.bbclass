@@ -72,9 +72,10 @@ def get_kernel_config_env(d):
     preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX',True)
     prefix_len = len(preconfigure_prefix)
     startswith_var = preconfigure_prefix + 'CONFIG_'
+    ignore_vars = { 'KERNEL_CONFIG_BUILD', 'KERNEL_CONFIG_COMMAND' }
     new_var = []
     for var in d.keys():
-        if var.startswith(startswith_var) and var != "KERNEL_CONFIG_COMMAND":
+        if var.startswith(startswith_var) and var not in ignore_vars:
             val = d.getVar(var,True)
             new_var += [var + "=" + val]
     new_var.sort()
@@ -91,9 +92,10 @@ python do_kernel_postconfigure() {
         preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX', True)
         prefix_len = len(preconfigure_prefix)
         startswith_var = preconfigure_prefix + 'CONFIG_'
+        ignore_vars = { 'KERNEL_CONFIG_BUILD', 'KERNEL_CONFIG_COMMAND' }
         new_vars = {}
         for var in d.keys():
-            if var.startswith(startswith_var) and var != 'KERNEL_CONFIG_BUILD':
+            if var.startswith(startswith_var) and var not in ignore_vars:
                 val = d.getVar(var,True)
                 bb.debug(2, 'config: %s=%s' % (var, val))
                 var = var[prefix_len:]
@@ -154,7 +156,7 @@ python do_kernel_postconfigure() {
 }
 
 kernel_reconfigure () {
-   eval ${KERNEL_CONFIG_COMMAND}
+   ${KERNEL_CONFIG_COMMAND}
 }
 
 do_make_scripts[depends] += "openssl-native:do_populate_sysroot"

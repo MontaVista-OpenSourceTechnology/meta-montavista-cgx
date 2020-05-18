@@ -18,6 +18,6 @@ do_install_append () {
    chmod 4755 ${D}${bindir}/mysqld_safe_helper
    mkdir -p ${D}${localstatedir}/lib/mysql
    chown mysql.mysql ${D}${localstatedir}/lib/mysql
-   oe_multilib_header mysql/my_config.h mysql/private/config.h
+   oe_multilib_header mysql/my_config.h
    oe_multilib_header mysql/server/my_config.h mysql/server/private/config.h mysql/mariadb_version.h
 } 

@@ -5,4 +5,4 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 
 DEFAULT_SDK ?= "cgx-complete-image"
-do_build[depends] = "${DEFAULT_SDK}:do_populate_sdk"
+do_build[depends] = "${DEFAULT_SDK}:do_populate_sdk ${DEFAULT_SDK}:do_build"

@@ -28,7 +28,7 @@ installer_image_preprocess () {
 
 #IMAGE_FEATURES += "self-host-installer"
 
-IMAGE_INSTALL += "packagegroup-selfhost-installer"
+IMAGE_INSTALL += "packagegroup-selfhost-installer packagegroup-selfhost-installer-defaultimage"
 
 export IMAGE_BASENAME = "installer-image"
 IMAGE_LINGUAS = ""

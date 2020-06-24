@@ -6,4 +6,3 @@ GDBSERVER_riscv64 = "gdbserver"
 RDEPENDS_packagegroup-self-hosted-debug_remove = "${GDBSERVER}"
 RDEPENDS_packagegroup-self-hosted-graphics_remove = "epiphany"
 
-RDEPENDS_packagegroup-self-hosted += "packagegroup-selfhost-installer-defaultimage"

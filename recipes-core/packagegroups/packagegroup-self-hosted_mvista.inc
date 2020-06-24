@@ -3,4 +3,3 @@ RDEPENDS_packagegroup-self-hosted-sdk += "packagegroup-core-standalone-sdk-targe
 
 RDEPENDS_packagegroup-self-hosted-graphics_remove = "epiphany"
 
-RDEPENDS_packagegroup-self-hosted += "packagegroup-selfhost-installer-defaultimage"

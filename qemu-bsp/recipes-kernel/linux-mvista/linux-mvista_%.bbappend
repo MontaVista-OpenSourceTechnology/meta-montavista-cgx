@@ -1,1 +1,10 @@
-SRC_URI_remove_qemuall = "file://defconfig"
+SRC_URI_remove_qemuarm64 = "file://defconfig"
+SRC_URI_remove_qemuarm = "file://defconfig"
+SRC_URI_remove_qemuarmhfp = "file://defconfig"
+SRC_URI_remove_qemumips64 = "file://defconfig"
+SRC_URI_remove_qemumips64nfp = "file://defconfig"
+SRC_URI_remove_qemumips = "file://defconfig"
+SRC_URI_remove_qemuppc = "file://defconfig"
+SRC_URI_remove_qemux86-64 = "file://defconfig"
+SRC_URI_remove_qemux86 = "file://defconfig"
+

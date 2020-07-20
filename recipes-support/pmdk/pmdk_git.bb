@@ -18,8 +18,9 @@ SRC_URI = "git://github.com/pmem/pmdk.git; \
 
 S = "${WORKDIR}/git/"
 PV = "1.4+git${SRCPV}"
-PR = "r1"
 
+# Make files have races.
+PARALLEL_MAKE = ""
 inherit autotools-brokensep pkgconfig
 
 export GIT_SSL_NO_VERIFY="true"

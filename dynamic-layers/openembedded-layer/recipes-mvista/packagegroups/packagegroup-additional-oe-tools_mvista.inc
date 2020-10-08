@@ -45,9 +45,8 @@ RDEPENDS_packagegroup-oe-database-utilities_append = " \
 "
 
 RDEPENDS_packagegroup-oe-filesystemutilities_append = " \
+    python3-cpuset
 "
-# FIXME: removed in python2 purge
-#	python-cpuset 
 
 RDEPENDS_packagegroup-oe-virtualization_append = " \
 	lua \

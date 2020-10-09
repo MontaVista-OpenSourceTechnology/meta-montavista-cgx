@@ -45,7 +45,7 @@ RDEPENDS_packagegroup-oe-database-utilities_append = " \
 "
 
 RDEPENDS_packagegroup-oe-filesystemutilities_append = " \
-    python3-cpuset
+    python3-cpuset \
 "
 
 RDEPENDS_packagegroup-oe-virtualization_append = " \

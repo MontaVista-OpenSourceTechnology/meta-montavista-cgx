@@ -1,0 +1,29 @@
+From a333a875e2c9771e499062fe31933b7e4ff0104b Mon Sep 17 00:00:00 2001
+From: neeraj dadhwal <ndadhwal@mvista.com>
+Date: Thu, 22 Oct 2020 09:50:33 +0000
+Subject: [PATCH] lttng-module: Compilation Fix
+
+Upstream status: backport
+https://git.yoctoproject.org/cgit.cgi/poky/plain/meta/recipes-kernel/lttng/lttng-modules/0008-fix-writeback-Fix-sync-livelock-due-to-b_dirty_time-.patch
+
+signed-off:: Neeraj dadhwal <ndadhwal@mvista.com>
+---
+ instrumentation/events/lttng-module/writeback.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/instrumentation/events/lttng-module/writeback.h b/instrumentation/events/lttng-module/writeback.h
+index c472b33..4d6692e 100644
+--- a/instrumentation/events/lttng-module/writeback.h
++++ b/instrumentation/events/lttng-module/writeback.h
+@@ -371,7 +371,7 @@ LTTNG_TRACEPOINT_EVENT_WBC_INSTANCE(wbc_balance_dirty_wait, writeback_wbc_balanc
+ #endif
+ LTTNG_TRACEPOINT_EVENT_WBC_INSTANCE(wbc_writepage, writeback_wbc_writepage)
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,1,0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0))
+ LTTNG_TRACEPOINT_EVENT(writeback_queue_io,
+ 	TP_PROTO(struct bdi_writeback *wb,
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,2,0))
+-- 
+2.18.2
+

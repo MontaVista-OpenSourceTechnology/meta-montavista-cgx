@@ -38,8 +38,9 @@ RDEPENDS_packagegroups-oe-networkmanagement_append = " \
 	lksctp-tools \
 	vlan \
 	iscsi-initiator-utils \
-	traceroute \
 "
+# FIXME: not building
+#	traceroute 
 
 RDEPENDS_packagegroups-oe-ftpserver_append = " \
 	proftpd \

@@ -1,0 +1,35 @@
+From f31ecbb7a9bd6476cde543b76e247518b53b0518 Mon Sep 17 00:00:00 2001
+From: Jeremy Puhlman <jpuhlman@mvista.com>
+Date: Fri, 13 Nov 2020 15:00:04 +0000
+Subject: [PATCH] Make header variables extern
+
+Fix duplicated variable on link:
+ld: oldmem.o:/usr/src/debug/kdump-elftool/1.4.0-r0/build/../kdump-elftool-1.4.0/kdump-elftool.h:69: multiple definition of `osrelease'; kdump-elftool.o:/usr/src/debug/kdump-elftool/1.4.0-r0/build/../kdump-elftool-1.4.0/kdump-elftool.h:69: first defined here
+
+Upstream-Statue: Pending
+
+Signed-off-by: Jeremy Puhlman <jpuhlman@mvista.com>
+---
+ kdump-elftool.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/kdump-elftool.h b/kdump-elftool.h
+index 577a3a9..9b50f23 100644
+--- a/kdump-elftool.h
++++ b/kdump-elftool.h
+@@ -79,9 +79,9 @@ int copy_elf_notes(struct elfc *out, struct elfc *in,
+ /*
+  * Extracted information about which OS version we are running.
+  */
+-char *osrelease;
+-int os_major_release;
+-int os_minor_release;
++extern char *osrelease;
++extern int os_major_release;
++extern int os_minor_release;
+ 
+ /*
+  * Scan the vmcoreinfo in the notes looking for values.  A value
+-- 
+2.28.0
+

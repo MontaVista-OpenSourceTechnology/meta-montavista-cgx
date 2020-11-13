@@ -15,6 +15,7 @@ SRC_URI = "\
         file://0001-Fix-ARM64-kernel-address-physical-offset.patch \
         file://elf-kdump \
         file://elf-kdump.conf \
+        file://0001-Make-header-variables-extern.patch \
 "
 SRC_URI[md5sum] = "b620bf6dc68bd7d0f54ad534102bd74c"
 SRC_URI[sha256sum] = "3843e1c74fccb6c0a6cf94b5e5d78e2a3b11c3e7ee13a6ecd8c8ca966ccaa79a"

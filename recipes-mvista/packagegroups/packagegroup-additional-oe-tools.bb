@@ -99,8 +99,8 @@ RDEPENDS_packagegroups-oe-networkmanagement = " \
 	libcap-ng \
 	ethtool \
 	net-tools \
-	dhcp-client \
-	dhcp-server \
+	dhcpcd \
+	kea \
 "
 RDEPENDS_packagegroups-oe-logmanagement = " \
 	consolekit \

@@ -8,10 +8,11 @@ inherit multilib_script multilib_header
 
 MULTILIB_SCRIPTS = " \
                     ${PN}-server:${bindir}/mysqld_safe \
+                    ${PN}-server:${bindir}/mariadbd-safe \
                     libmysqlclient-dev:${bindir}/mysql_config \
+                    ${PN}-server:${bindir}/mariadb-install-db \
                     ${PN}-server:${bindir}/mysql_install_db"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-
 FILES_${PN} += "${localstatedir}/lib/mysql"
 do_install_append () {
    chown mysql.mysql ${D}${bindir}/mysqld_safe_helper

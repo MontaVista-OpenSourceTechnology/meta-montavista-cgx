@@ -58,11 +58,11 @@ MSD_REVISION ?= "${MSD_VERSION}"
 OE_TERMINAL_EXPORTS += "MVL_SDK_PREFIX PATH"
 
 
-CORE_IMAGE_BASE_INSTALL_mvista-cgx = '\
-    ${@bb.utils.contains("IMAGE_FEATURES", "busyboxless", "packagegroup-core-boot-busyboxless", "packagegroup-core-boot", d)} \
-    packagegroup-base-extended \
-    ${CORE_IMAGE_EXTRA_INSTALL} \
-'
+#CORE_IMAGE_BASE_INSTALL_mvista-cgx = '\
+#    ${@bb.utils.contains("IMAGE_FEATURES", "busyboxless", "packagegroup-core-boot-busyboxless", "packagegroup-core-boot", d)} \
+#    packagegroup-base-extended \
+#    ${CORE_IMAGE_EXTRA_INSTALL} \
+#'
 
 
 PRECONFIGURE_PREFIX ?= "KERNEL_"

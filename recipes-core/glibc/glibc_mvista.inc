@@ -1,11 +1,5 @@
 do_install_append_class-target () {
       mv ${D}${bindir}/ldd ${D}${bindir}/ldd.${PN}
-      for LDLINK in ${D}${base_libdir}/ld-*; do
-          if [ -h $LDLINK -a ! -e ${D}/lib/$(basename $LDLINK) ] ; then
-             mkdir -p ${D}/lib
-             ln -s ..${base_libdir}/$(basename $(readlink $LDLINK)) ${D}/lib/$(basename $LDLINK)
-          fi
-      done
 }
 FILES_${PN} += "/lib/ld-*"
 FILES_ldd += "${bindir}/ldd.${PN}"

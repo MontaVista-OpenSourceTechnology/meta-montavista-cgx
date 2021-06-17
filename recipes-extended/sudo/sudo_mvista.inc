@@ -1,2 +1,2 @@
 libexecdir="${libdir}/${BPN}"
-sysconfdir="/ect/${PN}"
+sysconfdir="/etc/${PN}"

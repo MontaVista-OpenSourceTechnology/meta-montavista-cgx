@@ -9,7 +9,7 @@ SAVE_DISTRO_NAME := "${DISTRO_NAME}"
 include conf/distro/lmp.conf
 DISTRO := "${SAVE_DISTRO}"
 DISTRO_NAME := "${SAVE_DISTRO_NAME}"
-OVERRIDES_append = ":lmp:lmp-base"
+OVERRIDES_append = ":lmp"
 
 IMAGE_BOOT_FILES_rpi_prepend = "bootfiles/* "
 

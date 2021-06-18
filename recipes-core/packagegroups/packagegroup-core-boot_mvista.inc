@@ -20,7 +20,7 @@ RDEPENDS_${PN}-busyboxless = "\
     dpkg-start-stop \
     sed \
     gawk \
-    sysklogd \
+    ${VIRTUAL-RUNTIME_syslog} \
     diffutils \
     coreutils \
     grep \

@@ -72,7 +72,7 @@ def get_kernel_config_env(d):
     preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX',True)
     prefix_len = len(preconfigure_prefix)
     startswith_var = preconfigure_prefix + 'CONFIG_'
-    ignore_vars = { 'KERNEL_CONFIG_BUILD', 'KERNEL_CONFIG_COMMAND' }
+    ignore_vars = { 'KERNEL_CONFIG_BUILD', 'KERNEL_CONFIG_COMMAND', 'KERNEL_CONFIG_LINK_NAME', 'KERNEL_CONFIG_NAME' }
     new_var = []
     for var in d.keys():
         if var.startswith(startswith_var) and var not in ignore_vars:

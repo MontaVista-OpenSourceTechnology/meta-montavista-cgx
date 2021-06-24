@@ -16,3 +16,4 @@ IMAGE_BOOT_FILES_rpi_prepend = "bootfiles/* "
 ERROR_QA_remove = "installed-vs-shipped"
 
 PR_pn-mvl-support = "3.2.0"
+IMAGE_GROUPS=""

@@ -95,4 +95,4 @@ python do_write_qemuboot_conf () {
 addhandler packagegroupimage_virtclass_handler
 
 EXCLUDE_FROM_WORLD = ""
-SKIP_IMAGES="core-image-minimal-initramfs build-appliance-image core-image-rt-sdk core-image-rt"
+SKIP_IMAGES="build-appliance-image core-image-rt-sdk core-image-rt"

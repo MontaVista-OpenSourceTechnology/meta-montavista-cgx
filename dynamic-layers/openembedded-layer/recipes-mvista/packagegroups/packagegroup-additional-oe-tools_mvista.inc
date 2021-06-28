@@ -13,7 +13,10 @@ RDEPENDS_packagegroup-oe-console-utilities_append = " \
 	libol \
 	smartmontools \
 	vim \
-	cdrkit \
+	icedax \
+	wodim \
+	genisoimage \
+	dirsplit \
 	postgresql \
 	postgresql-client \
 	postgresql-timezone \

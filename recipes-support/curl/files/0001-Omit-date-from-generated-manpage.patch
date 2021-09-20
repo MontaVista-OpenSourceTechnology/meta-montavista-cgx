@@ -1,0 +1,26 @@
+From 67660fab8e8d758856a4c601e53c4ebed1c79227 Mon Sep 17 00:00:00 2001
+From: "Jeremy A. Puhlman" <jpuhlman@mvista.com>
+Date: Mon, 20 Sep 2021 22:36:26 +0000
+Subject: [PATCH] Omit date from generated manpage
+
+Upstream-Status: Inappropriate, custom issues
+---
+ docs/libcurl/mksymbolsmanpage.pl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/docs/libcurl/mksymbolsmanpage.pl b/docs/libcurl/mksymbolsmanpage.pl
+index 8ae202e..ffca4b9 100755
+--- a/docs/libcurl/mksymbolsmanpage.pl
++++ b/docs/libcurl/mksymbolsmanpage.pl
+@@ -49,7 +49,7 @@ print <<HEADER
+ .\\" * KIND, either express or implied.
+ .\\" *
+ .\\" **************************************************************************
+-.TH libcurl-symbols 3 "$date" "libcurl $version" "libcurl symbols"
++.TH libcurl-symbols 3 "libcurl $version" "libcurl symbols"
+ .SH NAME
+ libcurl-symbols \\- libcurl symbol version information
+ .SH "libcurl symbols"
+-- 
+2.18.2
+

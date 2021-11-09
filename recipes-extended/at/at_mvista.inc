@@ -8,10 +8,10 @@ EXTRA_OECONF += "--with-daemon_username=atd \
                 "
 inherit useradd
 USERADD_PACKAGES = "${PN}"
-USERADD_PARAM_${PN} = "--system --home ${localstatedir}/spool/at --no-create-home \
+USERADD_PARAM:${PN} = "--system --home ${localstatedir}/spool/at --no-create-home \
                        --user-group atd"
 
-do_install_append () {
+do_install:append () {
     chown atd:atd ${D}${localstatedir}/spool/at/jobs
     chown atd:atd ${D}${localstatedir}/spool/at/spool
     chown atd:atd ${D}${localstatedir}/spool/at/jobs/.SEQ

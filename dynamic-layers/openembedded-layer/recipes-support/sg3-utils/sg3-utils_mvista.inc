@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 DEPENDS += "udev"
 
@@ -9,7 +9,7 @@ SRC_URI += " \
 
 PR .= ".1"
 
-do_install_append() {
+do_install:append() {
        install -d ${D}${base_libdir}/udev/rules.d/
        install -m 0644 ${WORKDIR}/55-scsi-sg3_id.rules ${D}${base_libdir}/udev/rules.d/
        install -m 0644 ${WORKDIR}/58-scsi-sg3_symlink.rules ${D}${base_libdir}/udev/rules.d/
@@ -18,4 +18,4 @@ do_install_append() {
 PACKAGES =+ "${PN}-udev"
 PROVIDES += "${PN}-udev"
 
-FILES_${PN}-udev = "${base_libdir}/udev/rules.d/"
+FILES:${PN}-udev = "${base_libdir}/udev/rules.d/"

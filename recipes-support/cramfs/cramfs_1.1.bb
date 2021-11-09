@@ -17,7 +17,7 @@ EXTRA_OEMAKE = "\
     'LDFLAGS=${LDFLAGS}' \
 "
 
-do_compile_prepend() {
+do_compile:prepend() {
     ln -sf GNUmakefile Makefile
 }
 

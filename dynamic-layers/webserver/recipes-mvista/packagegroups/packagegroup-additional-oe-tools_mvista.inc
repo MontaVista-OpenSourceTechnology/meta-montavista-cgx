@@ -1,6 +1,6 @@
-DEPENDS_append += "rsyslog nginx"
+DEPENDS:append += "rsyslog nginx"
 
 VIRTUAL-RUNTIME_webserver ?= "apache2"
-RDEPENDS_packagegroup-oe-webserver_append = " \
+RDEPENDS:packagegroup-oe-webserver:append = " \
 	${VIRTUAL-RUNTIME_webserver} \
 "

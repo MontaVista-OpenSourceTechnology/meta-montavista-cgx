@@ -6,23 +6,23 @@ LIBVIRT=" \
         libvirt-dev \
 "
 # FIXME libvirt depends on qemu which does not build on mips64
-LIBVIRT_qemumips64 = ""
-LIBVIRT_qemumips64nfp = ""
+LIBVIRT:qemumips64 = ""
+LIBVIRT:qemumips64nfp = ""
 
-RDEPENDS_packagegroup-oe-virtualization_append = " \
+RDEPENDS:packagegroup-oe-virtualization:append = " \
 	${LIBVIRT} \
 "
 
-RDEPENDS_packagegroup-oe-console-utilities_append = " \
+RDEPENDS:packagegroup-oe-console-utilities:append = " \
 	autofs \
 "
 
-RDEPENDS_packagegroups-oe-ftpclient_append = " \
+RDEPENDS:packagegroups-oe-ftpclient:append = " \
         netkit-ftp \
         lftp \
 "
 
-RDEPENDS_packagegroups-oe-networkmanagement_append = " \
+RDEPENDS:packagegroups-oe-networkmanagement:append = " \
 	sntp \
 	radvd \
 	tunctl \
@@ -42,18 +42,18 @@ RDEPENDS_packagegroups-oe-networkmanagement_append = " \
 # FIXME: not building
 #	traceroute 
 
-RDEPENDS_packagegroups-oe-ftpserver_append = " \
+RDEPENDS:packagegroups-oe-ftpserver:append = " \
 	proftpd \
 "
 
-RDEPENDS_packagegroups-oe-mailserver_append = " \
+RDEPENDS:packagegroups-oe-mailserver:append = " \
 	postfix \
 "
 
-RDEPENDS_packagegroup-oe-security_append = " \
+RDEPENDS:packagegroup-oe-security:append = " \
 	strongswan \
 "
 
-RDEPENDS_packagegroup-oe-netprotocol-utilities = " \
+RDEPENDS:packagegroup-oe-netprotocol-utilities = " \
 	ptpd \
 "

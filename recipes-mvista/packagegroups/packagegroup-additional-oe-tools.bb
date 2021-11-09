@@ -35,7 +35,7 @@ PACKAGES = "\
         packagegroup-oe-extra-dev-libraries \
 	"
 
-RDEPENDS_packagegroup-additional-oe-tools = "\
+RDEPENDS:packagegroup-additional-oe-tools = "\
 	packagegroup-oe-filesystemutilities \
 	packagegroup-oe-hotplugutilities \
 	packagegroup-oe-wirelessutilities \
@@ -59,22 +59,22 @@ RDEPENDS_packagegroup-additional-oe-tools = "\
         packagegroup-oe-extra-dev-libraries \
 	"
 
-RDEPENDS_packagegroup-oe-filesystemutilities = "\
+RDEPENDS:packagegroup-oe-filesystemutilities = "\
 	squashfs-tools \
 	cramfs \
 "
 
-RDEPENDS_packagegroup-oe-hotplugutilities = "\
+RDEPENDS:packagegroup-oe-hotplugutilities = "\
 	usbutils \
 "
 
-RDEPENDS_packagegroup-oe-wirelessutilities = "\
+RDEPENDS:packagegroup-oe-wirelessutilities = "\
 	irda-utils \
 "
 PREFERRED_PROVIDER_libunwind_toolchain-gcc = "libunwind"
 PREFERRED_PROVIDER_libunwind ??= "libunwind"
-RRECOMMENDS_packagegroup-oe-console-utilities = "linux-firmware"
-RDEPENDS_packagegroup-oe-console-utilities = " \
+RRECOMMENDS:packagegroup-oe-console-utilities = "linux-firmware"
+RDEPENDS:packagegroup-oe-console-utilities = " \
 	console-tools \
 	cups \
 	dosfstools \
@@ -94,7 +94,7 @@ RDEPENDS_packagegroup-oe-console-utilities = " \
 	u-boot-mkimage \
 "
 
-RDEPENDS_packagegroups-oe-networkmanagement = " \
+RDEPENDS:packagegroups-oe-networkmanagement = " \
 	gnupg \
 	libcap-ng \
 	ethtool \
@@ -102,25 +102,25 @@ RDEPENDS_packagegroups-oe-networkmanagement = " \
 	dhcpcd \
 	kea \
 "
-RDEPENDS_packagegroups-oe-logmanagement = " \
+RDEPENDS:packagegroups-oe-logmanagement = " \
 	consolekit \
 	pam-plugin-ck-connector \
 "
 
-RDEPENDS_packagegroup-core-ssh-openssh = " \
+RDEPENDS:packagegroup-core-ssh-openssh = " \
 "
 
-RDEPENDS_packagegroups-oe-ftpserver = " \
+RDEPENDS:packagegroups-oe-ftpserver = " \
 "
-RDEPENDS_packagegroups-oe-ftpclient = " \
-"
-
-RDEPENDS_packagegroups-oe-mailclient = " \
-"
-RDEPENDS_packagegroups-oe-mailserver = " \
+RDEPENDS:packagegroups-oe-ftpclient = " \
 "
 
-RDEPENDS_packagegroup-oe-graphics = " \
+RDEPENDS:packagegroups-oe-mailclient = " \
+"
+RDEPENDS:packagegroups-oe-mailserver = " \
+"
+
+RDEPENDS:packagegroup-oe-graphics = " \
 	encodings \
 	font-util \
  	libdmx \
@@ -151,14 +151,14 @@ RDEPENDS_packagegroup-oe-graphics = " \
 #	libxxf86misc 
 #	libxxf86dga 
 
-RDEPENDS_packagegroup-oe-webserver = " \
+RDEPENDS:packagegroup-oe-webserver = " \
 "
 
-RDEPENDS_packagegroup-oe-console-utils += "${X86_PACKAGES_OE_CONSOLE_UTILS}"
+RDEPENDS:packagegroup-oe-console-utils += "${X86_PACKAGES_OE_CONSOLE_UTILS}"
 
 X86_PACKAGES_OE_CONSOLE_UTILS = ""
 
-X86_PACKAGES_OE_CONSOLE_UTILS_x86-64 = " \
+X86_PACKAGES_OE_CONSOLE_UTILS:x86-64 = " \
 	grub \
 	ruby \
 	nasm \
@@ -172,7 +172,7 @@ X86_PACKAGES_OE_CONSOLE_UTILS_i686 = " \
 	gnu-efi \
 "
 
-RDEPENDS_packagegroup-oe-security = " \
+RDEPENDS:packagegroup-oe-security = " \
 	pinentry \
 	wireshark \
 	tshark \
@@ -180,30 +180,30 @@ RDEPENDS_packagegroup-oe-security = " \
 
 KDUMP="kdump-elftool"
 KDUMP_riscv = ""
-KDUMP_riscv64 = ""
+KDUMP:riscv64 = ""
 
 GDB_KDUMP_HELPERS ?= "gdb-kdump-helpers"
 GDB_KDUMP_HELPERS_riscv = ""
-GDB_KDUMP_HELPERS_riscv64 = ""
+GDB_KDUMP_HELPERS:riscv64 = ""
 
-RDEPENDS_packagegroup-oe-debug = " \
+RDEPENDS:packagegroup-oe-debug = " \
 	${GDB_KDUMP_HELPERS} \
 	${PREFERRED_PROVIDER_libunwind} \
 	${KDUMP} \
 "
 
-RDEPENDS_packagegroup-oe-test-tools = " \
+RDEPENDS:packagegroup-oe-test-tools = " \
         rt-tests \
 "
 
-RDEPENDS_packagegroup-oe-extra-dev-libraries = " \
+RDEPENDS:packagegroup-oe-extra-dev-libraries = " \
 "
-RDEPENDS_packagegroup-oe-virtualization = " \
+RDEPENDS:packagegroup-oe-virtualization = " \
 "
 
-RDEPENDS_packagegroup-core-tools-profile = " \
+RDEPENDS:packagegroup-core-tools-profile = " \
 "
-RDEPENDS_packagegroup-oe-database-utilities = " \
+RDEPENDS:packagegroup-oe-database-utilities = " \
 "
-RDEPENDS_packagegroup-oe-netprotocol-utilities = " \
+RDEPENDS:packagegroup-oe-netprotocol-utilities = " \
 "

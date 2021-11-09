@@ -26,9 +26,9 @@ inherit update-rc.d
 
 INITSCRIPT_PACKAGES = "elf-kdump"
 INITSCRIPT_NAME = "elf-kdump"
-INITSCRIPT_PARAMS_elf-kdump = "start 56 2 3 4 5 . stop 56 0 1 6 ."
+INITSCRIPT_PARAMS:elf-kdump = "start 56 2 3 4 5 . stop 56 0 1 6 ."
 
-do_install_append() {
+do_install:append() {
 	install -d ${D}${sysconfdir}/init.d
 	install -m 0755 ${WORKDIR}/elf-kdump ${D}${sysconfdir}/init.d/elf-kdump
 	install -d ${D}${sysconfdir}/sysconfig
@@ -37,17 +37,17 @@ do_install_append() {
 
 PACKAGES += "elf-kdump"
 
-FILES_${PN} = "${bindir}/kdump-elftool"
-FILES_elf-kdump = "${sysconfdir}/init.d/elf-kdump \
+FILES:${PN} = "${bindir}/kdump-elftool"
+FILES:elf-kdump = "${sysconfdir}/init.d/elf-kdump \
                  ${sysconfdir}/sysconfig/elf-kdump.conf"
 
-RDEPENDS_elf-kdump = "gzip kexec"
+RDEPENDS:elf-kdump = "gzip kexec"
 
-RRECOMMENDS_${PN} = "elf-kdump"
+RRECOMMENDS:${PN} = "elf-kdump"
 
 # You can't have this and do kdump dumps at the same time, it will
 # screw things up, the "kdump" package will reboot the system in the
 # kdump kernel because it can't take a dump.
-RCONFLICTS_elf-kdump = "kdump"
+RCONFLICTS:elf-kdump = "kdump"
 
 BBCLASSEXTEND += "native"

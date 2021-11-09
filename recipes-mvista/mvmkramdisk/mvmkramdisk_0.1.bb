@@ -10,7 +10,7 @@ HOMEPAGE="http://www.mvista.com"
 # for other tools.  kernel-dev gets the System.map required for depmod
 # to work.  (depmod is in util-linux).  ldd requires bash, unfortunately,
 # and does not list this in its RDEPENDS.
-RDEPENDS_${PN} = "busybox \
+RDEPENDS:${PN} = "busybox \
 		  util-linux \
 		  util-linux-mount \
 		  util-linux-umount \
@@ -21,11 +21,11 @@ RDEPENDS_${PN} = "busybox \
 		  cpio \
 		  bash \
 		 "
-RDEPENDS_${PN}_append_i386 = " grub"
-RDEPENDS_${PN}_append_x86_64 = " grub"
+RDEPENDS:${PN}:append_i386 = " grub"
+RDEPENDS:${PN}:append:x86_64 = " grub"
 
 # Skip dev-packages rdependency test.
-INSANE_SKIP_${PN} = "dev-deps"
+INSANE_SKIP:${PN} = "dev-deps"
 
 PR = "r11"
 
@@ -63,8 +63,8 @@ do_install() {
 
 PACKAGES = "${PN}"
 PROVIDES = "${PACKAGES}"
-RPROVIDES_${PN} = "${PACKAGES}"
-FILES_${PN} = "/usr/sbin/mvmkramdisk /usr/sbin/mv-re-grub \
+RPROVIDES:${PN} = "${PACKAGES}"
+FILES:${PN} = "/usr/sbin/mvmkramdisk /usr/sbin/mv-re-grub \
 	      /usr/share/mvmkramdisk/init_template \
 	      /usr/share/mvmkramdisk/required_binaries \
 	      /usr/share/mvmkramdisk/required_modules \

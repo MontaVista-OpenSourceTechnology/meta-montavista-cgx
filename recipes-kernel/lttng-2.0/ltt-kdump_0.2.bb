@@ -20,4 +20,4 @@ do_install() {
 	install -m 0644 ${S}/LICENSE ${D}${GDB_MACRODIR}
 }
 
-FILES_${PN} = "${GDB_MACRODIR}"
+FILES:${PN} = "${GDB_MACRODIR}"

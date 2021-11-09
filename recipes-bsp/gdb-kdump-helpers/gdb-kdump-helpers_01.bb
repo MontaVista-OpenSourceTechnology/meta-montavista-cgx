@@ -2,7 +2,7 @@ DESCRIPTION = "GDB macro for making analyzing kernel dump easy"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://../LICENSE;md5=79808397c3355f163c012616125c9e26"
 PR = "r3"
-RDEPENDS_${PN} = "gdb python3"
+RDEPENDS:${PN} = "gdb python3"
 SECTION = "devel"
 SRC_URI = "file://LICENSE file://arm-gdbinit_commit file://powerpc-gdbinit_commit file://mips-gdbinit_commit file://x86-gdbinit_commit  file://gdbinit.py"
 
@@ -22,5 +22,5 @@ do_install() {
 	install -m 0644 ${WORKDIR}/gdbinit.py ${D}/usr/share/gdb/macros/gdb-kdump-helpers/
 }
 
-FILES_${PN} = "/usr/share/gdb/macros/gdb-kdump-helpers"
+FILES:${PN} = "/usr/share/gdb/macros/gdb-kdump-helpers"
 

@@ -1,3 +1,3 @@
 PR .= ".1"
 
-RDEPENDS_${PN} += "m4"
+RDEPENDS:${PN} += "m4"

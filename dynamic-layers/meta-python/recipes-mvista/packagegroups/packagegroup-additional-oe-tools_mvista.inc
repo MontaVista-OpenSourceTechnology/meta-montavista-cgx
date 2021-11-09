@@ -1,3 +1,3 @@
-RDEPENDS_packagegroup-oe-test-tools_append = " \
+RDEPENDS:packagegroup-oe-test-tools:append = " \
 	python3-pip \
 "

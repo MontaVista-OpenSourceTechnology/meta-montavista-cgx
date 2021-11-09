@@ -3,7 +3,7 @@ INC_PR = "r1"
 
 inherit syslinux
 
-syslinux_populate_prepend () {
+syslinux_populate:prepend () {
     # install -m 0755 ${S}/boot/bzImage ${S}/boot/bzImage  
      touch  ${S}/syslinux.cfg    
      cat >> ${S}/syslinux.cfg << EOF

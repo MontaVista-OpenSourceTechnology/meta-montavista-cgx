@@ -1,3 +1,3 @@
 PR .= ".1"
 
-RRECOMMENDS_${PN}_class-target += "rng-tools"
+RRECOMMENDS:${PN}:class-target += "rng-tools"

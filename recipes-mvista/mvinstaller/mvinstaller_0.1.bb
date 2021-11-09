@@ -9,7 +9,7 @@ HOMEPAGE="http://www.mvista.com"
 PR = "r3"
 DEPENDS += "mtools"
 
-RDEPENDS_${PN} = "grub \
+RDEPENDS:${PN} = "grub \
 		python3 \
                 util-linux-mount \
                 util-linux-umount\
@@ -47,8 +47,8 @@ do_install[vardeps] += "USER_INSTALLER"
 
 PACKAGES = "${PN}"
 PROVIDES = "${PACKAGES}"
-FILES_${PN} = "/installer.py /t /etc/init.d/mktmpwrite \
+FILES:${PN} = "/installer.py /t /etc/init.d/mktmpwrite \
 	    /etc/rcS.d/S01mktmpwrite \
 	    /etc/init.d/ifuploop /etc/rcS.d/S40ifuploop \
 	    /to_install.tar.gz /usr/bin "
-FILES_${PN} += "/user_installer.py*"
+FILES:${PN} += "/user_installer.py*"

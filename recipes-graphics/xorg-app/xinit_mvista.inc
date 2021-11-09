@@ -1,6 +1,6 @@
 PR .= ".1"
 
 # Encodes libdir in manpage
-EXTRA_OECONF_append += "--mandir=${datadir}/man/${PN}"
+EXTRA_OECONF:append += "--mandir=${datadir}/man/${PN}"
 
-FILES_${PN}-doc += "${datadir}/man/${PN}"
+FILES:${PN}-doc += "${datadir}/man/${PN}"

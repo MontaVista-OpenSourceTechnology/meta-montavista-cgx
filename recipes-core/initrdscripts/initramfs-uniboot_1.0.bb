@@ -3,7 +3,7 @@ PR = "r12"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 DESCRIPTON = "A modular initramfs init script system."
-RRECOMMENDS_${PN} = "kernel-module-mtdblock"
+RRECOMMENDS:${PN} = "kernel-module-mtdblock"
 
 do_install() {
 	install -d 0755 ${D}/dev
@@ -16,7 +16,7 @@ do_install() {
 }
 
 PACKAGE_ARCH = "all"
-FILES_${PN} += " /init "
-FILES_${PN} += " /dev/ "
-FILES_${PN} += " /key.image "
+FILES:${PN} += " /init "
+FILES:${PN} += " /dev/ "
+FILES:${PN} += " /key.image "
 LICENSE="MIT"

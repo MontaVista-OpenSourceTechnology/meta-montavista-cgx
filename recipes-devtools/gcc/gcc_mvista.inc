@@ -3,7 +3,7 @@ updateMips () {
     :
 }
 
-updateMips_linux-gnun32 () {
+updateMips:linux-gnun32 () {
      cd ${B}
      cat > gcc/config/mips/t-linux64 << EOF
 
@@ -16,39 +16,39 @@ EOF
 
 EXTRACONFFUNCS += "updateMips"
 
-do_install_append () {
+do_install:append () {
      rm -f ${D}${bindir}/gcc
      rm -f ${D}${bindir}/cpp
      rm -f ${D}${bindir}/g++
 }
-ALLOW_EMPTY_cpp-symlinks = "1"
+ALLOW_EMPTY:cpp-symlinks = "1"
 ALTERNATIVE_PRIORITY='${@oe.utils.conditional("PN", d.getVar("BPN", True), "110", "100", d)}'
-pkg_postinst_gcc-symlinks () {
+pkg_postinst:gcc-symlinks () {
 #!/bin/sh
     update-alternatives --install ${bindir}/gcc gcc ${TARGET_PREFIX}gcc ${ALTERNATIVE_PRIORITY}
 }
 
-pkg_prerm_gcc-symlinks () {
+pkg_prerm:gcc-symlinks () {
 #!/bin/sh
     update-alternatives --remove gcc ${TARGET_PREFIX}gcc ${ALTERNATIVE_PRIORITY}
 }
 
-pkg_postinst_g++-symlinks () {
+pkg_postinst:g++-symlinks () {
 #!/bin/sh
     update-alternatives --install ${bindir}/g++ g++ ${TARGET_PREFIX}g++ ${ALTERNATIVE_PRIORITY}
 }
 
-pkg_prerm_g++-symlinks () {
+pkg_prerm:g++-symlinks () {
 #!/bin/sh
     update-alternatives --remove g++ ${TARGET_PREFIX}g++ ${ALTERNATIVE_PRIORITY}
 }
 
-pkg_postinst_cpp-symlinks () {
+pkg_postinst:cpp-symlinks () {
 #!/bin/sh
     update-alternatives --install ${bindir}/cpp cpp ${TARGET_PREFIX}cpp ${ALTERNATIVE_PRIORITY}
 }
 
-pkg_prerm_cpp-symlinks() {
+pkg_prerm:cpp-symlinks() {
 #!/bin/sh
     update-alternatives --remove cpp ${TARGET_PREFIX}cpp ${ALTERNATIVE_PRIORITY}
 }

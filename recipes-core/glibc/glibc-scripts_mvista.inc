@@ -1,6 +1,6 @@
-RDEPENDS_${PN} += "${VIRTUAL-RUNTIME_update-alternatives}"
+RDEPENDS:${PN} += "${VIRTUAL-RUNTIME_update-alternatives}"
 
-do_install_append_class-target () {
+do_install:append:class-target () {
        mv ${D}${bindir}/xtrace ${D}${bindir}/xtrace.${PN}
        mv ${D}${bindir}/sotruss ${D}${bindir}/sotruss.${PN}
 }
@@ -15,13 +15,13 @@ def get_priority(d):
 
 ALTERNATIVE_PRIORITY="${@get_priority(d)}"
 
-pkg_postinst_${PN} () {
+pkg_postinst:${PN} () {
 #!/bin/sh
     update-alternatives --install ${bindir}/sotruss sotruss sotruss.${PN} ${ALTERNATIVE_PRIORITY}
     update-alternatives --install ${bindir}/xtrace xtrace xtrace.${PN} ${ALTERNATIVE_PRIORITY}
 }
 
-pkg_prerm_${PN} () {
+pkg_prerm:${PN} () {
 #!/bin/sh
     update-alternatives --remove  xtrace xtrace.${PN}
     update-alternatives --remove  sotruss sotruss.${PN}

@@ -1,14 +1,14 @@
-SUMMARY_${PN}-src ?= "${SUMMARY} - Contains pristine source tar after do_patch task"
-DESCRIPTION_${PN}-src ?= "${DESCRIPTION}  \
+SUMMARY:${PN}-src ?= "${SUMMARY} - Contains pristine source tar after do_patch task"
+DESCRIPTION:${PN}-src ?= "${DESCRIPTION}  \
 This package contains pristine source at ${SRC_TAR_PATH} for package test purposes."
 
 SRC_TAR_PATH ?= "${prefix}/src/${PN}-${PV}/"
-FILES_${PN}-source = " ${SRC_TAR_PATH} "
+FILES:${PN}-source = " ${SRC_TAR_PATH} "
 
 SHIP_SOURCE_ENABLED = "1"
-SHIP_SOURCE_ENABLED_class-native = ""
-SHIP_SOURCE_ENABLED_class-nativesdk = ""
-SHIP_SOURCE_ENABLED_class-cross-canadian = ""
+SHIP_SOURCE_ENABLED:class-native = ""
+SHIP_SOURCE_ENABLED:class-nativesdk = ""
+SHIP_SOURCE_ENABLED:class-cross-canadian = ""
 
 PACKAGES =+ "${@bb.utils.contains('SHIP_SOURCE_ENABLED', '1', '${PN}-source', '', d)}"
 

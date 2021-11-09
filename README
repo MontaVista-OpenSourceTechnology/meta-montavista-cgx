@@ -103,7 +103,7 @@ This layer provides the MontaVista support for foundation/base recipes.
 The bbappend files for the recipes provided, are only enabled when the
 value 'mvista-base' is added to DISTRO_FEATURES.
 
-  DISTRO_FEATURES_append = " mvista-base "
+  DISTRO_FEATURES:append = " mvista-base "
 
 There is a sanity check warning if that value is missing. That can be disabled
 by setting:

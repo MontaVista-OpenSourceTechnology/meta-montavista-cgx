@@ -35,10 +35,10 @@ do_install() {
         install -m 644 ${S}/bootcycle.8.gz ${D}${mandir}/man8
 }
 
-FILES_${PN} += "/var/misc"
-FILES_${PN}-doc += "${datadir}/${PN}/man"
+FILES:${PN} += "/var/misc"
+FILES:${PN}-doc += "${datadir}/${PN}/man"
 
-RDEPENDS_${PN} += "bash"
+RDEPENDS:${PN} += "bash"
 
 SRC_URI[md5sum] = "a97f58c6fe00fa7a9063d823b40e9c5d"
 SRC_URI[sha256sum] = "7c15b9ab550aa842b46d8de9f64165f245edb79d79f50c325987309fcd767aee"

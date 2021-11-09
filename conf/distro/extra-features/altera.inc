@@ -9,5 +9,5 @@ PREFERRED_VERSION_u-boot-socfpga_stratix10 ?= "v2019.01"
 SPL_BINARY_stratix10 = "spl/u-boot-spl.bin"
 UBOOT_BINARY_stratix10 = "u-boot.img"
 
-IMAGE_BOOT_FILES_remove_stratix10 = "u-boot-dtb.${UBOOT_SUFFIX}"
-IMAGE_BOOT_FILES_append_stratix10 = " u-boot.${UBOOT_SUFFIX} "
+IMAGE_BOOT_FILES:remove_stratix10 = "u-boot-dtb.${UBOOT_SUFFIX}"
+IMAGE_BOOT_FILES:append_stratix10 = " u-boot.${UBOOT_SUFFIX} "

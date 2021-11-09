@@ -1,9 +1,9 @@
 PR .= ".1"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://cryptdisk_support"
 
-do_install_append () {
+do_install:append () {
 
 	# Create the /etc , supporting directories and install the files
 
@@ -68,6 +68,6 @@ do_install_append () {
 	fi
 }
 
-FILES_${PN} += "${sbindir}/* /etc/* /lib/*"
+FILES:${PN} += "${sbindir}/* /etc/* /lib/*"
 
 

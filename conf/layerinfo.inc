@@ -1,5 +1,5 @@
-BB_HASHBASE_WHITELIST_append = " PROTECTED_SOURCE_URL PERSONAL_SOURCE_MIRROR MVLFETCH_OPTS MVLFETCH "
-BB_HASHBASE_WHITELIST_append = " FETCHCMD_wget USE_MVLFETCH "
+BB_HASHBASE_WHITELIST:append = " PROTECTED_SOURCE_URL PERSONAL_SOURCE_MIRROR MVLFETCH_OPTS MVLFETCH "
+BB_HASHBASE_WHITELIST:append = " FETCHCMD_wget USE_MVLFETCH "
 
 LAYER_NAME="${@ get_layername(d.getVar("FILE",d,1),d)}"
 SOURCE_MIRROR_URL?="${@get_layermirror(d)}/"
@@ -77,4 +77,4 @@ python() {
     set_source_mirror(d)
 }
 
-PATH_prepend = "${@mvlbase_path_element(d)}"
+PATH:prepend = "${@mvlbase_path_element(d)}"

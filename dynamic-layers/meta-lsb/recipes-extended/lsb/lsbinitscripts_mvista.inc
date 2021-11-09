@@ -4,11 +4,11 @@
 #
 PR .= ".3"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += "file://avoid_invalid_msg_print_on_stderr.patch"
 
-do_install_append () {
+do_install:append () {
     # Use systemctl command to run services only when DISTRO_FEATURES
     # has systemd. Don't use it based on mounting of /sys/fs/cgroup/systemd.
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)}; then
@@ -27,7 +27,7 @@ def get_priority(d):
 
 ALTERNATIVE_PRIORITY="${@get_priority(d)}"
 
-pkg_postinst_${PN} () {
+pkg_postinst:${PN} () {
 #!/bin/sh
     update-alternatives --install ${sysconfdir}/init.d/functions functions functions.${BPN} ${ALTERNATIVE_PRIORITY}
 }

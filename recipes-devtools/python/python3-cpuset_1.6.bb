@@ -9,7 +9,7 @@ SRC_URI = "git://github.com/parttimenerd/cpuset;protocol=https;"
 
 inherit setuptools3
 
-RDEPENDS_${PN} = "\
+RDEPENDS:${PN} = "\
     python3-core \
     python3-pkg-resources \
     python3-logging \

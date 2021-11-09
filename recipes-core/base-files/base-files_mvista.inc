@@ -1,5 +1,5 @@
 PR .= ".1"
 
-do_install_append () {
+do_install:append () {
      install -d ${D}/selinux
 }

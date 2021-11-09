@@ -10,6 +10,6 @@ PACKAGES = "\
          packagegroup-profile-base \
 "
 
-RDEPENDS_packagegroup-profile-base = " \
+RDEPENDS:packagegroup-profile-base = " \
          packagegroup-additional-oe-tools \
 " 

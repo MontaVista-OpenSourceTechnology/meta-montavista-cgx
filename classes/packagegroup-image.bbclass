@@ -3,11 +3,11 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
 SUMMARY ="Image Package Group for ${PN}"
-SUMMARY_${PN}-dbg ="Image Package Group for ${PN}"
-SUMMARY_${PN}-dev ="Image Package Group for ${PN}"
-DESCRIPTION_${PN}-dbg="Image Package Group for ${PN}"
-DESCRIPTION_${PN}-dev="Image Package Group for ${PN}"
-RDEPENDS_${PN} := "${RDEPENDS}"
+SUMMARY:${PN}-dbg ="Image Package Group for ${PN}"
+SUMMARY:${PN}-dev ="Image Package Group for ${PN}"
+DESCRIPTION:${PN}-dbg="Image Package Group for ${PN}"
+DESCRIPTION:${PN}-dev="Image Package Group for ${PN}"
+RDEPENDS:${PN} := "${RDEPENDS}"
 RDEPENDS=""
 IMAGE_TYPES="ext2"
 IMAGE_GEN_DEBUGFS="0"
@@ -34,11 +34,11 @@ do_image_qa[noexec] = "1"
 
 IMAGE_FSTYPES=""
 PACKAGES="${PN}"
-RRECOMMENDS_${PN} := "${RRECOMMENDS}"
+RRECOMMENDS:${PN} := "${RRECOMMENDS}"
 RRECOMMENDS = ""
 SRC_URI=""
 
-python multilib_virtclass_handler_append() {
+python multilib_virtclass_handler:append() {
     if bb.data.inherits_class('packagegroup-image', e.data):
        e.data.setVar("MLPREFIX", variant + "-")
        override = ":virtclass-multilib-" + variant
@@ -82,13 +82,13 @@ python () {
        pn = d.getVar("PN", True)
        rprovides = variant + "-" + pn
        rprovides += " " + d.getVar("RAW_PN", True)
-       d.setVar("RPROVIDES_%s" % pn, rprovides)
+       d.setVar("RPROVIDES:%s" % pn, rprovides)
     bpn = d.getVar("BPN", True)
     skips=d.getVar("SKIP_IMAGES", True) or ""
     if bpn.replace("packagegroup-","").replace(variant + "-" , "") in set(skips.split()):
         raise bb.parse.SkipPackage("No need for this image.")
 }
-SSTATETASKS_remove = "do_image_complete do_image_qa do_populate_sdk_ext do_populate_sdk"
+SSTATETASKS:remove = "do_image_complete do_image_qa do_populate_sdk_ext do_populate_sdk"
 python do_write_qemuboot_conf () {
     return 
 }

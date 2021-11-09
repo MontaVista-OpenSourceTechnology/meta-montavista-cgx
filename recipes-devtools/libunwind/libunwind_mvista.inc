@@ -1,6 +1,6 @@
 PR .= ".3"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += " \
            file://avoid_latex2man_pdflatex_for_docs.patch \
@@ -50,5 +50,5 @@ do_install_ptest() {
 
 INHIBIT_PACKAGE_STRIP = "1"
 
-RDEPENDS_${PN}-ptest += "make bash gawk binutils"
+RDEPENDS:${PN}-ptest += "make bash gawk binutils"
 

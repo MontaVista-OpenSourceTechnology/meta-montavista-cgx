@@ -4,7 +4,7 @@
 #
 PR .= ".5"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 # Adding these files, as we may need to add 
 # few extra functions for initscripts
@@ -14,23 +14,23 @@ SRC_URI += "file://lsb_killproc \
             file://lsb_start_daemon \
             file://init-functions \
 	    "
-RDEPENDS_${PN} += " lsbinitscripts"
-RDEPENDS_${PN}_virtclass-native = ""
+RDEPENDS:${PN} += " lsbinitscripts"
+RDEPENDS:${PN}_virtclass-native = ""
 
 DEPENDS += "bash"
-RDEPENDS_${PN} += "bash"
+RDEPENDS:${PN} += "bash"
 
 do_install_virtclass-native() {
 	oe_runmake install prefix=${D}${prefix} mandir=${D}/${datadir}/man/ DESTDIR=${D}
 }
 
-do_install_append_class-target () {
+do_install:append:class-target () {
     install -d ${D}/${datadir}/${PN}
     mv ${D}/${datadir}/man ${D}/${datadir}/${PN}/
 }
 inherit multilib_script
 MULTILIB_SCRIPTS += "${PN}:${sysconfdir}/lsb-release"
 
-FILES_${PN}-doc += "${datadir}/${PN}/man"
+FILES:${PN}-doc += "${datadir}/${PN}/man"
 BBCLASSEXTEND = "native"
 

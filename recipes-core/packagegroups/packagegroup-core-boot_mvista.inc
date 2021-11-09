@@ -2,7 +2,7 @@ PR .= ".2"
 
 PACKAGES += "${PN}-busyboxless"
 
-RDEPENDS_${PN}-busyboxless = "\
+RDEPENDS:${PN}-busyboxless = "\
     base-files \
     base-passwd \
     ${@bb.utils.contains("MACHINE_FEATURES", "keyboard", "${VIRTUAL-RUNTIME_keymaps}", "", d)} \
@@ -28,7 +28,7 @@ RDEPENDS_${PN}-busyboxless = "\
     net-tools \
 "
 
-RRECOMMENDS_${PN}-busyboxless = "\
+RRECOMMENDS:${PN}-busyboxless = "\
     ${MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS}"
 
-RDEPENDS_${PN} += "${@bb.utils.contains('DISTRO_FEATURES','systemd','','cgroup-lite',d)}"
+RDEPENDS:${PN} += "${@bb.utils.contains('DISTRO_FEATURES','systemd','','cgroup-lite',d)}"

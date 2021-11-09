@@ -1,11 +1,11 @@
 OPROFILE="oprofile"
 OPROFILE_linux-gnuilp32 = ""
 #Fix Me: This should work
-OPROFILE_linux-gnun32 = ""
-OPROFILE_riscv64 = ""
+OPROFILE:linux-gnun32 = ""
+OPROFILE:riscv64 = ""
 OPROFILE_riscv = ""
 
-RDEPENDS_packagegroup-oe-console-utilities_append = " \
+RDEPENDS:packagegroup-oe-console-utilities:append = " \
 	libc-client \
 	${OPROFILE} \
 	pax-utils \
@@ -24,15 +24,15 @@ RDEPENDS_packagegroup-oe-console-utilities_append = " \
 	poco \
 "
 
-RDEPENDS_packagegroup-oe-extra-dev-libraries_append = " \
+RDEPENDS:packagegroup-oe-extra-dev-libraries:append = " \
 	${PMDK} \
 "
 
 PMDK = ""
 PMDK_i586 = ""
-PMDK_x86-64 = "pmdk"
+PMDK:x86-64 = "pmdk"
 
-RDEPENDS_packagegroups-oe-networkmanagement_append = " \
+RDEPENDS:packagegroups-oe-networkmanagement:append = " \
 	sg3-utils \
 	sg3-utils-udev \
 	openldap \
@@ -40,38 +40,38 @@ RDEPENDS_packagegroups-oe-networkmanagement_append = " \
 	tipcutils-demos \
 "
 
-RDEPENDS_packagegroup-oe-database-utilities_append = " \
+RDEPENDS:packagegroup-oe-database-utilities:append = " \
 	mariadb-setupdb \
 	mariadb-client \
 	mariadb-server \
 	libmysqlclient \
 "
 
-RDEPENDS_packagegroup-oe-filesystemutilities_append = " \
+RDEPENDS:packagegroup-oe-filesystemutilities:append = " \
     python3-cpuset \
 "
 
-RDEPENDS_packagegroup-oe-virtualization_append = " \
+RDEPENDS:packagegroup-oe-virtualization:append = " \
 	lua \
 "
 
-RDEPENDS_packagegroup-oe-hotplugutilities_append = " \
+RDEPENDS:packagegroup-oe-hotplugutilities:append = " \
 	pcmciautils \
 "
 
-RDEPENDS_packagegroups-oe-logmanagement_append = " \
+RDEPENDS:packagegroups-oe-logmanagement:append = " \
 	${VIRTUAL-RUNTIME_syslog} \
 "
 
-RDEPENDS_packagegroups-oe-mailclient_append = " \
+RDEPENDS:packagegroups-oe-mailclient:append = " \
 	mailx \
 "
 
-X86_PACKAGES_OE_CONSOLE_UTILS_append_x86-64 = " \
+X86_PACKAGES_OE_CONSOLE_UTILS:append:x86-64 = " \
 	efibootmgr \
 "
 
-RDEPENDS_packagegroup-oe-security_append = " \
+RDEPENDS:packagegroup-oe-security:append = " \
 	liblockfile \
 	lockfile-progs \
 "

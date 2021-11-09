@@ -1,6 +1,6 @@
-RDEPENDS_mtrace += "${VIRTUAL-RUNTIME_update-alternatives}"
+RDEPENDS:mtrace += "${VIRTUAL-RUNTIME_update-alternatives}"
 
-do_install_append_class-target () {
+do_install:append:class-target () {
        mv ${D}${bindir}/mtrace ${D}${bindir}/mtrace.${PN}
 }
 
@@ -14,12 +14,12 @@ def get_priority(d):
 
 ALTERNATIVE_PRIORITY="${@get_priority(d)}"
 
-pkg_postinst_${PN} () {
+pkg_postinst:${PN} () {
 #!/bin/sh
     update-alternatives --install ${bindir}/mtrace mtrace mtrace.${PN} ${ALTERNATIVE_PRIORITY}
 }
 
-pkg_prerm_${PN} () {
+pkg_prerm:${PN} () {
 #!/bin/sh
     update-alternatives --remove  mtrace mtrace.${PN}
 }

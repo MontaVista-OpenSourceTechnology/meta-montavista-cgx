@@ -1,2 +1,2 @@
 PR .= ".1"
-COMPATIBLE_MACHINE_append = "|mx8"
+COMPATIBLE_MACHINE:append = "|mx8"

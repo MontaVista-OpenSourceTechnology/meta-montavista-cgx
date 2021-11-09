@@ -93,4 +93,4 @@ split_partitions () {
         ${@get_update_fstab_cmds(d)}
         munge_fstype_fstab
 }
-IMAGE_PREPROCESS_COMMAND_append ="split_partitions;"
+IMAGE_PREPROCESS_COMMAND:append ="split_partitions;"

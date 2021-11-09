@@ -2,7 +2,7 @@
 # 
 # Features:
 #
-# * blacklist handling, set ANGSTROM_BLACKLIST_pn-blah = "message"
+# * blacklist handling, set ANGSTROM_BLACKLIST:pn-blah = "message"
 #
 
 python () {
@@ -14,7 +14,7 @@ python () {
        packageName = d.getVar("PN", True)
        mlPrefix = d.getVar("MLPREFIX", True)
        if ( packageName == mlPrefix + basePackage ):
-          blacklist = d.getVar("PN_BLACKLIST_pn-%s" % basePackage, True)
+          blacklist = d.getVar("PN_BLACKLIST:pn-%s" % basePackage, True)
 
     if blacklist:
         bb.debug(1, "%s" % (blacklist))

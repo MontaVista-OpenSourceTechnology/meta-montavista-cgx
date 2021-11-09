@@ -7,11 +7,11 @@ def get_mlprovides(provide,d) :
        rprovides = "%s %s-%s" % (rprovides, each, provide)
     return rprovides
 
-RPROVIDES_${PN}_append_class-target += "${@['','base-libgcc'][d.getVar('MLPREFIX', True) == '']}"
+RPROVIDES:${PN}:append:class-target += "${@['','base-libgcc'][d.getVar('MLPREFIX', True) == '']}"
 
-RDEPENDS_${PN}-dev_append_class-target += "${@['','base-libgcc-dev'][d.getVar('MLPREFIX', True) != '']}"
-RDEPENDS_${PN}-dev_append_class-target += "${@['',get_mlprovides('libgcc-dev', d)][d.getVar('MLPREFIX', True) == '']}"
-RDEPENDS_${PN}-dev_append__class-target += "${@['','base-libgcc'][d.getVar('MLPREFIX', True) == '']}"
+RDEPENDS:${PN}-dev:append:class-target += "${@['','base-libgcc-dev'][d.getVar('MLPREFIX', True) != '']}"
+RDEPENDS:${PN}-dev:append:class-target += "${@['',get_mlprovides('libgcc-dev', d)][d.getVar('MLPREFIX', True) == '']}"
+RDEPENDS:${PN}-dev:append_:class-target += "${@['','base-libgcc'][d.getVar('MLPREFIX', True) == '']}"
 
-RPROVIDES_${PN}-dev_append_class-target += "${@['',get_mlprovides('base-libgcc-dev', d)][d.getVar('MLPREFIX', True) == '']}"
+RPROVIDES:${PN}-dev:append:class-target += "${@['',get_mlprovides('base-libgcc-dev', d)][d.getVar('MLPREFIX', True) == '']}"
 

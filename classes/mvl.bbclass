@@ -204,8 +204,8 @@ def appendKernelCfgFiles(d):
         appendedcfgfiles += "file://" + iter + " "
     return appendedcfgfiles
 
-PACKAGE_PREPROCESS_FUNCS_prepend += " get_fileperms "
-PACKAGEBUILDPKGD_append += " fixup_stripped_perms "
+PACKAGE_PREPROCESS_FUNCS:prepend += " get_fileperms "
+PACKAGEBUILDPKGD:append += " fixup_stripped_perms "
 PACKAGEFILEPERMS = "${WORKDIR}/dir.perms ${WORKDIR}/file.perms"
 PACKAGEFILEPERMS_DISABLE ?= "0"
 
@@ -293,14 +293,14 @@ python () {
             d.setVar('INHIBIT_PACKAGE_STRIP', '1')
 }
 
-kernel_do_install_append_pn-linux-mvista () {
+kernel_do_install:append:pn-linux-mvista () {
      mkdir -p ${D}/usr/src/
      cp ${B}/.config ${STAGING_KERNEL_DIR}/
      tar -C ${STAGING_KERNEL_DIR}  --exclude='.git' -czvf ${D}/usr/src/linux.tar.gz .
      rm ${STAGING_KERNEL_DIR}/.config
 }
 
-kernel_do_deploy_append () {
+kernel_do_deploy:append () {
     if [ "${KERNEL_IMAGETYPE}" != "vmlinux" ]; then
         if [ -e vmlinux ] ; then
             BASE_NAME=$(echo "${KERNEL_IMAGE_NAME}" | cut -d - -f 2-)
@@ -327,8 +327,8 @@ kernel_do_deploy_append () {
     done
 }
 
-PACKAGES_append_pn-linux-mvista += "kernel-src"
-FILES_kernel-src_pn-linux-mvista = "/usr/src/linux.tar.gz"
+PACKAGES:append:pn-linux-mvista += "kernel-src"
+FILES:kernel-src:pn-linux-mvista = "/usr/src/linux.tar.gz"
 
 prep_copy_buildsystem () {
     mkdir -p ${SDK_OUTPUT}/${SDKPATH}/conf
@@ -345,6 +345,6 @@ prep_copy_buildsystem () {
     fi
 }
 
-python copy_buildsystem_prepend_mvista-cgx () {
+python copy_buildsystem:prepend_mvista-cgx () {
     bb.build.exec_func("prep_copy_buildsystem", d)
 }

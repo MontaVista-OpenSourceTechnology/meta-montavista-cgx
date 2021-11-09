@@ -1,8 +1,8 @@
-RDEPENDS_packagegroup-oe-security_append = " \
+RDEPENDS:packagegroup-oe-security:append = " \
 	cyrus-sasl \
 "
 
-RDEPENDS_packagegroups-oe-networkmanagement_append = " \
+RDEPENDS:packagegroups-oe-networkmanagement:append = " \
 	ntp \
 	ntpdate \
 	ntp-utils \

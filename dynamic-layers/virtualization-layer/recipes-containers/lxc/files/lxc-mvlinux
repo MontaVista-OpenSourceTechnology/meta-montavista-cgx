@@ -693,7 +693,7 @@ point 'lxc-mvlinux-cross' to the filesystem image to create a
 rootfs and container configuration.
 
 You can specify additional packages required, in your project's
-local.conf with IMAGE_INSTALL_append.  Additional customizations
+local.conf with IMAGE_INSTALL:append.  Additional customizations
 to the rootfs will need to be performed manually.
 
 A container config file <CONTAINER_NAME>.conf and a compressed

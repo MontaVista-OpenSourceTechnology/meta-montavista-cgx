@@ -17,7 +17,7 @@ inherit autotools systemd update-rc.d
 B = "${S}"
 
 SYSTEMD_PACKAGES = "${PN}"
-SYSTEMD_SERVICE_${PN} = "mv-target-daemond.service"
+SYSTEMD_SERVICE:${PN} = "mv-target-daemond.service"
 
 INITSCRIPT_NAME = "mv-target-daemond"
 INITSCRIPT_PARAMS = "defaults 90 10"
@@ -35,4 +35,4 @@ do_install () {
     fi
 }
 
-FILES_${PN} = "${sysconfdir} ${sbindir}"
+FILES:${PN} = "${sysconfdir} ${sbindir}"

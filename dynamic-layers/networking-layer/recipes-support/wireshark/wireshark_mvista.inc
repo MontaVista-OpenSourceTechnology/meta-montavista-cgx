@@ -1,3 +1,3 @@
 PR .= ".1"
 
-EXTRA_OECMAKE_remove_class-target = "-DM_LIBRARY=${libdir}"
+EXTRA_OECMAKE:remove:class-target = "-DM_LIBRARY=${libdir}"

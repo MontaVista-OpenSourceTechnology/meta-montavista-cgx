@@ -1,7 +1,7 @@
 
-LANGUAGES_append =",go"
+LANGUAGES:append =",go"
 
-do_configure_append () {
+do_configure:append () {
      sed -i config.status -e '/if\ gotools/d' -e 's,\ gotools\ ,\ ,'
      ./config.status
 }

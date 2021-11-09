@@ -4,8 +4,8 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 PR = "r2"
 DESCRIPTION = "An initramfs module for booting a filesystem image by loopback \
                mounting it."
-RDEPENDS_${PN} = "initramfs-uniboot initramfs-module-initfs"
-RRECOMMENDS_${PN} = "kernel-module-loop kernel-module-vfat"
+RDEPENDS:${PN} = "initramfs-uniboot initramfs-module-initfs"
+RRECOMMENDS:${PN} = "kernel-module-loop kernel-module-vfat"
 
 do_install() {
 	install -d ${D}/initrd.d
@@ -13,5 +13,5 @@ do_install() {
 }
 
 PACKAGE_ARCH = "all"
-FILES_${PN} += " /initrd.d/* "
+FILES:${PN} += " /initrd.d/* "
 LICENSE="MIT"

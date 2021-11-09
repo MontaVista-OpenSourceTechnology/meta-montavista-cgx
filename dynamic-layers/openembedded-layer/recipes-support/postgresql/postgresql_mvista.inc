@@ -1,8 +1,8 @@
 PR .= ".2"
 
-EXTRA_OECONF_append_riscv64 += "--disable-spinlocks"
+EXTRA_OECONF:append:riscv64 += "--disable-spinlocks"
 
-pkg_postinst_ontarget_${PN}_append () {
+pkg_postinst_ontarget:${PN}:append () {
     if [ "x$D" != "x" ] ; then
         exit 1
     else
@@ -15,9 +15,9 @@ pkg_postinst_ontarget_${PN}_append () {
 
 # Make sure postgresql server starts at all run levels
 # Character 'S' is absent in meta-oe's postgresql.inc
-INITSCRIPT_PARAMS_${PN} = "start 64 S . stop 36 0 1 2 3 4 5 6 ."
+INITSCRIPT_PARAMS:${PN} = "start 64 S . stop 36 0 1 2 3 4 5 6 ."
 
 inherit multilib_header
-do_install_append () {
+do_install:append () {
     oe_multilib_header pg_config.h pg_config_ext.h
 }

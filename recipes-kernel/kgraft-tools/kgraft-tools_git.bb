@@ -11,7 +11,7 @@ B="${S}"
 
 PV = "0.0.0+gitr${SRCPV}"
 
-RDEPENDS_${PN} = "bash"
+RDEPENDS:${PN} = "bash"
 
 do_install () {
 	install -d ${D}${bindir}

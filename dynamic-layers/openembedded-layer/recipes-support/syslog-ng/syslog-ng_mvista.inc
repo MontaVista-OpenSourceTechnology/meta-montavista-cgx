@@ -1,6 +1,6 @@
 inherit multilib_header
 
-do_install_append () {
+do_install:append () {
     oe_multilib_header syslog-ng/syslog-ng-config.h
 }
 

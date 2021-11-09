@@ -1,6 +1,6 @@
 PR .= ".2"
 
-do_install_append_class-target () {
+do_install:append:class-target () {
     mv ${D}${sysconfdir}/init.d/apache2 ${D}${sysconfdir}/apache2/apache2
     cat << EOF > ${D}${sysconfdir}/init.d/apache2
 #! /bin/sh
@@ -22,7 +22,7 @@ MULTILIB_SCRIPTS = " \
                     ${PN}:${sysconfdir}/apache2/apache2"
 MULTILIB_HEADERS = "apache2/ap_config_layout.h"
 
-FILES_${PN} += "${sysconfdir}/init.d/apache2"
+FILES:${PN} += "${sysconfdir}/init.d/apache2"
 apache_sysroot_preprocess () {
     install -d ${SYSROOT_DESTDIR}${bindir_crossscripts}/
     install -m 755 ${D}${bindir}/apxs ${SYSROOT_DESTDIR}${bindir_crossscripts}/

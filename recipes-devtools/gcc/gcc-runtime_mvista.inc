@@ -6,4 +6,4 @@ def get_mlprovides(provide,d) :
     return rprovides
 
 DEPENDS_libstdc++-dev += "${@['','base-libstdc++-dev'][d.getVar('MLPREFIX', True) != '']} ${@['',get_mlprovides('libstdc++-dev', d)][d.getVar('MLPREFIX', True) == '']}"
-RPROVIDES_libstdc++-dev += "${@['',get_mlprovides('base-libstdc++-dev', d)][d.getVar('MLPREFIX', True) == '']}"
+RPROVIDES:libstdc++-dev += "${@['',get_mlprovides('base-libstdc++-dev', d)][d.getVar('MLPREFIX', True) == '']}"

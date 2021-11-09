@@ -1,6 +1,6 @@
 USE_SYSTEMD = "1"
-DISTRO_FEATURES_append = " systemd "
-DISTRO_FEATURES_remove = "sysvinit"
+DISTRO_FEATURES:append = " systemd "
+DISTRO_FEATURES:remove = "sysvinit"
 VIRTUAL-RUNTIME_init_manager = "systemd"
 VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
 
@@ -9,10 +9,10 @@ SAVE_DISTRO_NAME := "${DISTRO_NAME}"
 include conf/distro/lmp.conf
 DISTRO := "${SAVE_DISTRO}"
 DISTRO_NAME := "${SAVE_DISTRO_NAME}"
-OVERRIDES_append = ":lmp"
+OVERRIDES:append = ":lmp"
 
-IMAGE_BOOT_FILES_rpi_prepend = "bootfiles/* "
+IMAGE_BOOT_FILES_rpi:prepend = "bootfiles/* "
 
-ERROR_QA_remove = "installed-vs-shipped"
+ERROR_QA:remove = "installed-vs-shipped"
 
-PR_pn-mvl-support = "3.4.0"
+PR:pn-mvl-support = "3.4.0"

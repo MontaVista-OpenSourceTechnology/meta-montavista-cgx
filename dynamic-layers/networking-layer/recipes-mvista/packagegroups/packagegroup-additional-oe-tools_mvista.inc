@@ -51,6 +51,8 @@ RDEPENDS_packagegroups-oe-mailserver_append = " \
 
 RDEPENDS_packagegroup-oe-security_append = " \
 	strongswan \
+        wireshark \
+	tshark \
 "
 
 RDEPENDS_packagegroup-oe-netprotocol-utilities = " \

@@ -72,3 +72,6 @@ RDEPENDS_packagegroup-oe-security_append = " \
 	liblockfile \
 	lockfile-progs \
 "
+RDEPENDS_packagegroup-oe-wirelessutilities_append = "\
+	irda-utils \
+"

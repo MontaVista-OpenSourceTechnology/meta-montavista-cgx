@@ -204,8 +204,8 @@ def appendKernelCfgFiles(d):
         appendedcfgfiles += "file://" + iter + " "
     return appendedcfgfiles
 
-PACKAGE_PREPROCESS_FUNCS:prepend += " get_fileperms "
-PACKAGEBUILDPKGD:append += " fixup_stripped_perms "
+PACKAGE_PREPROCESS_FUNCS:prepend = " get_fileperms "
+PACKAGEBUILDPKGD:append = " fixup_stripped_perms "
 PACKAGEFILEPERMS = "${WORKDIR}/dir.perms ${WORKDIR}/file.perms"
 PACKAGEFILEPERMS_DISABLE ?= "0"
 
@@ -327,7 +327,7 @@ kernel_do_deploy:append () {
     done
 }
 
-PACKAGES:append:pn-linux-mvista += "kernel-src"
+PACKAGES:append:pn-linux-mvista = " kernel-src "
 FILES:kernel-src:pn-linux-mvista = "/usr/src/linux.tar.gz"
 
 prep_copy_buildsystem () {

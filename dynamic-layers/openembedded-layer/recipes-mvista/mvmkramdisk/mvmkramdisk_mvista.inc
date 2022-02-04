@@ -1,1 +1,1 @@
-RDEPENDS:${PN}:append += " lvm2 "
+RDEPENDS:${PN}:append = " lvm2 "

@@ -23,6 +23,6 @@ def get_mlprovides(provide,d) :
        rprovides = "%s %s-%s" % (rprovides, each, provide)
     return rprovides
 
-RDEPENDS:${PN}-dev:append:class-target += "${@['','base-glibc-dev'][d.getVar('MLPREFIX', True) != '']} ${@['',get_mlprovides('glibc-dev', d)][d.getVar('MLPREFIX', True) == '']}"
+RDEPENDS:${PN}-dev:append:class-target = " ${@['','base-glibc-dev'][d.getVar('MLPREFIX', True) != '']} ${@['',get_mlprovides('glibc-dev', d)][d.getVar('MLPREFIX', True) == '']} "
 
-RPROVIDES:${PN}-dev:append:class-target += "${@['',get_mlprovides('base-glibc-dev',d)][d.getVar('MLPREFIX', True) == '']}"
+RPROVIDES:${PN}-dev:append:class-target = " ${@['',get_mlprovides('base-glibc-dev',d)][d.getVar('MLPREFIX', True) == '']} "

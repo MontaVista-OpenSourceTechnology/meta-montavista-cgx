@@ -1,1 +1,1 @@
-RDEPENDS:${PN}:append += " efibootmgr lvm2 "
+RDEPENDS:${PN}:append = " efibootmgr lvm2 "

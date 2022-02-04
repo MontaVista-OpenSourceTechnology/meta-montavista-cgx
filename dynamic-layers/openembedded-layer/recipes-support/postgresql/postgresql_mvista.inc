@@ -1,6 +1,6 @@
 PR .= ".2"
 
-EXTRA_OECONF:append:riscv64 += "--disable-spinlocks"
+EXTRA_OECONF:append:riscv64 = " --disable-spinlocks "
 
 pkg_postinst_ontarget:${PN}:append () {
     if [ "x$D" != "x" ] ; then

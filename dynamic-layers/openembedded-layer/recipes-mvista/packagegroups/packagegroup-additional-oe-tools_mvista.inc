@@ -64,9 +64,9 @@ RDEPENDS:packagegroups-oe-logmanagement:append = " \
 "
 
 RDEPENDS:packagegroups-oe-mailclient:append = " \
-	mailx \
 "
 
+# FIXME: mailx was removed.
 X86_PACKAGES_OE_CONSOLE_UTILS:append:x86-64 = " \
 	efibootmgr \
 "

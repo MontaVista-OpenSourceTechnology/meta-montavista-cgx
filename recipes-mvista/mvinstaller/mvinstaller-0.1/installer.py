@@ -549,7 +549,7 @@ echo "terminal_output serial"
         subprocess.call(("cp", "/tmp/fstab", self.mpref + "/etc/fstab"))
 
         # Now make sure fsck of the root filesystem is enabled.
-        # Dummy loop so we can "break" to abort this operation.
+        # Dummy loop so we can "break" to escape this operation.
         for i in range(0,1):
             try:
                 fin = open(self.mpref + "/etc/default/rcS", "r")

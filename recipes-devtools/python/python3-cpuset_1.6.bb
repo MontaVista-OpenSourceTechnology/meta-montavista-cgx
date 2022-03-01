@@ -7,8 +7,9 @@ S = "${WORKDIR}/git"
 SRCREV = "1eeb1ebd8b78b34a86de6da7909fcdecc8b6fd5c"
 SRC_URI = "git://github.com/parttimenerd/cpuset;protocol=https;"
 
+DEPENDS += "python3-setuptools-scm-native"
 inherit setuptools3
-
+PYPA_WHEEL = "${S}/dist/cpuset_py3-*-*.whl"
 RDEPENDS:${PN} = "\
     python3-core \
     python3-pkg-resources \

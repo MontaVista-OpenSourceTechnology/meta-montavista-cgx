@@ -1,8 +1,5 @@
 PR .= ".1"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-SRC_URI:append:riscv64 = " file://0001-libmysql-Do-not-export-_fini-_init-on-risc-v.patch"
-SRC_URI:append_riscv = " file://0001-libmysql-Do-not-export-_fini-_init-on-risc-v.patch"
 
 inherit multilib_script multilib_header
 

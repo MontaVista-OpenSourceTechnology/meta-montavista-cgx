@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f"
 PYPI_PACKAGE = "cpuset-py3"
 S = "${WORKDIR}/git"
 SRCREV = "1eeb1ebd8b78b34a86de6da7909fcdecc8b6fd5c"
-SRC_URI = "git://github.com/parttimenerd/cpuset;protocol=https;"
+SRC_URI = "git://github.com/parttimenerd/cpuset;protocol=https;branch=master"
 
 DEPENDS += "python3-setuptools-scm-native"
 inherit setuptools3

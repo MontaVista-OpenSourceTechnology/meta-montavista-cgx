@@ -60,7 +60,7 @@ RDEPENDS:packagegroup-oe-hotplugutilities:append = " \
 "
 
 RDEPENDS:packagegroups-oe-logmanagement:append = " \
-	${VIRTUAL-RUNTIME_syslog} \
+	${VIRTUAL-RUNTIME_base-utils-syslog} \
 "
 
 RDEPENDS:packagegroups-oe-mailclient:append = " \

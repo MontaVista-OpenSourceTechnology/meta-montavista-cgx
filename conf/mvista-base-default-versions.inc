@@ -16,8 +16,3 @@ PACKAGECONFIG:pn-qemu ?= "libusb \
 "
 PACKAGECONFIG:pn-lib32-qemu = "${PACKAGECONFIG:pn-qemu}"
 PACKAGECONFIG:pn-lib64-qemu = "${PACKAGECONFIG:pn-qemu}"
-# Clang sets preferred version and provider for llvm. But version is checked before the provide is taken in to account.
-# Add to clean up warning, with clang, it still picks up clang 10.0.1
-
-PREFERRED_VERSION_llvm="9.0.1"
-PREFERRED_VERSION_llvm-native="9.0.1"

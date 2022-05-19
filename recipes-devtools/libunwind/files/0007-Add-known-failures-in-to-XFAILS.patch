@@ -1,16 +1,30 @@
+From 0b1d535b455f68eae9f0ac07376b556bfbf8828a Mon Sep 17 00:00:00 2001
+From: "Jeremy A. Puhlman" <jpuhlman@mvista.com>
+Date: Thu, 19 May 2022 17:20:18 +0000
+Subject: [PATCH 7/7] Add known failures in to XFAILS
+
+---
+ tests/Makefile.am | 27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
+
 diff --git a/tests/Makefile.am b/tests/Makefile.am
-index 010dcbb..0e44144 100644
+index 9e2a41d..1aefd00 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
-@@ -107,13 +107,36 @@ endif
- # ptrace request used in the tests.
- XFAIL_TESTS_PTRACE_SINGLESTEP = run-ptrace-mapper run-ptrace-misc
+@@ -108,12 +108,31 @@ if ARCH_IA64
+  check_PROGRAMS_cdep += Gtest-dyn1 Ltest-dyn1
+ endif
  
 +# test-ptrace and test-async-sig are known failures for ARM.
 +# As libunwind doesn't support unwinding of,
 +# call stack after a asynchoronous signal for test-async-sig.
 +# remote applications on prelinked images for test-ptrace
 +XFAIL_TESTS_FOR_ARM = test-async-sig test-ptrace
++
++# Gtest-exe, Ltest-exe, and run-check-namespace are known failures for MIPS
++# 1. Gtest-exe, Ltest-exe - unw_resume is not implemented for MIPS yet.
++# 2. run-check-namespace - unw_is_signal_frame is not implemented for MIPS yet.
++XFAIL_TESTS_FOR_MIPS = Gtest-exe Ltest-exe run-check-namespace
 +
 +# run-check-namespace and run-ptrace-mapper are known failures for AArch64
 +# 1. run-check-namespace - _Uaarch64_getcontext is not implemented for AArch64
@@ -20,15 +34,17 @@ index 010dcbb..0e44144 100644
 +# in open source/upstream.
 +XFAIL_TESTS_FOR_AARCH64 = run-check-namespace run-ptrace-mapper
 +
-+# Gtest-exe, Ltest-exe, and run-check-namespace are known failures for MIPS
-+# 1. Gtest-exe, Ltest-exe - unw_resume is not implemented for MIPS yet.
-+# 2. run-check-namespace - unw_is_signal_frame is not implemented for MIPS yet.
-+XFAIL_TESTS_FOR_MIPS = Gtest-exe Ltest-exe run-check-namespace
-+
+ # Use if arch defines but does not support PTRACE_SINGLESTEP
+ # ptrace request used in the tests.
+ XFAIL_TESTS_PTRACE_SINGLESTEP = run-ptrace-mapper run-ptrace-misc
+ 
  if ARCH_MIPS
 -XFAIL_TESTS += $(XFAIL_TESTS_PTRACE_SINGLESTEP)
 +XFAIL_TESTS += $(XFAIL_TESTS_PTRACE_SINGLESTEP) $(XFAIL_TESTS_FOR_MIPS)
  endif
+ 
+ if ARCH_RISCV
+@@ -122,7 +141,11 @@ endif
  
  if ARCH_ARM
  # ARM Linux kernel >=2.6.39 removed PTRACE_SINGLESTEP emulation
@@ -41,3 +57,6 @@ index 010dcbb..0e44144 100644
  endif
  
  # This is meant for multilib binaries, -m32.
+-- 
+2.35.3
+

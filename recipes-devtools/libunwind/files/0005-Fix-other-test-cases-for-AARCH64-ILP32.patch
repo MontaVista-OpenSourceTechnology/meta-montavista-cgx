@@ -1,18 +1,30 @@
+From 0d30ff2a7551cb32418a20f7bafce84c22868fa9 Mon Sep 17 00:00:00 2001
+From: "Jeremy A. Puhlman" <jpuhlman@mvista.com>
+Date: Thu, 19 May 2022 17:13:57 +0000
+Subject: [PATCH 5/7] Fix other test cases for AARCH64 ILP32
+
+---
+ src/aarch64/Gcreate_addr_space.c |  8 +++--
+ src/aarch64/Gget_proc_info.c     | 13 ++++++-
+ src/coredump/_UCD_internal.h     | 61 ++++++++++++++++++++++++++++++++
+ src/ptrace/_UPT_access_reg.c     | 22 ++++++++++++
+ 4 files changed, 100 insertions(+), 4 deletions(-)
+
 diff --git a/src/aarch64/Gcreate_addr_space.c b/src/aarch64/Gcreate_addr_space.c
-index f217adc..4bb1b7d 100644
+index ac2b85e..f16a390 100644
 --- a/src/aarch64/Gcreate_addr_space.c
 +++ b/src/aarch64/Gcreate_addr_space.c
-@@ -50,10 +50,12 @@ unw_create_addr_space (unw_accessors_t *a, int byte_order)
+@@ -49,10 +49,12 @@ unw_create_addr_space (unw_accessors_t *a, int byte_order)
    as->acc = *a;
  
    /* Default to little-endian for AArch64. */
--  if (byte_order == 0 || byte_order == __LITTLE_ENDIAN)
+-  if (byte_order == 0 || byte_order == UNW_LITTLE_ENDIAN)
 -    as->big_endian = 0;
 +  if (byte_order == 0)
-+    as->big_endian = (__BYTE_ORDER == __BIG_ENDIAN);
++    as->big_endian = (__BYTE_ORDER == UNW_BIG_ENDIAN);
    else
 -    as->big_endian = 1;
-+    as->big_endian = (__BYTE_ORDER == __BIG_ENDIAN);
++    as->big_endian = (__BYTE_ORDER == UNW_BIG_ENDIAN);
 +
 +  as->addr_size = sizeof (void *);
  
@@ -45,7 +57,7 @@ index c363d24..bfc6bc6 100644
    *pi = c->dwarf.pi;
    return 0;
 diff --git a/src/coredump/_UCD_internal.h b/src/coredump/_UCD_internal.h
-index 21ed1c3..b8e9f32 100644
+index 3d1d180..d1a723f 100644
 --- a/src/coredump/_UCD_internal.h
 +++ b/src/coredump/_UCD_internal.h
 @@ -110,13 +110,74 @@ struct coredump_phdr
@@ -124,7 +136,7 @@ index 21ed1c3..b8e9f32 100644
    {
      int big_endian;  /* bool */
 diff --git a/src/ptrace/_UPT_access_reg.c b/src/ptrace/_UPT_access_reg.c
-index ce25c78..1ecf167 100644
+index 0e24705..2f9dafc 100644
 --- a/src/ptrace/_UPT_access_reg.c
 +++ b/src/ptrace/_UPT_access_reg.c
 @@ -33,6 +33,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
@@ -137,7 +149,7 @@ index ce25c78..1ecf167 100644
  
  #if HAVE_DECL_PTRACE_SETREGSET
  #include <sys/uio.h>
-@@ -288,7 +291,26 @@ _UPT_access_reg (unw_addr_space_t as, unw_regnum_t reg, unw_word_t *val,
+@@ -298,7 +301,26 @@ _UPT_access_reg (unw_addr_space_t as, unw_regnum_t reg, unw_word_t *val,
      Debug(16, "ptrace PEEKUSER pid: %lu , reg: %lu , offs: %lu\n", (unsigned long)pid, (unsigned long)reg,
          (unsigned long)_UPT_reg_offset[reg]);
  #endif
@@ -164,3 +176,6 @@ index ce25c78..1ecf167 100644
    }
    if (errno) {
  #if UNW_DEBUG
+-- 
+2.35.3
+

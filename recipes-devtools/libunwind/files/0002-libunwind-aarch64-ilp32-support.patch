@@ -1,15 +1,30 @@
+From 7f51d2e481ec0331703bb96f49e5f5e6df1c3f1a Mon Sep 17 00:00:00 2001
+From: "Jeremy A. Puhlman" <jpuhlman@mvista.com>
+Date: Thu, 19 May 2022 17:01:58 +0000
+Subject: [PATCH 2/7] libunwind aarch64 ilp32 support
+
+---
+ configure.ac                        | 4 ++--
+ include/tdep-aarch64/dwarf-config.h | 1 +
+ include/tdep-aarch64/libunwind_i.h  | 5 +++++
+ src/Makefile.am                     | 2 +-
+ src/aarch64/Ginit.c                 | 5 +++++
+ src/aarch64/Gresume.c               | 8 ++++++++
+ src/aarch64/offsets.h               | 8 ++++++++
+ 7 files changed, 30 insertions(+), 3 deletions(-)
+
 diff --git a/configure.ac b/configure.ac
-index 31d2817..10c2a09 100644
+index 2893f0c..a3e8418 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -183,8 +183,8 @@ AM_CONDITIONAL(OS_QNX, expr x$target_os : xnto-qnx >/dev/null)
+@@ -198,8 +198,8 @@ AM_CONDITIONAL(OS_SOLARIS, expr x$target_os : xsolaris >/dev/null)
  AC_MSG_CHECKING([for ELF helper width])
  case "${target_arch}" in
  (arm|hppa|ppc32|x86|sh) use_elf32=yes; AC_MSG_RESULT([32]);;
--(aarch64|ia64|ppc64|x86_64|tilegx)  use_elf64=yes; AC_MSG_RESULT([64]);;
--(mips)                 use_elfxx=yes; AC_MSG_RESULT([xx]);;
-+(ia64|ppc64|x86_64|tilegx)  use_elf64=yes; AC_MSG_RESULT([64]);;
-+(aarch64|mips)                      use_elfxx=yes; AC_MSG_RESULT([xx]);;
+-(aarch64|ia64|ppc64|x86_64|s390x|tilegx)  use_elf64=yes; AC_MSG_RESULT([64]);;
+-(mips|riscv)                 use_elfxx=yes; AC_MSG_RESULT([xx]);;
++(ia64|ppc64|x86_64|s390x|tilegx)  use_elf64=yes; AC_MSG_RESULT([64]);;
++(aarch64|mips|riscv)                 use_elfxx=yes; AC_MSG_RESULT([xx]);;
  *)                     AC_MSG_ERROR([Unknown ELF target: ${target_arch}])
  esac
  AM_CONDITIONAL(USE_ELF32, [test x$use_elf32 = xyes])
@@ -26,12 +41,12 @@ index f65db17..421cc7e 100644
  /* Convert a pointer to a dwarf_cursor structure to a pointer to
     unw_cursor_t.  */
 diff --git a/include/tdep-aarch64/libunwind_i.h b/include/tdep-aarch64/libunwind_i.h
-index b91273f..69d8020 100644
+index d96833a..947bc2c 100644
 --- a/include/tdep-aarch64/libunwind_i.h
 +++ b/include/tdep-aarch64/libunwind_i.h
-@@ -33,7 +33,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
- #include <stdlib.h>
+@@ -34,7 +34,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
  #include <libunwind.h>
+ #include <stdatomic.h>
  
 +#ifdef __LP64__
  #include "elf64.h"
@@ -41,19 +56,19 @@ index b91273f..69d8020 100644
  #include "mempool.h"
  #include "dwarf.h"
  
-@@ -77,6 +81,7 @@ struct unw_addr_space
+@@ -78,6 +82,7 @@ struct unw_addr_space
    {
      struct unw_accessors acc;
      int big_endian;
 +    unsigned int addr_size;
      unw_caching_policy_t caching_policy;
- #ifdef HAVE_ATOMIC_OPS_H
-     AO_t cache_generation;
+     _Atomic uint32_t cache_generation;
+     unw_word_t dyn_generation;          /* see dyn-common.h */
 diff --git a/src/Makefile.am b/src/Makefile.am
-index a557d8d..a2ea9d1 100644
+index 2b5b029..ec1ced3 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
-@@ -527,7 +527,7 @@ if ARCH_AARCH64
+@@ -586,7 +586,7 @@ if ARCH_AARCH64
   libunwind_aarch64_la_SOURCES = $(libunwind_aarch64_la_SOURCES_aarch64)
   libunwind_aarch64_la_LDFLAGS = $(COMMON_SO_LDFLAGS) -version-info $(SOVERSION)
   libunwind_aarch64_la_LIBADD = libunwind-dwarf-generic.la
@@ -63,10 +78,10 @@ index a557d8d..a2ea9d1 100644
   libunwind_aarch64_la_LIBADD += libunwind.la -lc
  endif
 diff --git a/src/aarch64/Ginit.c b/src/aarch64/Ginit.c
-index 9c4eae8..c1f2fdc 100644
+index 2b08feb..094f054 100644
 --- a/src/aarch64/Ginit.c
 +++ b/src/aarch64/Ginit.c
-@@ -167,13 +167,18 @@ get_static_proc_name (unw_addr_space_t as, unw_word_t ip,
+@@ -408,13 +408,18 @@ get_static_proc_name (unw_addr_space_t as, unw_word_t ip,
                        char *buf, size_t buf_len, unw_word_t *offp,
                        void *arg)
  {
@@ -86,7 +101,7 @@ index 9c4eae8..c1f2fdc 100644
    local_addr_space.acc.find_proc_info = dwarf_find_proc_info;
    local_addr_space.acc.put_unwind_info = put_unwind_info;
 diff --git a/src/aarch64/Gresume.c b/src/aarch64/Gresume.c
-index 3d82739..58e33f9 100644
+index 445bac7..a30df63 100644
 --- a/src/aarch64/Gresume.c
 +++ b/src/aarch64/Gresume.c
 @@ -40,7 +40,11 @@ aarch64_local_resume (unw_addr_space_t as, unw_cursor_t *cursor, void *arg)
@@ -137,3 +152,6 @@ index e78251d..9fc8a4d 100644
  
  /* Offsets for AArch64 Linux "struct sigcontext":  */
  
+-- 
+2.35.3
+

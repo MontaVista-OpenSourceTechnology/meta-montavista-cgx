@@ -1,3 +1,17 @@
+From d69da6d5ac3fbb07a495b5d30918e3c771b7ff4e Mon Sep 17 00:00:00 2001
+From: "Jeremy A. Puhlman" <jpuhlman@mvista.com>
+Date: Thu, 19 May 2022 17:08:37 +0000
+Subject: [PATCH 3/7] Fix arm test cases
+
+---
+ src/arm/Gget_proc_info.c           | 13 ++++++++++---
+ src/arm/Ginit.c                    |  1 +
+ src/coredump/_UCD_find_proc_info.c |  7 +++----
+ tests/Gtest-nomalloc.c             |  5 +++++
+ tests/Ltest-nocalloc.c             |  9 +++++++++
+ tests/run-coredump-unwind          | 11 +++++++++--
+ 6 files changed, 37 insertions(+), 9 deletions(-)
+
 diff --git a/src/arm/Gget_proc_info.c b/src/arm/Gget_proc_info.c
 index 4051a10..7cd43eb 100644
 --- a/src/arm/Gget_proc_info.c
@@ -25,10 +39,10 @@ index 4051a10..7cd43eb 100644
    *pi = c->dwarf.pi;
    return 0;
 diff --git a/src/arm/Ginit.c b/src/arm/Ginit.c
-index 2720d06..e924d6f 100644
+index 0bac0d7..e5989dd 100644
 --- a/src/arm/Ginit.c
 +++ b/src/arm/Ginit.c
-@@ -220,6 +220,7 @@ HIDDEN void
+@@ -219,6 +219,7 @@ HIDDEN void
  arm_local_addr_space_init (void)
  {
    memset (&local_addr_space, 0, sizeof (local_addr_space));
@@ -37,10 +51,10 @@ index 2720d06..e924d6f 100644
    local_addr_space.acc.find_proc_info = arm_find_proc_info;
    local_addr_space.acc.put_unwind_info = arm_put_unwind_info;
 diff --git a/src/coredump/_UCD_find_proc_info.c b/src/coredump/_UCD_find_proc_info.c
-index 33b66c8..99ac5b9 100644
+index 35e1624..028aac0 100644
 --- a/src/coredump/_UCD_find_proc_info.c
 +++ b/src/coredump/_UCD_find_proc_info.c
-@@ -147,16 +147,15 @@ _UCD_find_proc_info (unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
+@@ -151,16 +151,15 @@ _UCD_find_proc_info (unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
      ret = tdep_search_unwind_table (as, ip, &ui->edi.di_cache,
                                      pi, need_unwind_info, arg);
  
@@ -145,3 +159,6 @@ index 8d07742..035ad53 100755
  }
  
  
+-- 
+2.35.3
+

@@ -1,0 +1,53 @@
+From dcedae0875e9219a23c9c854e30b74526e395a3f Mon Sep 17 00:00:00 2001
+From: "Jeremy A. Puhlman" <jpuhlman@mvista.com>
+Date: Thu, 19 May 2022 17:15:14 +0000
+Subject: [PATCH 6/7] add attribute used to retain static variable
+
+---
+ tests/Gperf-simple.c | 2 +-
+ tests/Gperf-trace.c  | 2 +-
+ tests/Makefile.am    | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/tests/Gperf-simple.c b/tests/Gperf-simple.c
+index e181918..82acbc2 100644
+--- a/tests/Gperf-simple.c
++++ b/tests/Gperf-simple.c
+@@ -87,7 +87,7 @@ measure_unwind (int maxlevel, double *step)
+   return 0;
+ }
+ 
+-static int f1 (int, int, double *);
++static int f1 (int, int, double *) __attribute__((used));
+ 
+ static int NOINLINE
+ g1 (int level, int maxlevel, double *step)
+diff --git a/tests/Gperf-trace.c b/tests/Gperf-trace.c
+index 4d24fa5..b7a0c65 100644
+--- a/tests/Gperf-trace.c
++++ b/tests/Gperf-trace.c
+@@ -73,7 +73,7 @@ measure_unwind (int maxlevel, double *step)
+   return 0;
+ }
+ 
+-static int f1 (int, int, double *);
++static int f1 (int, int, double *) __attribute__((used));
+ 
+ static int NOINLINE
+ g1 (int level, int maxlevel, double *step)
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index c783fc3..9e2a41d 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -83,7 +83,7 @@ endif # HAVE_LZMA
+ endif # BUILD_COREDUMP
+ endif # OS_LINUX
+ 
+-perf: perf-startup Gperf-simple Lperf-simple Lperf-trace
++perf: perf-startup Gperf-simple Lperf-simple Lperf-trace forker
+ 	@echo "########## Basic performance of generic libunwind:"
+ 	@./Gperf-simple
+ 	@echo "########## Basic performance of local-only libunwind:"
+-- 
+2.35.3
+

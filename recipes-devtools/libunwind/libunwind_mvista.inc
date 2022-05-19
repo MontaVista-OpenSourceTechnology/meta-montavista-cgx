@@ -3,16 +3,15 @@ PR .= ".3"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += " \
-           file://avoid_latex2man_pdflatex_for_docs.patch \
-           file://libunwind_aarch64_ILP32_support.patch \
-           file://mips_testcases_fix.patch \
-           file://arm_testcases_fix.patch \
-           file://ignore_invalid_regnum_in_DW_CFA_offset_extended.patch \
-           file://libunwind_fix_other_test_cases_for_AARCH64_ILP32.patch \
-	       file://add_attribute_used_to_retain_static_variable.patch \
-           file://Add-known-failures-into-XFAILS.patch \
-	       file://run-ptest \
-          "
+file://0001-Avoid-latex2man-pdflatex-for-docs.patch \
+file://0002-libunwind-aarch64-ilp32-support.patch \
+file://0003-Fix-arm-test-cases.patch \
+file://0004-Ignore-invalid-regnum-in-DM_CFA-offset-extended.patch \
+file://0005-Fix-other-test-cases-for-AARCH64-ILP32.patch \
+file://0006-add-attribute-used-to-retain-static-variable.patch \
+file://0007-Add-known-failures-in-to-XFAILS.patch \
+file://run-ptest \
+"
 
 LEAD_SONAME = "libunwind"
 

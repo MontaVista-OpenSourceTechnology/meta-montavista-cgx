@@ -1,0 +1,27 @@
+From 6fa4f70a3bb97b74568b90c23f2f8cea1f30e53e Mon Sep 17 00:00:00 2001
+From: "Jeremy A. Puhlman" <jpuhlman@mvista.com>
+Date: Thu, 19 May 2022 16:59:26 +0000
+Subject: [PATCH 1/7] Avoid latex2man pdflatex for docs
+
+---
+ doc/Makefile.am | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index bfe4669..74e89cc 100644
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -56,8 +56,8 @@ EXTRA_DIST = NOTES libunwind.trans					\
+ 	_U_dyn_cancel.tex						\
+ 	$(man3_MANS)
+ 
+-L2M	= latex2man
+-L2P	= pdflatex
++L2M	= echo 
++L2P	= echo 
+ L2M_CMD	= $(L2M) -t $(srcdir)/libunwind.trans
+ L2H_CMD	= $(L2M) -H -t $(srcdir)/libunwind.trans
+ 
+-- 
+2.35.3
+

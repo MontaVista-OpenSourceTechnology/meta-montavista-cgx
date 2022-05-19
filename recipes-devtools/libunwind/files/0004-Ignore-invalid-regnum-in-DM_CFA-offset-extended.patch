@@ -1,5 +1,14 @@
+From 7fb80314259133cdeb3128846d53077bc78ccc27 Mon Sep 17 00:00:00 2001
+From: "Jeremy A. Puhlman" <jpuhlman@mvista.com>
+Date: Thu, 19 May 2022 17:09:51 +0000
+Subject: [PATCH 4/7] Ignore invalid regnum in DM_CFA offset extended
+
+---
+ src/dwarf/Gparser.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
 diff --git a/src/dwarf/Gparser.c b/src/dwarf/Gparser.c
-index 7d255ae..34cb14d 100644
+index da170d4..6801220 100644
 --- a/src/dwarf/Gparser.c
 +++ b/src/dwarf/Gparser.c
 @@ -189,10 +189,18 @@ run_cfi_program (struct dwarf_cursor *c, dwarf_state_record_t *sr,
@@ -24,3 +33,6 @@ index 7d255ae..34cb14d 100644
            Debug (15, "CFA_offset_extended r%lu at cf+0x%lx\n",
                   (long) regnum, (long) (val * dci->data_align));
            break;
+-- 
+2.35.3
+

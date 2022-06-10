@@ -10,7 +10,9 @@ SHIP_SOURCE_ENABLED:class-native = ""
 SHIP_SOURCE_ENABLED:class-nativesdk = ""
 SHIP_SOURCE_ENABLED:class-cross-canadian = ""
 
-PACKAGES =+ "${@bb.utils.contains('SHIP_SOURCE_ENABLED', '1', '${PN}-source', '', d)}"
+PACKAGES =+ "${@bb.utils.contains('SHIP_SOURCE_ENABLED', '1', '${PN}-source', '', d)} ${@bb.utils.contains('PACKAGE_DEBUG_SPLIT_STYLE', 'debug-with-srcpkg', '', '${PN}-src',d)}"
+ALLOW_EMPTY:${PN}-src = "1"
+RDEPENDS:append:${PN}-src = " ${@bb.utils.contains('SHIP_SOURCE_ENABLED', '1', '${PN}-source', '', d)} "
 
 
 do_tar_recipe_sources () {

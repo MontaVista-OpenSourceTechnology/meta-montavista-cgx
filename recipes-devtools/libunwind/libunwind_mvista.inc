@@ -28,6 +28,7 @@ do_compile_ptest() {
 }
 
 do_install_ptest() {
+    set -x
     # copy binaries excluding ".o" files
     install -d ${D}${PTEST_PATH}
     cp -a ${B}/tests ${D}${PTEST_PATH}
@@ -40,7 +41,11 @@ do_install_ptest() {
     # Use libunwind libraries present in standard path and tweak Makefile
     # to run only tests
     [ -f ${D}${PTEST_PATH}/tests/Makefile ] && \
-    sed -i -e "s|^\(.*\)\.log: .*(EXEEXT)|\1\.log:|" ${D}${PTEST_PATH}/tests/Makefile
+    sed -i -e "s|^\(.*\)\.log: .*(EXEEXT)|\1\.log:|" \
+           -e "s,--sysroot=${WORKDIR}/recipe-sysroot,," \
+           -e "s,-fdebug-prefix-map=${WORKDIR}/recipe-sysroot=,," \
+           -e "s,-fdebug-prefix-map=${WORKDIR}/recipe-sysroot-native=,," \
+           ${D}${PTEST_PATH}/tests/Makefile
     [ -f ${D}${PTEST_PATH}/tests/check-namespace.sh ] && \
     sed -i -e "s|^LIBUNWIND=.*|LIBUNWIND=${libdir}/libunwind.so|g" \
     -e "s|^LIBUNWIND_GENERIC=.*|LIBUNWIND_GENERIC=${libdir}/libunwind-\${plat}.so|g" \

@@ -38,7 +38,8 @@ RDEPENDS:packagegroups-oe-networkmanagement:append = " \
 	lksctp-tools \
 	vlan \
 	iscsi-initiator-utils \
-"
+    tgt \
+    "
 # FIXME: not building
 #	traceroute 
 

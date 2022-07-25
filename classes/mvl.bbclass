@@ -65,6 +65,7 @@ OE_TERMINAL_EXPORTS += "MVL_SDK_PREFIX PATH"
 #'
 
 
+PRECONFIGURE_IGNORE ?= "KERNEL_CONFIG_BUILD KERNEL_CONFIG_COMMAND"
 PRECONFIGURE_PREFIX ?= "KERNEL_"
 do_kernel_postconfigure[vardeps] += "KERNEL_CONF_LIST"
 do_kernel_postconfigure[doc] = "Adds kernel config values from the environment"
@@ -72,7 +73,7 @@ def get_kernel_config_env(d):
     preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX',True)
     prefix_len = len(preconfigure_prefix)
     startswith_var = preconfigure_prefix + 'CONFIG_'
-    ignore_vars = { 'KERNEL_CONFIG_BUILD', 'KERNEL_CONFIG_COMMAND' }
+    ignore_vars = d.getVar('PRECONFIGURE_IGNORE', True).split()
     new_var = []
     for var in d.keys():
         if var.startswith(startswith_var) and var not in ignore_vars:
@@ -92,7 +93,7 @@ python do_kernel_postconfigure() {
         preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX', True)
         prefix_len = len(preconfigure_prefix)
         startswith_var = preconfigure_prefix + 'CONFIG_'
-        ignore_vars = { 'KERNEL_CONFIG_BUILD', 'KERNEL_CONFIG_COMMAND' }
+        ignore_vars = d.getVar('PRECONFIGURE_IGNORE', True).split()
         new_vars = {}
         for var in d.keys():
             if var.startswith(startswith_var) and var not in ignore_vars:

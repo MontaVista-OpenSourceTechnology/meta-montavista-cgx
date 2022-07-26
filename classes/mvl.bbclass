@@ -20,7 +20,7 @@ python () {
     if bb.data.inherits_class("kernel",d):
        configs=get_kernel_config_env(d)
        if configs:
-          d.setVar('KERNEL_CONF_LIST',get_kernel_config_env(d)) 
+          d.setVar('KERNEL_CONF_LIST', configs)
           bb.build.addtask('do_kernel_postconfigure', 'do_compile', 'do_configure', d)
     if bb.data.inherits_class("module",d) and d.getVar("MULTILIB_VARIANTS", True) != "":
           errorQA = d.getVar("ERROR_QA", True)

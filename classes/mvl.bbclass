@@ -91,15 +91,14 @@ python do_kernel_postconfigure() {
     def get_kernel_config_vars():
         preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX', True)
         prefix_len = len(preconfigure_prefix)
-        startswith_var = preconfigure_prefix + 'CONFIG_'
-        ignore_vars = d.getVar('PRECONFIGURE_IGNORE', True).split()
+        configs = d.getVar('KERNEL_CONF_LIST', True).split()
         new_vars = {}
-        for var in d.keys():
-            if var.startswith(startswith_var) and var not in ignore_vars:
-                val = d.getVar(var,True)
-                bb.debug(2, 'config: %s=%s' % (var, val))
-                var = var[prefix_len:]
-                new_vars[var] = val
+        for config in configs:
+            bb.debug(2, 'config: %s' % config)
+            config = config.split('=')
+            var = config[0][prefix_len:]
+            val = config[1]
+            new_vars[var] = val
         return new_vars
 
     def copy_config(config, new_config, new_vars={}):

@@ -71,7 +71,6 @@ do_kernel_postconfigure[vardeps] += "KERNEL_CONF_LIST"
 do_kernel_postconfigure[doc] = "Adds kernel config values from the environment"
 def get_kernel_config_env(d):
     preconfigure_prefix = d.getVar('PRECONFIGURE_PREFIX',True)
-    prefix_len = len(preconfigure_prefix)
     startswith_var = preconfigure_prefix + 'CONFIG_'
     ignore_vars = d.getVar('PRECONFIGURE_IGNORE', True).split()
     new_var = []

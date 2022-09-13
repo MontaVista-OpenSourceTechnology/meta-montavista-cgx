@@ -358,7 +358,7 @@ IP=${BRIDGE_DEV_IP}
 MASK=${BRIDGE_DEV_MASK}
 if ! (brctl show | grep "^\$BRNET\s" >/dev/null); then
 	if [ -z "\$IP" ]; then
-		IPMASK=\`ifconfig \$ETH | grep 'inet addr:' | sed -e 's/^.*inet addr://' -e 's/ *Bcast:.*Mask:/ /'\`
+		IPMASK=\`ifconfig \$ETH | grep 'inet' | sed -e 's/^.*inet//' -e 's/ *Bcast:.*Mask:/ /'\`
 		if [ -z "\$IPMASK" ]; then
 			echo "Unable to get configuration for \$ETH"
 			exit 1

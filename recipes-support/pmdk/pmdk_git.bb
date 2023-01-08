@@ -6,7 +6,7 @@ DESCRIPTION = "PMDK (Persistent Memory Development Kit) library is required for 
 
 AUTHOR = "Harish Gurram <hgurram@mvista.com>"
 HOMEPAGE = "https://pmem.io/pmdk/"
-
+DEPENDS += "coreutils-native"
 LICENSE = "Intel"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=7db1106255a1baa80391fd2e21eebab7"
 

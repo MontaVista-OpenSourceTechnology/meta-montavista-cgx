@@ -72,4 +72,4 @@ BBMASK += "meta-openstack/recipes-support/postgresql/"
 BBMASK += "meta-cgl-common/recipes-cgl/makedumpfile/makedumpfile_1.5.8.bb"
 BBMASK += "meta-virtualization/recipes-devtools/python/python3-twisted_13.2.0.bb"
 
-LLVMVERSION = "13.0.1"
+LLVMVERSION = "15.0.7"

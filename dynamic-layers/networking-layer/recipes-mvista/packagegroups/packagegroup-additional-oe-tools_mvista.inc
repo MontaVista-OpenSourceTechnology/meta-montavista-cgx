@@ -30,9 +30,7 @@ RDEPENDS:packagegroups-oe-networkmanagement:append = " \
 	ifenslave \
 	netkit-telnet \
 	openl2tp \
-	quagga \
-	${@bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'quagga-watchquagga', '', d)} \
-	quagga-ospfclient \
+	frr \
 	strongswan \
 	tcpdump \
 	lksctp-tools \

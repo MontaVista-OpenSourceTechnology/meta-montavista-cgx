@@ -6,11 +6,15 @@ SRCREV="c001072b564b945e4f77ef903cf1e4cf650bf0d7"
 PR = "r8"
 
 SRC_URI = "git://github.com/MontaVista-OpenSourceTechnology/bootcycle.git;protocol=https;branch=master \
+           file://bootcycle.service \
           "
 S="${WORKDIR}/git"
-inherit update-rc.d
+inherit update-rc.d pkgconfig systemd
 INITSCRIPT_NAME = "bootcycle.sh"
 INITSCRIPT_PARAMS = "start 31 S ."
+
+SYSTEMD_PACKAGES = "${PN}"
+SYSTEMD_SERVICE:${PN} = "bootcycle.service"
 
 export mandir="${datadir}/${PN}/man"
 
@@ -33,6 +37,9 @@ do_install() {
 
         gzip -c9 ${S}/bootcycle.8 >${S}/bootcycle.8.gz
         install -m 644 ${S}/bootcycle.8.gz ${D}${mandir}/man8
+
+        install -d ${D}/${systemd_unitdir}/system
+        install -m 0644 ${WORKDIR}/bootcycle.service ${D}/${systemd_unitdir}/system
 }
 
 FILES:${PN} += "/var/misc"

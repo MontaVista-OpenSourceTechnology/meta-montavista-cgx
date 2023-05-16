@@ -1,0 +1,9 @@
+[Unit]
+Description=A daemon which check if system has been rebooting repeatedly.
+After=network.target
+
+[Service]
+ExecStart=/sbin/bootcycle
+
+[Install]
+WantedBy=multi-user.target

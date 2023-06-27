@@ -24,6 +24,12 @@ IMAGE_FSTYPES:remove = "cpio"
 IMAGE_FSTYPES:remove = "cpio.gz"
 IMAGE_FSTYPES:remove = "cpio.gz.u-boot"
 
+# CGX complete image is far too large for wic
+IMAGE_FSTYPES:remove = "wic"
+IMAGE_FSTYPES:remove = "wic.gz"
+IMAGE_FSTYPES:remove = "wic.bmap"
+
+
 MKUBIFS_ARGS="-F -m 2048 -e 126976 -c 12000"
 
 remove_yum_dir () {

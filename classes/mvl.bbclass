@@ -351,4 +351,4 @@ python copy_buildsystem:prepend_mvista-cgx () {
 }
 
 # Initramfs shouldn't be built as a wic image
-IMAGE_FSTYPES:remove = "${@'wic wic.gz wic.qemu-sd' if d.getVar('INITRAMFS_IMAGE') == d.getVar('IMAGE_BASENAME') else ''}"
+IMAGE_FSTYPES:remove = "${@'wic wic.gz wic.qemu-sd wic.bmap' if d.getVar('INITRAMFS_IMAGE') == d.getVar('IMAGE_BASENAME') else ''}"

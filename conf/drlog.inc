@@ -4,6 +4,7 @@
 
 DRLOG ?= "${TMPDIR}/dr.log"
 DRLOG_HANDLER = ""
+DRLOG_ENABLE ?= "1"
 def add_drlog(d):
     import logging
     from os.path import join
@@ -21,11 +22,12 @@ def add_drlog(d):
 python drlog_eventhandler () {
     from bb.event import ConfigParsed,BuildCompleted
     import logging, sys
-    if isinstance(e, ConfigParsed):
-        add_drlog(e.data)
-    if isinstance(e, BuildCompleted):
-        drloghandler = e.data.getVar("DRLOG_HANDLER",True)
-        drloghandler.close()
+    if d.getVar('DRLOG_ENABLE') == '1':
+        if isinstance(e, ConfigParsed):
+            add_drlog(e.data)
+        if isinstance(e, BuildCompleted):
+            drloghandler = e.data.getVar("DRLOG_HANDLER",True)
+            drloghandler.close()
 }
 
 addhandler drlog_eventhandler

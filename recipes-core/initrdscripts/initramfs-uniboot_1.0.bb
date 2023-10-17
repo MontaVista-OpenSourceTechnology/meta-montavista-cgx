@@ -15,7 +15,7 @@ do_install() {
 	fi
 }
 
-PACKAGE_ARCH = "all"
+inherit allarch
 FILES:${PN} += " /init "
 FILES:${PN} += " /dev/ "
 FILES:${PN} += " /key.image "

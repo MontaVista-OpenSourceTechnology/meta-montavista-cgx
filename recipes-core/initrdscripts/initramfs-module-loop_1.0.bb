@@ -12,6 +12,6 @@ do_install() {
         install -m 0755 ${WORKDIR}/80-loopboot.sh ${D}/initrd.d/
 }
 
-PACKAGE_ARCH = "all"
+inherit allarch
 FILES:${PN} += " /initrd.d/* "
 LICENSE="MIT"

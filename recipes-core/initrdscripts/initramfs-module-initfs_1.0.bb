@@ -11,6 +11,6 @@ do_install() {
         install -m 0755 ${WORKDIR}/10-initfs.sh ${D}/initrd.d/
 }
 
-PACKAGE_ARCH = "all"
+inherit allarch
 FILES:${PN} += " /initrd.d/* "
 LICENSE="MIT"

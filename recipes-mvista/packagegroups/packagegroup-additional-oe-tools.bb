@@ -123,7 +123,6 @@ RDEPENDS:packagegroups-oe-mailserver = " \
 RDEPENDS:packagegroup-oe-graphics = " \
 	encodings \
 	font-util \
- 	libdmx \
 	libfontenc \
 	libmatchbox \
 	libgcc \

@@ -10,7 +10,6 @@ RDEPENDS:packagegroup-oe-console-utilities:append = " \
 	${OPROFILE} \
 	pax-utils \
 	lvm2 \
-	libol \
 	smartmontools \
 	vim \
 	icedax \

@@ -4,6 +4,5 @@ RDEPENDS:packagegroup-oe-security:append = " \
 
 RDEPENDS:packagegroups-oe-networkmanagement:append = " \
 	ntp \
-	ntpdate \
 	ntp-utils \
 "

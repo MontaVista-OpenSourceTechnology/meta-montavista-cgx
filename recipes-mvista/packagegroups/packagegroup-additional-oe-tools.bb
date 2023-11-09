@@ -61,7 +61,6 @@ RDEPENDS:packagegroup-additional-oe-tools = "\
 
 RDEPENDS:packagegroup-oe-filesystemutilities = "\
 	squashfs-tools \
-	cramfs \
 "
 
 RDEPENDS:packagegroup-oe-hotplugutilities = "\

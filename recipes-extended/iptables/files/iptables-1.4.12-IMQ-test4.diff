@@ -1,3 +1,4 @@
+Upstream-Status: Backport http://www.linuximq.net/patches/iptables-1.4.12-IMQ-test4.diff
 diff -Naur iptables-1.4.12.1/extensions/libxt_IMQ.c iptables-1.4.12.1-imq/extensions/libxt_IMQ.c
 --- iptables-1.4.12.1/extensions/libxt_IMQ.c	1970-01-01 02:00:00.000000000 +0200
 +++ iptables-1.4.12.1-imq/extensions/libxt_IMQ.c	2011-09-30 13:53:21.000000000 +0300

@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [embedded specific] 
+
 --- lua-5.3.1_org/Makefile	2015-06-02 18:35:35.000000000 -0700
 +++ lua-5.3.1/Makefile	2016-02-22 03:35:04.806048972 -0800
 @@ -41,7 +41,7 @@ PLATS= aix bsd c89 freebsd generic linux

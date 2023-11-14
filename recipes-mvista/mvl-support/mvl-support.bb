@@ -40,7 +40,6 @@ fakeroot python do_install_bits () {
         shutil.copyfile(fromfn, destfn)
 
     # Emit current configuration metadata
-    bb.data.update_data(d)
     emitted = open("/".join([mvldir, "conf", "emitted.inc"]), "w")
 
     bb.data.emit_env(emitted, d, True)

@@ -18,17 +18,16 @@ RDEPENDS:packagegroup-oe-console-utilities:append = " \
 "
 
 RDEPENDS:packagegroups-oe-ftpclient:append = " \
-        netkit-ftp \
+        tnftp \
         lftp \
 "
-
+# FIXME: Removed netkit-telnet
 RDEPENDS:packagegroups-oe-networkmanagement:append = " \
 	sntp \
 	radvd \
 	tunctl \
 	bridge-utils \
 	ifenslave \
-	netkit-telnet \
 	openl2tp \
         frr \
 	strongswan \

@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [MV specific]
+
 --- valgrind-3.13.0/configure.ac_orig	2019-02-08 18:51:20.965127256 +0530
 +++ valgrind-3.13.0/configure.ac	2019-02-08 18:46:52.335923504 +0530
 @@ -234,7 +234,7 @@ case "${host_cpu}" in

@@ -176,7 +176,7 @@ RDEPENDS:packagegroup-oe-security = " \
 	tshark \
 "
 
-KDUMP="kdump-elftool"
+KDUMP = "kdump-elftool"
 KDUMP_riscv = ""
 KDUMP:riscv64 = ""
 

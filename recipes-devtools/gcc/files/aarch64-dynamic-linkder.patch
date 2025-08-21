@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [embedded specific]
+
 diff -u gcc-6.2.0/gcc/config/aarch64/aarch64-linux.h gcc-6.2.0/gcc/config/aarch64/aarch64-linux.h
 --- gcc-6.2.0/gcc/config/aarch64/aarch64-linux.h	2017-06-15 16:59:07.588425851 -0700
 +++ gcc-6.2.0/gcc/config/aarch64/aarch64-linux.h	2017-06-15 20:22:28.456808685 -0700

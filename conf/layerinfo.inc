@@ -1,8 +1,8 @@
 BB_BASEHASH_IGNORE_VARS:append = " PROTECTED_SOURCE_URL PERSONAL_SOURCE_MIRROR MVLFETCH_OPTS MVLFETCH "
 BB_BASEHASH_IGNORE_VARS:append = " FETCHCMD_wget USE_MVLFETCH "
 
-LAYER_NAME="${@ get_layername(d.getVar("FILE",d,1),d)}"
-SOURCE_MIRROR_URL?="${@get_layermirror(d)}/"
+LAYER_NAME = "${@ get_layername(d.getVar("FILE",d,1),d)}"
+SOURCE_MIRROR_URL ?= "${@get_layermirror(d)}/"
 inherit own-mirrors
 PROTECTED_SOURCE_URL ?= ""
 PERSONAL_SOURCE_MIRROR ?= ""
@@ -34,7 +34,7 @@ def get_layerdir(file, d):
     bbpattern=d.getVar("BBFILE_PATTERN_%s" % layer,1)
     return os.path.normpath(bbpattern.replace("^",""))
 
-MVLBASE="${@ get_layerdir('conf/layerinfo.inc',d)}"
+MVLBASE = "${@ get_layerdir('conf/layerinfo.inc',d)}"
 def get_layermirror(d):
     layer = d.getVar("LAYER_NAME",1)
     layer_mirror = d.getVar("LAYER_SOURCES_%s" % layer , 1) or d.getVar("FALLBACK_MIRROR", 1) 

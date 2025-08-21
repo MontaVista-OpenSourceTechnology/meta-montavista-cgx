@@ -41,16 +41,16 @@ python () {
              d.setVar("ALTERNATIVE_PRIORITY", prioMult)
 }
 
-SDKTARGETSYSROOT_mvista-cgx="${SDKPATH}/sysroots/${MACHINE}-montavista-linux"
+SDKTARGETSYSROOT_mvista-cgx = "${SDKPATH}/sysroots/${MACHINE}-montavista-linux"
 
-P2BUILDDIR="${WORKDIR}/p2"
-P2DIR="${DEPLOY_DIR}/p2/${SDK_ARCH}"
+P2BUILDDIR = "${WORKDIR}/p2"
+P2DIR = "${DEPLOY_DIR}/p2/${SDK_ARCH}"
 SDK_NAME = "${SDK_NAME_PREFIX}-${MACHINE}-${SDK_ARCH}"
-MSD_VERSION ?="${DATETIME}"
+MSD_VERSION ?= "${DATETIME}"
 PLUGIN_ID ?= "com.mvista.sdk.core-${MACHINE}-${SDK_ARCH}-mvlsdk"
 FEATURE_ID ?= "com.mvista.sdk-${MACHINE}-${SDK_ARCH}-mvlsdk"
-PLUGIN_NAME ?="MontaVista SDK ${MACHINE}-${SDK_ARCH}"
-FEATURE_NAME ?="MontaVista SDK ${MACHINE}-${SDK_ARCH}"
+PLUGIN_NAME ?= "MontaVista SDK ${MACHINE}-${SDK_ARCH}"
+FEATURE_NAME ?= "MontaVista SDK ${MACHINE}-${SDK_ARCH}"
 VENDOR_NAME ?= "MontaVista Software, LLC."
 ADK_VERSION ?= "${DISTRO_VERSION}"
 MSD_REVISION ?= "${MSD_VERSION}"

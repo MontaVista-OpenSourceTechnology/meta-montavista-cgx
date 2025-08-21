@@ -1,13 +1,13 @@
-DESCRIPTION="Live kernel patching"
+DESCRIPTION = "Live kernel patching"
 
 SRC_URI = "git://github.com/useidel/kgraft-tools;protocol=https;branch=master"
-SRCREV="b4f069f849d7d9266310fbfaf78a765f7a3a4de7"
+SRCREV = "b4f069f849d7d9266310fbfaf78a765f7a3a4de7"
 
-LICENSE="GPL-2"
+LICENSE = "GPL-2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-S="${WORKDIR}/git"
-B="${S}"
+S = "${UNPACKDIR}/git"
+B = "${S}"
 
 PV = "0.0.0+gitr${SRCPV}"
 

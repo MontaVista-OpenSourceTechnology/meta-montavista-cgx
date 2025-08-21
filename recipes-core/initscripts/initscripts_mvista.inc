@@ -29,7 +29,7 @@ def get_priority(d):
           else:
              return "5"
 
-ALTERNATIVE_PRIORITY="${@get_priority(d)}"
+ALTERNATIVE_PRIORITY = "${@get_priority(d)}"
 
 pkg_postinst:${PN}-functions () {
 #!/bin/sh

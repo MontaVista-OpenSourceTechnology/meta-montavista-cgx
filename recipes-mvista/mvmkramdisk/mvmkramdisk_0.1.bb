@@ -1,9 +1,9 @@
 # mvmkramdisk
 
-LICENSE="GPL-2.0"
+LICENSE = "GPL-2.0"
 LIC_FILES_CHKSUM = "file://init_template;beginline=1;endline=19;md5=b38562175ffb2271d15ed8496d7724a6"
-DESCRIPTION="Create boot ramdisks for MV Linux"
-HOMEPAGE="http://www.mvista.com"
+DESCRIPTION = "Create boot ramdisks for MV Linux"
+HOMEPAGE = "http://www.mvista.com"
 
 # A few notes here. We need all the tools that go onto the ramdisk here.
 # mount and cpio from busybox are missing some required capabilities
@@ -38,7 +38,7 @@ SRC_URI = "file://mvmkramdisk \
 	  file://hotplug \
           file://local_declare_pos_chg.patch \ 
 "
-S="${WORKDIR}"
+S = "${UNPACKDIR}"
 
 MVMKRAMDISK_REQUIRED_BINARIES ?= "required_binaries"
 MVMKRAMDISK_REQUIRED_MODULES ?= "required_modules"

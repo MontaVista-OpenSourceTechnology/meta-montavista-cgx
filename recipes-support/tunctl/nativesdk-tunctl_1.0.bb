@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://${WORKDIR}/tunctl.c;endline=4;md5=ff3a09996bc5fff6bc5
 SRC_URI = " file://tunctl.c \
           "
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 inherit nativesdk
 

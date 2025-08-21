@@ -13,4 +13,3 @@ do_install() {
 
 inherit allarch
 FILES:${PN} += " /initrd.d/* "
-LICENSE="MIT"

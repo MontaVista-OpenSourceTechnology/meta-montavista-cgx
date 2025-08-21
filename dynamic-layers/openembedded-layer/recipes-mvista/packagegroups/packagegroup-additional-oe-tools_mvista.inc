@@ -1,4 +1,4 @@
-OPROFILE="oprofile"
+OPROFILE = "oprofile"
 OPROFILE_linux-gnuilp32 = ""
 #Fix Me: This should work
 OPROFILE:linux-gnun32 = ""

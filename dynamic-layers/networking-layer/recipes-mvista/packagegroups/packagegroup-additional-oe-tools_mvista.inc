@@ -1,4 +1,4 @@
-LIBVIRT=" \
+LIBVIRT = " \
         libvirt \
         libvirt-libvirtd \
         libvirt-virsh \

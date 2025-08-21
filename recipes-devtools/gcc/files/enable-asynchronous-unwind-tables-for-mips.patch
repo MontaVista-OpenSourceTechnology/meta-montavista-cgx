@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [embedded specific]
+
 diff -Naurp gcc-6.2.0_org/gcc/config/mips/mips.h gcc-6.2.0/gcc/config/mips/mips.h
 --- gcc-6.2.0_org/gcc/config/mips/mips.h	2016-01-18 05:30:43.000000000 -0800
 +++ gcc-6.2.0/gcc/config/mips/mips.h	2017-07-16 20:26:14.822348876 -0700

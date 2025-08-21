@@ -30,7 +30,7 @@ IMAGE_FSTYPES:remove = "wic.gz"
 IMAGE_FSTYPES:remove = "wic.bmap"
 
 
-MKUBIFS_ARGS="-F -m 2048 -e 126976 -c 12000"
+MKUBIFS_ARGS = "-F -m 2048 -e 126976 -c 12000"
 
 remove_yum_dir () {
 	rm -rf ${IMAGE_ROOTFS}/var/lib/dnf/yumdb/

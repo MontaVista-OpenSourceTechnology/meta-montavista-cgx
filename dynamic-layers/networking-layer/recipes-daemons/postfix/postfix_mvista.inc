@@ -9,4 +9,4 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 CCARGS:append_virtclass-native = " -DNO_NIS "
 AUXLIBS:append_virtclass-native = " -lresolv"
 
-libexecdir="${prefix}/libexec/postfix"
+libexecdir = "${prefix}/libexec/postfix"

@@ -2,13 +2,13 @@ DESCRIPTION = "Boot cycle detection"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a23a74b3f4caf9616230789d94217acb"
 #Version 1.0
-SRCREV="c001072b564b945e4f77ef903cf1e4cf650bf0d7"
+SRCREV = "c001072b564b945e4f77ef903cf1e4cf650bf0d7"
 PR = "r8"
 
 SRC_URI = "git://github.com/MontaVista-OpenSourceTechnology/bootcycle.git;protocol=https;branch=master \
            file://bootcycle.service \
           "
-S="${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 inherit update-rc.d pkgconfig systemd
 INITSCRIPT_NAME = "bootcycle.sh"
 INITSCRIPT_PARAMS = "start 31 S ."
@@ -16,7 +16,7 @@ INITSCRIPT_PARAMS = "start 31 S ."
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE:${PN} = "bootcycle.service"
 
-export mandir="${datadir}/${PN}/man"
+export mandir = "${datadir}/${PN}/man"
 
 do_install() {
         install -d ${D}${base_sbindir}

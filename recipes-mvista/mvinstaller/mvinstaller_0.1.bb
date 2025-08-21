@@ -1,9 +1,9 @@
 # mvinstaller
 
-LICENSE="CLOSED"
+LICENSE = "CLOSED"
 
-DESCRIPTION="A basic installer for installing MV Linux"
-HOMEPAGE="http://www.mvista.com"
+DESCRIPTION = "A basic installer for installing MV Linux"
+HOMEPAGE = "http://www.mvista.com"
 
 # No need to build this in a normal build.
 PR = "r3"
@@ -22,7 +22,7 @@ SRC_URI = "file://mktmpwrite \
 	  file://ifuploop \
 	  file://installer.py \
 "
-S="${WORKDIR}"
+S = "${UNPACKDIR}"
 
 INSTALLER_TARBALL ?= ""
 USER_INSTALLER ?= ""

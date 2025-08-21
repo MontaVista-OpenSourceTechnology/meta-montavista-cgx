@@ -1,6 +1,6 @@
 PR .= ".3"
 
-export mandir="${datadir}/${PN}/man"
+export mandir = "${datadir}/${PN}/man"
 EXTRA_OEMAKE:append = " man8dir=${datadir}/${PN}/man/man8 man5dir=${datadir}/${PN}/man/man5 man3dir=${datadir}/${PN}/man/man3 "
 
 do_compile:prepend:class-target () {

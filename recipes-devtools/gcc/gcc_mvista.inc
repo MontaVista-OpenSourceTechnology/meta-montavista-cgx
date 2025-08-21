@@ -22,7 +22,7 @@ do_install:append () {
      rm -f ${D}${bindir}/g++
 }
 ALLOW_EMPTY:cpp-symlinks = "1"
-ALTERNATIVE_PRIORITY='${@oe.utils.conditional("PN", d.getVar("BPN", True), "110", "100", d)}'
+ALTERNATIVE_PRIORITY = '${@oe.utils.conditional("PN", d.getVar("BPN", True), "110", "100", d)}'
 pkg_postinst:gcc-symlinks () {
 #!/bin/sh
     update-alternatives --install ${bindir}/gcc gcc ${TARGET_PREFIX}gcc ${ALTERNATIVE_PRIORITY}

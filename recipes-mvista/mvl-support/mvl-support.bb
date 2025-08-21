@@ -1,8 +1,8 @@
 # Copyright (C) 2009 MontaVista Software, Inc.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-LICENSE="MIT"
-SUMMARY="Information for MontaVista support"
+LICENSE = "MIT"
+SUMMARY = "Information for MontaVista support"
 DESCRIPTION = "Information for MontaVista support"
 INHIBIT_DEFAULT_DEPS = "1"
 PSTAGING_DISABLED = "1"
@@ -17,7 +17,7 @@ do_install_bits[nostamp] = "${@bb.utils.contains("CGX_PROFILES", "base", "1", ""
 do_install[nostamp] = "${@bb.utils.contains("CGX_PROFILES", "base", "1", "", d)}"
 do_compile[nostamp] = "${@bb.utils.contains("CGX_PROFILES", "base", "1", "", d)}"
 do_install[noexec] = "1"
-PACKAGES="${PN}"
+PACKAGES = "${PN}"
 
 addtask do_install_bits before do_install after do_compile
 

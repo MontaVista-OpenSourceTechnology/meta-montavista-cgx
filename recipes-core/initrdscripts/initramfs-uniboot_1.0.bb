@@ -19,4 +19,3 @@ inherit allarch
 FILES:${PN} += " /init "
 FILES:${PN} += " /dev/ "
 FILES:${PN} += " /key.image "
-LICENSE="MIT"

@@ -4,7 +4,7 @@ do_install:append:class-target () {
 FILES:${PN} += "/lib/ld-*"
 FILES:ldd += "${bindir}/ldd.${PN}"
 INSANE_SKIP:${PN} += "libdir"
-ALTERNATIVE_PRIORITY='${@oe.utils.conditional("PN", d.getVar("BPN", True), "110", "100", d)}'
+ALTERNATIVE_PRIORITY = '${@oe.utils.conditional("PN", d.getVar("BPN", True), "110", "100", d)}'
 
 pkg_postinst:ldd () {
 #!/bin/sh

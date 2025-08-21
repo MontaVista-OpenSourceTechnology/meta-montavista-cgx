@@ -54,7 +54,7 @@ def emit_shellscript(fn, d):
     from bb.utils import mkdirhier
     from bb import note
     from os.path import dirname
-    from pipes import quote
+    from shlex import quote
 
     mkdirhier(dirname(fn))
 

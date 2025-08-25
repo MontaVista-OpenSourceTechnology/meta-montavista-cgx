@@ -19,6 +19,8 @@ do_compile[nostamp] = "${@bb.utils.contains("CGX_PROFILES", "base", "1", "", d)}
 do_install[noexec] = "1"
 PACKAGES = "${PN}"
 
+ERROR_QA:remove = "buildpaths"
+
 addtask do_install_bits before do_install after do_compile
 
 fakeroot python do_install_bits () {

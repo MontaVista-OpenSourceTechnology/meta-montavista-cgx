@@ -38,7 +38,7 @@ BOOTIMG_VOLUME_ID ??= "MVL TEST"
 
 
 IMAGE_FSTYPES += " iso"
-EXTRA_IMAGE_FEATURES += "debug-tweaks"
+EXTRA_IMAGE_FEATURES += "allow-empty-password empty-root-password allow-root-login"
 
 # No need for opkg stuff on the installer CD
 ONLINE_PACKAGE_MANAGEMENT = "none"

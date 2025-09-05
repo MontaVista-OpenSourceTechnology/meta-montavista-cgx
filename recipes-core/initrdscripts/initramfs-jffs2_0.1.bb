@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 RRECOMMENDS:${PN} = "kernel-module-mtdblock kernel-module-mtdram"
 
 do_install() {
-        install -m 0755 ${WORKDIR}/jffs2boot.sh ${D}/init
+        install -m 0755 ${UNPACKDIR}/jffs2boot.sh ${D}/init
 }
 
 inherit allarch

@@ -11,8 +11,8 @@ PR .= ".1"
 
 do_install:append() {
        install -d ${D}${base_libdir}/udev/rules.d/
-       install -m 0644 ${WORKDIR}/55-scsi-sg3_id.rules ${D}${base_libdir}/udev/rules.d/
-       install -m 0644 ${WORKDIR}/58-scsi-sg3_symlink.rules ${D}${base_libdir}/udev/rules.d/
+       install -m 0644 ${UNPACKDIR}/55-scsi-sg3_id.rules ${D}${base_libdir}/udev/rules.d/
+       install -m 0644 ${UNPACKDIR}/58-scsi-sg3_symlink.rules ${D}${base_libdir}/udev/rules.d/
 }
 
 PACKAGES =+ "${PN}-udev"

@@ -36,7 +36,7 @@ build_iso() {
  return
  fi
 
- install -m 0644 ${WORKDIR}/rootfs/boot/bzImage-* ${ISODIR}/vmlinuz
+ install -m 0644 ${UNPACKDIR}/rootfs/boot/bzImage-* ${ISODIR}/vmlinuz
  cp -a ${RFS}/* ${ISODIR}
 
 

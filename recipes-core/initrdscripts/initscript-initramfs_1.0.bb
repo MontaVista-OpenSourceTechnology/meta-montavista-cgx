@@ -6,7 +6,7 @@ SRC_URI = "file://init-boot-initramfs.sh"
 PR = "r2"
 
 do_install() {
-        install -m 0755 ${WORKDIR}/init-boot-initramfs.sh ${D}/init
+        install -m 0755 ${UNPACKDIR}/init-boot-initramfs.sh ${D}/init
 }
 
 inherit allarch

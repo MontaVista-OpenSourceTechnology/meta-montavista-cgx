@@ -26,11 +26,11 @@ do_configure[noexec] = "1"
 
 do_install () {
     oe_runmake install DESTDIR="${D}"
-    install -D -m 0755 ${WORKDIR}/mv-target-daemond \
+    install -D -m 0755 ${UNPACKDIR}/mv-target-daemond \
     ${D}/${sysconfdir}/init.d/mv-target-daemond
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
-        install -D -m 0644 ${WORKDIR}/mv-target-daemond.service \
+        install -D -m 0644 ${UNPACKDIR}/mv-target-daemond.service \
         ${D}${systemd_unitdir}/system/mv-target-daemond.service
     fi
 }

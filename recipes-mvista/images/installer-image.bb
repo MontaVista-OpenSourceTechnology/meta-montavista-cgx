@@ -46,7 +46,7 @@ LDCONFIGDEPEND = ""
 NOHDD = "1"
 
 EFI = "1"
-RFS = "${WORKDIR}/rootfs"
+RFS = "${UNPACKDIR}/rootfs"
 
 require installer-image.inc
 
@@ -89,7 +89,7 @@ python () {
 #      return " "
 
 do_install_installerbinary() {
-    install -d -m  0755 ${WORKDIR}/rootfs/isolinux 
-    install -m 0755 ${WORKDIR}/rootfs/boot/bzImage-* ${WORKDIR}/rootfs/isolinux/vmlinuz 
+    install -d -m  0755 ${UNPACKDIR}/rootfs/isolinux 
+    install -m 0755 ${UNPACKDIR}/rootfs/boot/bzImage-* ${UNPACKDIR}/rootfs/isolinux/vmlinuz 
 }
 

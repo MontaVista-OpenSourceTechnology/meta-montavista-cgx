@@ -7,7 +7,7 @@ RDEPENDS:${PN} = "initramfs-uniboot"
 
 do_install() {
 	install -d ${D}/initrd.d
-        install -m 0755 ${WORKDIR}/90-check-modules.sh ${D}/initrd.d/
+        install -m 0755 ${UNPACKDIR}/90-check-modules.sh ${D}/initrd.d/
 }
 
 inherit allarch

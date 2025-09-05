@@ -5,7 +5,6 @@ PR = "r3"
 
 SRCREV = "56cd22f5da88938227a9e2ea32f7118f4b3c51b7"
 SRC_URI = "git://github.com/MontaVista-OpenSourceTechnology/uipartition.git;protocol=https;branch=master"
-S = "${WORKDIR}/git"
 RDEPENDS:${PN} = "parted \
 	          util-linux \
 		  e2fsprogs-mke2fs \

@@ -50,7 +50,7 @@ fakeroot python do_install_bits () {
 
 fakeroot do_install_script () {
     install -d ${D}${bindir}
-    cat ${WORKDIR}/mvl-supportinfo | \
+    cat ${UNPACKDIR}/mvl-supportinfo | \
         sed -e's,@sysconfdir@,${sysconfdir},g' > ${D}${bindir}/mvl-supportinfo
     chmod +x ${D}${bindir}/mvl-supportinfo
     if [ -e ${TOPDIR}/.mvl-content/project-descriptor.xml ] ; then

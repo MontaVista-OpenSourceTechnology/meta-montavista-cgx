@@ -8,7 +8,7 @@ SRC_URI += "file://lxc-mvlinux"
 FULL_OPTIMIZATION:arm = " -pipe ${DEBUG_FLAGS} "
 
 do_install:append () {
-    install -m 755 ${WORKDIR}/lxc-mvlinux ${D}${datadir}/lxc/templates
+    install -m 755 ${UNPACKDIR}/lxc-mvlinux ${D}${datadir}/lxc/templates
 }
 
 do_install_ptest:append () {

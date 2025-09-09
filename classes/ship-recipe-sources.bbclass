@@ -17,14 +17,14 @@ RDEPENDS:append:${PN}-src = " ${@bb.utils.contains('SHIP_SOURCE_ENABLED', '1', '
 
 do_tar_recipe_sources () {
     dir_to_be_compressed="$(basename ${S})"
-    tar -cjf ${WORKDIR}/${BPN}-${PV}-patched.tar.bz2 -C ${WORKDIR} $dir_to_be_compressed
+    tar -cjf ${UNPACKDIR}/${BPN}-${PV}-patched.tar.bz2 -C ${UNPACKDIR} $dir_to_be_compressed
 }
 
 do_ship_recipe_sources () {
-    install -D -m 0666 ${WORKDIR}/${BPN}-${PV}-patched.tar.bz2 ${D}${SRC_TAR_PATH}/${BPN}-${PV}-patched.tar.bz2
+    install -D -m 0666 ${UNPACKDIR}/${BPN}-${PV}-patched.tar.bz2 ${D}${SRC_TAR_PATH}/${BPN}-${PV}-patched.tar.bz2
 }
 
-do_tar_recipe_sources[dirs] = "${WORKDIR}"
+do_tar_recipe_sources[dirs] = "${UNPACKDIR}"
 do_ship_recipe_sources[cleandirs] = "${D}${SRC_TAR_PATH}"
 
 addtask tar_recipe_sources after do_populate_lic before do_configure

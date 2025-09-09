@@ -2,7 +2,7 @@ DESCRIPTION = "MontaVista LLC poky Image"
 
 IMAGE_FEATURES += "splash ssh-server-openssh "
 
-EXTRA_IMAGE_FEATURES += "debug-tweaks dbg-pkgs dev-pkgs staticdev-pkgs"
+EXTRA_IMAGE_FEATURES += "allow-empty-password empty-root-password allow-root-login dbg-pkgs dev-pkgs staticdev-pkgs"
 
 IMAGE_INSTALL = "packagegroup-core-boot"
 IMAGE_INSTALL += "packagegroup-core-full-cmdline"

@@ -43,7 +43,7 @@ python () {
 
 SDKTARGETSYSROOT_mvista-cgx = "${SDKPATH}/sysroots/${MACHINE}-montavista-linux"
 
-P2BUILDDIR = "${WORKDIR}/p2"
+P2BUILDDIR = "${UNPACKDIR}/p2"
 P2DIR = "${DEPLOY_DIR}/p2/${SDK_ARCH}"
 SDK_NAME = "${SDK_NAME_PREFIX}-${MACHINE}-${SDK_ARCH}"
 MSD_VERSION ?= "${DATETIME}"
@@ -207,12 +207,12 @@ def appendKernelCfgFiles(d):
 
 PACKAGE_PREPROCESS_FUNCS:prepend = " get_fileperms "
 PACKAGEBUILDPKGD:append = " fixup_stripped_perms "
-PACKAGEFILEPERMS = "${WORKDIR}/dir.perms ${WORKDIR}/file.perms"
+PACKAGEFILEPERMS = "${UNPACKDIR}/dir.perms ${UNPACKDIR}/file.perms"
 PACKAGEFILEPERMS_DISABLE ?= "0"
 
 get_fileperms () {
-    find ${PKGD} -type d | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${WORKDIR}/dir.perms
-    find ${PKGD} -type f | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${WORKDIR}/file.perms
+    find ${PKGD} -type d | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${UNPACKDIR}/dir.perms
+    find ${PKGD} -type f | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${UNPACKDIR}/file.perms
 }
 
 python fixup_stripped_perms () {

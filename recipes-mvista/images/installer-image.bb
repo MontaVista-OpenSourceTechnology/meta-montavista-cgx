@@ -38,7 +38,7 @@ BOOTIMG_VOLUME_ID ??= "MVL TEST"
 
 
 IMAGE_FSTYPES += " iso"
-EXTRA_IMAGE_FEATURES += "debug-tweaks"
+EXTRA_IMAGE_FEATURES += "allow-empty-password empty-root-password allow-root-login"
 
 # No need for opkg stuff on the installer CD
 ONLINE_PACKAGE_MANAGEMENT = "none"
@@ -46,7 +46,7 @@ LDCONFIGDEPEND = ""
 NOHDD = "1"
 
 EFI = "1"
-RFS = "${WORKDIR}/rootfs"
+RFS = "${UNPACKDIR}/rootfs"
 
 require installer-image.inc
 
@@ -89,7 +89,7 @@ python () {
 #      return " "
 
 do_install_installerbinary() {
-    install -d -m  0755 ${WORKDIR}/rootfs/isolinux 
-    install -m 0755 ${WORKDIR}/rootfs/boot/bzImage-* ${WORKDIR}/rootfs/isolinux/vmlinuz 
+    install -d -m  0755 ${UNPACKDIR}/rootfs/isolinux 
+    install -m 0755 ${UNPACKDIR}/rootfs/boot/bzImage-* ${UNPACKDIR}/rootfs/isolinux/vmlinuz 
 }
 

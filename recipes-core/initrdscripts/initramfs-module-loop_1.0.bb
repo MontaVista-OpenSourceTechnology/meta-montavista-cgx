@@ -9,7 +9,7 @@ RRECOMMENDS:${PN} = "kernel-module-loop kernel-module-vfat"
 
 do_install() {
 	install -d ${D}/initrd.d
-        install -m 0755 ${WORKDIR}/80-loopboot.sh ${D}/initrd.d/
+        install -m 0755 ${UNPACKDIR}/80-loopboot.sh ${D}/initrd.d/
 }
 
 inherit allarch

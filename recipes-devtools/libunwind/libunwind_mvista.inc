@@ -42,9 +42,9 @@ do_install_ptest() {
     # to run only tests
     [ -f ${D}${PTEST_PATH}/tests/Makefile ] && \
     sed -i -e "s|^\(.*\)\.log: .*(EXEEXT)|\1\.log:|" \
-           -e "s,--sysroot=${WORKDIR}/recipe-sysroot,," \
-           -e "s,-fdebug-prefix-map=${WORKDIR}/recipe-sysroot=,," \
-           -e "s,-fdebug-prefix-map=${WORKDIR}/recipe-sysroot-native=,," \
+           -e "s,--sysroot=${UNPACKDIR}/recipe-sysroot,," \
+           -e "s,-fdebug-prefix-map=${UNPACKDIR}/recipe-sysroot=,," \
+           -e "s,-fdebug-prefix-map=${UNPACKDIR}/recipe-sysroot-native=,," \
            ${D}${PTEST_PATH}/tests/Makefile
     [ -f ${D}${PTEST_PATH}/tests/check-namespace.sh ] && \
     sed -i -e "s|^LIBUNWIND=.*|LIBUNWIND=${libdir}/libunwind.so|g" \

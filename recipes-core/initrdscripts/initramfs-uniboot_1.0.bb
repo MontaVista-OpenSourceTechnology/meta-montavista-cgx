@@ -8,7 +8,7 @@ RRECOMMENDS:${PN} = "kernel-module-mtdblock"
 do_install() {
 	install -d 0755 ${D}/dev
 	mknod ${D}/dev/console c 5 1
-	install -m 0755 ${WORKDIR}/init.sh ${D}/init
+	install -m 0755 ${UNPACKDIR}/init.sh ${D}/init
 
 	if [ "${INITRAMFS_CRYPT_KEY}" == "1" ]; then
 		install -m 0600 ${INITRAMFS_CRYPT_KEYFILE} ${D}/key.image

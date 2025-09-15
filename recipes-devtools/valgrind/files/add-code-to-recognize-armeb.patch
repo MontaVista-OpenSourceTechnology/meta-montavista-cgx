@@ -1,13 +1,26 @@
-Upstream-Status: Inappropriate [MV specific]
+From 31658a59e8c6b537d03f379ef35429975e13b7a0 Mon Sep 17 00:00:00 2001
+From: Vijay Anusuri <vanusuri@mvista.com>
+Date: Mon, 15 Sep 2025 13:57:02 +0000
+Subject: [PATCH] add code to recognize armeb
 
---- valgrind-3.13.0/configure.ac_orig	2019-02-08 18:51:20.965127256 +0530
-+++ valgrind-3.13.0/configure.ac	2019-02-08 18:46:52.335923504 +0530
-@@ -234,7 +234,7 @@ case "${host_cpu}" in
-         ARCH_MAX="s390x"
+Upstream-Status: Inappropriate [MV specific]
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 2e152c7..63862ae 100755
+--- a/configure.ac
++++ b/configure.ac
+@@ -255,7 +255,7 @@ case "${host_cpu}" in
+         ARCH_MAX="arm"
          ;;
  
 -     armv7*)
 +     armv7*|armeb)
- 	AC_MSG_RESULT([ok (${host_cpu})])
- 	ARCH_MAX="arm"
- 	;;
+         AC_MSG_RESULT([ok (${host_cpu})])
+         VGCONF_PLATFORM_ARM_ARCH="-marm"
+         ARCH_MAX="arm"
+-- 
+2.49.0
+

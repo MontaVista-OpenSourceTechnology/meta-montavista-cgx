@@ -1,6 +1,6 @@
 PR .= ".2"
 
-DEPENDS += "bison-native base-passwd"
+DEPENDS += "base-passwd"
 # Change username and group to daemon, to allow normal users to schedule
 # at jobs.
 EXTRA_OECONF += "--with-daemon_username=atd \

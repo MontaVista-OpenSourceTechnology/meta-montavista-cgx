@@ -1,15 +1,21 @@
-valgrind: Mask CPUID support in HWCAP on aarch64
-
-Author: Mark Wielaard (address@hidden)
+From f59ce431ac77096548dc8ad1214dfb5457484bf1 Mon Sep 17 00:00:00 2001
+From: Vijay Anusuri <vanusuri@mvista.com>
+Date: Mon, 15 Sep 2025 13:53:08 +0000
+Subject: [PATCH] Mask CPUID support in HWCAP on aarch64
 
 Upstream-Status: Pending
 
 Signed-off-by: Jagadeesh Krishnanjanappa <jkrishnanjanappa@mvista.com>
-diff -Naurp valgrind-3.14.0_org/coregrind/m_initimg/initimg-linux.c valgrind-3.14.0/coregrind/m_initimg/initimg-linux.c
---- valgrind-3.14.0_org/coregrind/m_initimg/initimg-linux.c	2018-07-13 14:22:05.000000000 +0530
-+++ valgrind-3.14.0/coregrind/m_initimg/initimg-linux.c	2019-01-04 17:42:19.145004978 +0530
-@@ -716,6 +716,12 @@ Addr setup_client_stack( void*  init_sp,
-                                | VKI_HWCAP_ASIMD)
+---
+ coregrind/m_initimg/initimg-linux.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/coregrind/m_initimg/initimg-linux.c b/coregrind/m_initimg/initimg-linux.c
+index 483b7a3..f193fc0 100644
+--- a/coregrind/m_initimg/initimg-linux.c
++++ b/coregrind/m_initimg/initimg-linux.c
+@@ -734,6 +734,12 @@ Addr setup_client_stack( void*  init_sp,
+                                | VKI_HWCAP_ASIMDDP)
                 auxv->u.a_val &= ARM64_SUPPORTED_HWCAP;
              }
 +#           elif defined(VGP_arm64_linux)
@@ -21,3 +27,6 @@ diff -Naurp valgrind-3.14.0_org/coregrind/m_initimg/initimg-linux.c valgrind-3.1
  #           endif
              break;
  #        if defined(VGP_ppc64be_linux) || defined(VGP_ppc64le_linux)
+-- 
+2.49.0
+

@@ -211,9 +211,11 @@ PACKAGEFILEPERMS = "${UNPACKDIR}/dir.perms ${UNPACKDIR}/file.perms"
 PACKAGEFILEPERMS_DISABLE ?= "0"
 
 get_fileperms () {
-    find ${PKGD} -type d | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${UNPACKDIR}/dir.perms
-    find ${PKGD} -type f | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${UNPACKDIR}/file.perms
-}
+    if [ -e ${UNPACKDIR} ] ; then 
+       find ${PKGD} -type d | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${UNPACKDIR}/dir.perms
+       find ${PKGD} -type f | xargs  stat -c "%n %a %u %g %i" | sed -e 's,${PKGD},,' > ${UNPACKDIR}/file.perms
+    fi
+}   
 
 python fixup_stripped_perms () {
     # Provide method for turning off this code from the metadata.

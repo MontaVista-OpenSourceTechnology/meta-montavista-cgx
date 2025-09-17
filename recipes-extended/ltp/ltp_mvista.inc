@@ -16,6 +16,10 @@ do_install(){
     rm -rf ${D}${prefix}/bin/STPfailure_report.pl
 
     # Copy POSIX test suite into ${D}${prefix}/testcases by manual
+    rm -f testcases/open_posix_testsuite/config.log
+    rm -f testcases/open_posix_testsuite/config.status
+    rm -fr testcases/open_posix_testsuite/autom4te.cache 
+    rm -f testcases/open_posix_testsuite/include/mk/config.mk
     cp -r testcases/open_posix_testsuite ${D}${prefix}/testcases
 }
 

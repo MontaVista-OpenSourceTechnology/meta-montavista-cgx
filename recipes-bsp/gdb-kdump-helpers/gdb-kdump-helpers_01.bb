@@ -1,5 +1,5 @@
 DESCRIPTION = "GDB macro for making analyzing kernel dump easy"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://../LICENSE;md5=79808397c3355f163c012616125c9e26"
 PR = "r3"
 RDEPENDS:${PN} = "gdb python3"
@@ -8,7 +8,7 @@ SRC_URI = "file://LICENSE file://arm-gdbinit_commit file://powerpc-gdbinit_commi
 
 do_install() {
 	install -d  ${D}/usr/share/gdb/macros/gdb-kdump-helpers
-	install -m 0644 ${WORKDIR}/LICENSE ${D}/usr/share/gdb/macros/gdb-kdump-helpers/
+	install -m 0644 ${UNPACKDIR}/LICENSE ${D}/usr/share/gdb/macros/gdb-kdump-helpers/
 
   case ${TARGET_ARCH} in
     arm*|aarch64*)    ARCH=arm ;;
@@ -18,8 +18,8 @@ do_install() {
 	  i*86*)    ARCH=x86 ;;
   esac
 
-	install -m 0644 ${WORKDIR}/${ARCH}-gdbinit_commit ${D}/usr/share/gdb/macros/gdb-kdump-helpers/gdbinit_commit
-	install -m 0644 ${WORKDIR}/gdbinit.py ${D}/usr/share/gdb/macros/gdb-kdump-helpers/
+	install -m 0644 ${UNPACKDIR}/${ARCH}-gdbinit_commit ${D}/usr/share/gdb/macros/gdb-kdump-helpers/gdbinit_commit
+	install -m 0644 ${UNPACKDIR}/gdbinit.py ${D}/usr/share/gdb/macros/gdb-kdump-helpers/
 }
 
 FILES:${PN} = "/usr/share/gdb/macros/gdb-kdump-helpers"

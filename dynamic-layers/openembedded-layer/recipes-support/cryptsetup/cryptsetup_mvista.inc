@@ -61,17 +61,17 @@ do_install:append () {
 	install -d -m 0755 ${D}/${nonarch_base_libdir}/udev/rules.d
 
 	if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
-	      install -d -m 0755 ${D}/${nonarch_base_libdir}/systemd
-	      install -d -m 0755 ${D}/${nonarch_base_libdir}/systemd/system
+	      install -d -m 0755 ${D}/${systemd_unitdir}
+	      install -d -m 0755 ${D}/${systemd_unitdir}/system
 
 	      install -m 0744 ${UNPACKDIR}/cryptdisk_support/lib/udev/rules.d/systemd-cryptdisks.rules ${D}/${nonarch_base_libdir}/udev/rules.d/98-cryptdisks.rules
-	      install -m 0644 ${UNPACKDIR}/cryptdisk_support/lib/systemd/system/cryptsetup@.service ${D}/${nonarch_base_libdir}/systemd/system/
-	      install -m 0644 ${UNPACKDIR}/cryptdisk_support/lib/systemd/system/cryptsetup-umount@.service ${D}/${nonarch_base_libdir}/systemd/system/
+	      install -m 0644 ${UNPACKDIR}/cryptdisk_support/lib/systemd/system/cryptsetup@.service ${D}/${systemd_unitdir}/system/
+	      install -m 0644 ${UNPACKDIR}/cryptdisk_support/lib/systemd/system/cryptsetup-umount@.service ${D}/${systemd_unitdir}/system/
 	else
 		install -m 0744 ${UNPACKDIR}/cryptdisk_support/lib/udev/rules.d/cryptdisks.rules ${D}/${nonarch_base_libdir}/udev/rules.d/98-cryptdisks.rules
 	fi
 }
 
-FILES:${PN} += "${sbindir}/*  /etc/* /${nonarch_base_libdir}/*"
+FILES:${PN} += "${sbindir}/*  /etc/* ${systemd_unitdir}/*"
 
 
